@@ -1,0 +1,72 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jacobi.AdventureBuilder.AppHost", "Jacobi.AdventureBuilder.AppHost\Jacobi.AdventureBuilder.AppHost.csproj", "{15E03F1D-D9DF-448E-98F3-F6878DCD2452}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jacobi.AdventureBuilder.ServiceDefaults", "Jacobi.AdventureBuilder.ServiceDefaults\Jacobi.AdventureBuilder.ServiceDefaults.csproj", "{916F4301-C2BE-497E-A43D-27483B0C3BA9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jacobi.AdventureBuilder.ApiService", "Jacobi.AdventureBuilder.ApiService\Jacobi.AdventureBuilder.ApiService.csproj", "{C799BE2C-779F-4E0C-9CEB-57248EDC1462}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jacobi.AdventureBuilder.Web", "Jacobi.AdventureBuilder.Web\Jacobi.AdventureBuilder.Web.csproj", "{5F608EDF-7B7F-40A6-B67E-7415DC78094B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jacobi.AdventureBuilder.GameActors", "Jacobi.AdventureBuilder.GameActors\Jacobi.AdventureBuilder.GameActors.csproj", "{D2C44F9A-DD89-4132-AB09-520FB00ED9A7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jacobi.AdventureBuilder.GameServer", "Jacobi.AdventureBuilder.GameServer\Jacobi.AdventureBuilder.GameServer.csproj", "{55014708-1B88-46BA-BCE8-2EA333571AA8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jacobi.AdventureBuilder.GameContracts", "Jacobi.AdventureBuilder.GameContracts\Jacobi.AdventureBuilder.GameContracts.csproj", "{144AA78F-EDCF-485C-90EA-536135D2B179}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A1A15286-2F84-4B15-86CA-8326CD2FC30A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jacobi.AdventureBuilder.Tests", "Jacobi.AdventureBuilder.Tests\Jacobi.AdventureBuilder.Tests.csproj", "{5F1ED126-4913-4289-A890-60349E06C4EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15E03F1D-D9DF-448E-98F3-F6878DCD2452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15E03F1D-D9DF-448E-98F3-F6878DCD2452}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15E03F1D-D9DF-448E-98F3-F6878DCD2452}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15E03F1D-D9DF-448E-98F3-F6878DCD2452}.Release|Any CPU.Build.0 = Release|Any CPU
+		{916F4301-C2BE-497E-A43D-27483B0C3BA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{916F4301-C2BE-497E-A43D-27483B0C3BA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{916F4301-C2BE-497E-A43D-27483B0C3BA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{916F4301-C2BE-497E-A43D-27483B0C3BA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C799BE2C-779F-4E0C-9CEB-57248EDC1462}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C799BE2C-779F-4E0C-9CEB-57248EDC1462}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C799BE2C-779F-4E0C-9CEB-57248EDC1462}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C799BE2C-779F-4E0C-9CEB-57248EDC1462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F608EDF-7B7F-40A6-B67E-7415DC78094B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F608EDF-7B7F-40A6-B67E-7415DC78094B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F608EDF-7B7F-40A6-B67E-7415DC78094B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F608EDF-7B7F-40A6-B67E-7415DC78094B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2C44F9A-DD89-4132-AB09-520FB00ED9A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2C44F9A-DD89-4132-AB09-520FB00ED9A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2C44F9A-DD89-4132-AB09-520FB00ED9A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2C44F9A-DD89-4132-AB09-520FB00ED9A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55014708-1B88-46BA-BCE8-2EA333571AA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55014708-1B88-46BA-BCE8-2EA333571AA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55014708-1B88-46BA-BCE8-2EA333571AA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55014708-1B88-46BA-BCE8-2EA333571AA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{144AA78F-EDCF-485C-90EA-536135D2B179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{144AA78F-EDCF-485C-90EA-536135D2B179}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{144AA78F-EDCF-485C-90EA-536135D2B179}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{144AA78F-EDCF-485C-90EA-536135D2B179}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F1ED126-4913-4289-A890-60349E06C4EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F1ED126-4913-4289-A890-60349E06C4EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F1ED126-4913-4289-A890-60349E06C4EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F1ED126-4913-4289-A890-60349E06C4EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {333D2CC0-C1E2-4283-8598-607934E9A28E}
+	EndGlobalSection
+EndGlobal

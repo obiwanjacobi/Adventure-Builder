@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>d99da5ad-48cb-481d-917b-debd5cf878df</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.10" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Jacobi.AdventureBuilder.GameActors\Jacobi.AdventureBuilder.GameActors.csproj" />
+    <ProjectReference Include="..\Jacobi.AdventureBuilder.GameContracts\Jacobi.AdventureBuilder.GameContracts.csproj" />
+    <ProjectReference Include="..\Jacobi.AdventureBuilder.ServiceDefaults\Jacobi.AdventureBuilder.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>

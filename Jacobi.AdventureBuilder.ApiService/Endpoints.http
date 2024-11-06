@@ -1,0 +1,25 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+@server=localhost:7395
+
+# Test
+POST https://{{server}}/test
+Content-Type: application/json
+
+{
+  "text": "Not Empty"
+}
+
+###
+
+POST https://{{server}}/accounts/signup
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "nickname": "tstusr",
+  "email": "user@test.com"
+}
+
+###
+

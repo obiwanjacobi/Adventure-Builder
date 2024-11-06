@@ -1,0 +1,6 @@
+@Jacobi.AdventureBuilder.GameServer_HostAddress = http://localhost:5216
+
+GET {{Jacobi.AdventureBuilder.GameServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
