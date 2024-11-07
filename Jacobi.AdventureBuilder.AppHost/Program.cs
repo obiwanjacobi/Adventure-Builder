@@ -1,13 +1,15 @@
+using Microsoft.Extensions.Hosting;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
-//var cosmosDb = builder.AddAzureCosmosDB("adventurebuilder");
-//cosmosDb.AddDatabase("adventurebuilder");
-//if (builder.Environment.IsDevelopment())
-//cosmosDb.WithHttpsEndpoint(8081, 8081, "emulator-port").RunAsEmulator();
+var cosmosDb = builder.AddAzureCosmosDB("adventurebuilder");
+cosmosDb.AddDatabase("adventurebuilder");
+if (builder.Environment.IsDevelopment())
+    cosmosDb.RunAsEmulator();
 
 
 var apiService = builder.AddProject<Projects.Jacobi_AdventureBuilder_ApiService>("apiservice")
-    //.WithReference(cosmosDb)
+    .WithReference(cosmosDb)
     ;
 
 builder.AddProject<Projects.Jacobi_AdventureBuilder_Web>("webfrontend")

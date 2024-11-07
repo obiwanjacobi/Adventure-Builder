@@ -25,16 +25,16 @@ internal sealed class CosmosDatabase : IDatabase
         where T : Entity
     {
         var type = typeof(T).Name;
-        var container = await GetContainerAsync(type, ct);
-        var response = await container.UpsertItemAsync<T>(entity, new PartitionKey(entity.id), cancellationToken: ct);
+        var container = await GetContainerAsync(type, entity.PartitionPath, ct);
+        var response = await container.UpsertItemAsync<T>(entity, new PartitionKey(entity.PartitionKey), cancellationToken: ct);
 
         return response.Resource;
     }
 
-    private async Task<Cosmos.Container> GetContainerAsync(string container, CancellationToken ct)
+    private async Task<Cosmos.Container> GetContainerAsync(string container, string partitionPath, CancellationToken ct)
     {
         await _cosmosClient.CreateDatabaseIfNotExistsAsync(DatabaseName, cancellationToken: ct);
-        await _cosmosDb.CreateContainerIfNotExistsAsync(container, $"/id", cancellationToken: ct);
+        await _cosmosDb.CreateContainerIfNotExistsAsync(container, $"/{partitionPath}", cancellationToken: ct);
         return _cosmosDb.GetContainer(container);
     }
 }
