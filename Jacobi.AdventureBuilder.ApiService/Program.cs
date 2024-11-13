@@ -23,4 +23,5 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.MapDefaultEndpoints();
 app.UseFastEndpoints();
-app.Run();
+
+await app.RunAsync();

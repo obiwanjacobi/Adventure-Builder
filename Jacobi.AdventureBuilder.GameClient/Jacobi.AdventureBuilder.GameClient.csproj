@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
-    <PackageReference Include="Microsoft.Orleans.Sdk" Version="8.2.0" />
+    <PackageReference Include="Aspire.Azure.Data.Tables" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orleans.Serialization.LanguageExt\Orleans.Serialization.LanguageExt.csproj" />
+    <ProjectReference Include="..\Jacobi.AdventureBuilder.GameContracts\Jacobi.AdventureBuilder.GameContracts.csproj" />
   </ItemGroup>
 
 </Project>

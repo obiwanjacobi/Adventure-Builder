@@ -1,0 +1,6 @@
+@Server = http://localhost:5216
+
+# Ping
+GET {{Server}}
+
+###

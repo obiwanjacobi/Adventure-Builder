@@ -1,4 +1,4 @@
-namespace Jacobi.AdventureBuilder.Web;
+namespace Jacobi.AdventureBuilder.Web.Features.Weather;
 
 public class WeatherApiClient(HttpClient httpClient)
 {
