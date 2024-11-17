@@ -13,6 +13,7 @@ Welcome to your new app.
     protected override async Task OnInitializedAsync()
     {
         var world = await _gameClient.WorldManager.CreateWorld("testWorld");
-        await world.Start();
+        var player = _gameClient.GetPlayer("PlayerOne");
+        await world.Start(player);
     }
 }

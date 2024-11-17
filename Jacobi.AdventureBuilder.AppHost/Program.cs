@@ -24,12 +24,13 @@ var orleans = builder.AddOrleans("default")
 if (builder.Environment.IsDevelopment())
 {
     cosmosDb.RunAsEmulator();
-    storage.RunAsEmulator();
+    // net9 uses a unsupported version
+    storage.RunAsEmulator(/*c => c.WithImageTag("3.31.0")*/);
 }
 
 var apiService = builder.AddProject<Projects.Jacobi_AdventureBuilder_ApiService>("apiservice")
     .WithReference(cosmosDb)
-    .WaitFor(cosmosDb)
+    //.WaitFor(cosmosDb)
     ;
 
 var gameServer = builder.AddProject<Projects.Jacobi_AdventureBuilder_GameServer>("gameserver")

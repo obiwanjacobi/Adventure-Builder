@@ -9,7 +9,7 @@ public sealed class WorldManagerState
     public Dictionary<string, IAdventureWorld> WorldsById { get; } = [];
 }
 
-public sealed class WorldManager : Grain<WorldManagerState>, IWorldManager
+public sealed class WorldManager : Grain<WorldManagerState>, IWorldManagerGrain
 {
     private readonly IGrainFactory factory;
     private readonly IAdventureClient client;
@@ -20,15 +20,16 @@ public sealed class WorldManager : Grain<WorldManagerState>, IWorldManager
         this.client = client;
     }
 
-    public Task<IAdventureWorld> CreateWorld(string adventureId)
+    public async Task<IAdventureWorld> CreateWorld(string adventureId)
     {
         // load adventure meta data
-        var worldMap = this.client.GetAdventure(adventureId);
-        var worldId = worldMap.Name + "-" + Guid.NewGuid().ToString();
+        var worldInfo = await this.client.GetAdventureWorldAsync(adventureId);
+        var worldId = worldInfo.Id + "-" + Guid.NewGuid().ToString();
         var world = this.factory.GetGrain<IAdventureWorld>(worldId);
-        //world.Load(adventureMap);
+        await world.Load(worldInfo);
+
         State.WorldsById.Add(worldId, world);
-        return Task.FromResult(world);
+        return world;
     }
 
     public ValueTask<Option<IAdventureWorld>> FindWorld(string worldNameOrId)

@@ -10,16 +10,21 @@ public sealed class AdventureGameClient
     public AdventureGameClient(IGrainFactory factory)
         => this.factory = factory;
 
-    public IWorldManager WorldManager
+    public IWorldManagerGrain WorldManager
     {
         get
         {
-            var guidAttr = typeof(IWorldManager)
+            var guidAttr = typeof(IWorldManagerGrain)
                 .GetCustomAttributes(false)
                 .OfType<GuidAttribute>()
                 .Single();
 
-            return this.factory.GetGrain<IWorldManager>(Guid.Parse(guidAttr.Value.AsSpan()));
+            return this.factory.GetGrain<IWorldManagerGrain>(Guid.Parse(guidAttr.Value.AsSpan()));
         }
+    }
+
+    public IPlayerGrain GetPlayer(string playerId)
+    {
+        return this.factory.GetGrain<IPlayerGrain>(playerId);
     }
 }

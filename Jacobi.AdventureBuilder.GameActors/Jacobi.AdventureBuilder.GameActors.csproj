@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Jacobi.AdventureBuilder.AdventureModel\Jacobi.AdventureBuilder.AdventureModel.csproj" />
     <ProjectReference Include="..\Jacobi.AdventureBuilder.ApiClient\Jacobi.AdventureBuilder.ApiClient.csproj" />
     <ProjectReference Include="..\Jacobi.AdventureBuilder.GameContracts\Jacobi.AdventureBuilder.GameContracts.csproj" />
   </ItemGroup>

@@ -1,12 +1,29 @@
-﻿namespace Jacobi.AdventureBuilder.ApiClient;
+﻿using Jacobi.AdventureBuilder.AdventureModel;
 
-internal class AdventureClient : IAdventureClient
+namespace Jacobi.AdventureBuilder.ApiClient;
+
+internal sealed class AdventureClient : IAdventureClient
 {
-    public AdventureWorldMap GetAdventure(string adventureId)
+    public Task<AdventureWorldInfo> GetAdventureWorldAsync(string adventureId)
     {
-        return new AdventureWorldMap()
+        // TODO: get from metadata database
+
+        return Task.FromResult(new AdventureWorldInfo()
         {
-            Name = adventureId
-        };
+            Id = adventureId,
+            Name = $"Adventure {adventureId}",
+            Rooms = [
+                new AdventureRoomInfo()
+                {
+                    Id = 1,
+                    Name = "Room 1",
+                },
+                new AdventureRoomInfo()
+                {
+                    Id = 2,
+                    Name = "Room 2",
+                }
+            ]
+        });
     }
 }

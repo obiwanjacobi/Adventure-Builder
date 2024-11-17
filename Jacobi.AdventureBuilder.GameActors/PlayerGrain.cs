@@ -6,7 +6,7 @@ public sealed class PlayerGrain : Grain, IPlayerGrain
 {
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        _playerInfo = new(this.GetPrimaryKey(), Guid.Empty, "John Doe");
+        _playerInfo = new(this.GetPrimaryKeyString(), Guid.Empty, "John Doe");
 
         return base.OnActivateAsync(cancellationToken);
     }
@@ -18,7 +18,7 @@ public sealed class PlayerGrain : Grain, IPlayerGrain
 
     public ValueTask SetPlayerInfo(Guid accountId, string nickname)
     {
-        _playerInfo = new PlayerInfo(this.GetPrimaryKey(), accountId, nickname);
+        _playerInfo = new PlayerInfo(this.GetPrimaryKeyString(), accountId, nickname);
         return ValueTask.CompletedTask;
     }
 

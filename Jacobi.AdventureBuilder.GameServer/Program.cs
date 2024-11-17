@@ -1,5 +1,9 @@
 using Jacobi.AdventureBuilder.ApiClient;
 
+//
+// Game Server
+//
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
@@ -9,7 +13,6 @@ builder.UseOrleans(silo =>
 {
     silo.ConfigureServices(services =>
     {
-
         services.AddApiClient();
     });
 });

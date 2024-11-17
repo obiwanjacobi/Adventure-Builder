@@ -30,6 +30,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.Serialization.Langu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jacobi.AdventureBuilder.ApiClient", "Jacobi.AdventureBuilder.ApiClient\Jacobi.AdventureBuilder.ApiClient.csproj", "{D5C14CE4-F6AC-422E-935B-48A363C62B1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jacobi.AdventureBuilder.AdventureModel", "Jacobi.AdventureBuilder.AdventureModel\Jacobi.AdventureBuilder.AdventureModel.csproj", "{2A46DFA3-A6D5-49F5-AD63-CFE1688230A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{D5C14CE4-F6AC-422E-935B-48A363C62B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5C14CE4-F6AC-422E-935B-48A363C62B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5C14CE4-F6AC-422E-935B-48A363C62B1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A46DFA3-A6D5-49F5-AD63-CFE1688230A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A46DFA3-A6D5-49F5-AD63-CFE1688230A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A46DFA3-A6D5-49F5-AD63-CFE1688230A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A46DFA3-A6D5-49F5-AD63-CFE1688230A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

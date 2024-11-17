@@ -2,6 +2,10 @@ using FastEndpoints;
 using Jacobi.AdventureBuilder.ApiService.Account;
 using Jacobi.AdventureBuilder.ApiService.Data;
 
+//
+// API Service
+//
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.

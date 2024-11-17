@@ -1,6 +1,6 @@
 ﻿namespace Jacobi.AdventureBuilder.GameContracts;
 
-public interface IPlayerGrain : IGrainWithGuidKey
+public interface IPlayerGrain : IGrainWithStringKey
 {
     ValueTask<PlayerInfo> GetPlayerInfo();
     ValueTask SetPlayerInfo(Guid accountId, string nickname);
