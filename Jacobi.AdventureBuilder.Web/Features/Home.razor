@@ -1,4 +1,5 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 @using Jacobi.AdventureBuilder.GameClient
 @using Jacobi.AdventureBuilder.GameContracts
 
@@ -7,24 +8,53 @@
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, Adventure World!</h1>
+<div>Welcome to your new Adventure.</div>
 
-Welcome to your new Adventure.
+<FluentLabel>@_name</FluentLabel>
+<FluentDivider />
+<div>@_description</div>
 
-<FluentCard>
-    @_name
-    @_description
-</FluentCard>
+@if (@_commands is not null)
+{
+    @foreach (var command in @_commands!)
+    {
+        <div>@command.Description</div>
+        <FluentButton @onclick="@(() => ExecuteCommand(command.Id))">@command.Name</FluentButton>
+        
+    }
+}
 
 @code {
     protected string? _name;
     protected string? _description;
+    protected IReadOnlyCollection<GameCommandInfo>? _commands;
+    protected IPlayerGrain? _player;
+    protected IAdventureWorldGrain? _world;
+    protected IRoomGrain? _room;
 
     protected override async Task OnInitializedAsync()
     {
-        var world = await _gameClient.WorldManager.CreateWorld("testWorld");
-        var player = _gameClient.GetPlayer("PlayerOne");
-        var room = await world.Start(player);
+        _world = await _gameClient.WorldManager.CreateWorld("testWorld");
+        _player = _gameClient.GetPlayer("PlayerOne");
+        var room = await _world.Start(_player);
+        await SetRoom(room);
         _name = await room.Name();
         _description = await room.Description();
+        _commands = await room.CommandInfos();
+    }
+
+    async Task ExecuteCommand(string commandId)
+    {
+        var command = await _room!.GetCommand(commandId);
+        var result = await _player!.Play(_world!, command);
+        await SetRoom(result.Room!);
+    }
+
+    private async Task SetRoom(IRoomGrain room)
+    {
+        _room = room;
+        _name = await _room.Name();
+        _description = await _room.Description();
+        _commands = await _room.CommandInfos();
     }
 }

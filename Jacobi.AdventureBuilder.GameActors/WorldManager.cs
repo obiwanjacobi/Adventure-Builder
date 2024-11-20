@@ -6,7 +6,7 @@ namespace Jacobi.AdventureBuilder.GameActors;
 
 public sealed class WorldManagerState
 {
-    public Dictionary<string, IAdventureWorld> WorldsById { get; } = [];
+    public Dictionary<string, IAdventureWorldGrain> WorldsById { get; } = [];
 }
 
 public sealed class WorldManager : Grain<WorldManagerState>, IWorldManagerGrain
@@ -20,24 +20,24 @@ public sealed class WorldManager : Grain<WorldManagerState>, IWorldManagerGrain
         this.client = client;
     }
 
-    public async Task<IAdventureWorld> CreateWorld(string adventureId)
+    public async Task<IAdventureWorldGrain> CreateWorld(string adventureId)
     {
         // load adventure meta data
         var worldInfo = await this.client.GetAdventureWorldAsync(adventureId);
         var worldId = worldInfo.Id + "-" + Guid.NewGuid().ToString();
-        var world = this.factory.GetGrain<IAdventureWorld>(worldId);
+        var world = this.factory.GetGrain<IAdventureWorldGrain>(worldId);
         await world.Load(worldInfo);
 
         State.WorldsById.Add(worldId, world);
         return world;
     }
 
-    public Task<Option<IAdventureWorld>> FindWorld(string worldNameOrId)
+    public Task<Option<IAdventureWorldGrain>> FindWorld(string worldNameOrId)
     {
         if (State.WorldsById.TryGetValue(worldNameOrId, out var world))
-            return Task.FromResult(Option<IAdventureWorld>.Some(world));
+            return Task.FromResult(Option<IAdventureWorldGrain>.Some(world));
 
         // find by name
-        return Task.FromResult(Option<IAdventureWorld>.None);
+        return Task.FromResult(Option<IAdventureWorldGrain>.None);
     }
 }

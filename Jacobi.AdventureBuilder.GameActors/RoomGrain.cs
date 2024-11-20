@@ -35,6 +35,26 @@ public sealed class RoomGrain : Grain, IRoomGrain
         return Task.FromResult(this.roomInfo!.Description);
     }
 
+    public Task<IReadOnlyCollection<GameCommandInfo>> CommandInfos()
+    {
+        ThrowIfUninitialized();
+        return Task.FromResult(
+            (IReadOnlyCollection<GameCommandInfo>)this.roomInfo!.Commands
+                .Map(cmd => new GameCommandInfo(cmd.Id, cmd.Name, cmd.Description))
+                .ToList()
+        );
+    }
+
+    public Task<GameCommand> GetCommand(string commandId)
+    {
+        ThrowIfUninitialized();
+        var commandInfo = this.roomInfo!.Commands
+            .Find(cmd => cmd.Id == commandId)
+            .Single();
+        var command = new GameCommand(commandId, commandInfo.Kind, commandInfo.Action);
+        return Task.FromResult(command);
+    }
+
     private void ThrowIfUninitialized()
     {
         if (this.roomInfo is null)

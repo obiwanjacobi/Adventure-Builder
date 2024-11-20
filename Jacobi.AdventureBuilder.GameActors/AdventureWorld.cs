@@ -9,7 +9,7 @@ public sealed class AdventureWorldState
     public string WorldId { get; set; } = String.Empty;
 }
 
-public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
+public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorldGrain
 {
     private readonly IGrainFactory factory;
 
@@ -34,9 +34,12 @@ public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
         return startRoom;
     }
 
-    public Task Stop()
+    public Task<IRoomGrain> GetRoom(long roomId)
     {
-        return Task.CompletedTask;
+        ThrowIfNotLoaded();
+        var room = this.adventureWorld!.Rooms.Find(r => r.Id == roomId).SingleOrDefault();
+        if (room is null) throw new ArgumentOutOfRangeException("Illegal Room Id.");
+        return GetOrCreateRoom(room);
     }
 
     private async Task<IRoomGrain> GetOrCreateRoom(AdventureRoomInfo roomInfo)
@@ -47,5 +50,11 @@ public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
             // initial load
         }
         return room;
+    }
+
+    private void ThrowIfNotLoaded()
+    {
+        if (this.adventureWorld is null)
+            throw new InvalidOperationException("This AdventureWorld has not been loaded.");
     }
 }

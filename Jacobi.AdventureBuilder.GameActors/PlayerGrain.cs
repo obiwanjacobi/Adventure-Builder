@@ -33,8 +33,9 @@ public sealed class PlayerGrain : Grain, IPlayerGrain
         return Task.CompletedTask;
     }
 
-    public Task<GameCommandResult> Play(GameCommand command)
+    public async Task<GameCommandResult> Play(IAdventureWorldGrain world, GameCommand command)
     {
-        return Task.FromResult(new GameCommandResult());
+        var commandHandler = new GameCommandHandler(world, this);
+        return await commandHandler.ExecuteAsync(command);
     }
 }
