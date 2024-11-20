@@ -1,19 +1,30 @@
 ﻿@page "/"
 @using Jacobi.AdventureBuilder.GameClient
+@using Jacobi.AdventureBuilder.GameContracts
 
 @inject AdventureGameClient _gameClient
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Hello, Adventure World!</h1>
 
-Welcome to your new app.
+Welcome to your new Adventure.
+
+<FluentCard>
+    @_name
+    @_description
+</FluentCard>
 
 @code {
+    protected string? _name;
+    protected string? _description;
+
     protected override async Task OnInitializedAsync()
     {
         var world = await _gameClient.WorldManager.CreateWorld("testWorld");
         var player = _gameClient.GetPlayer("PlayerOne");
-        await world.Start(player);
+        var room = await world.Start(player);
+        _name = await room.Name();
+        _description = await room.Description();
     }
 }

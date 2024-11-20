@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Jacobi.AdventureBuilder.AppHost\Jacobi.AdventureBuilder.AppHost.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="System.Net" />
     <Using Include="Microsoft.Extensions.DependencyInjection" />
     <Using Include="Aspire.Hosting.ApplicationModel" />

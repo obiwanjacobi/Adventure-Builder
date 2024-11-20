@@ -32,12 +32,12 @@ public sealed class WorldManager : Grain<WorldManagerState>, IWorldManagerGrain
         return world;
     }
 
-    public ValueTask<Option<IAdventureWorld>> FindWorld(string worldNameOrId)
+    public Task<Option<IAdventureWorld>> FindWorld(string worldNameOrId)
     {
         if (State.WorldsById.TryGetValue(worldNameOrId, out var world))
-            return ValueTask.FromResult(Option<IAdventureWorld>.Some(world));
+            return Task.FromResult(Option<IAdventureWorld>.Some(world));
 
         // find by name
-        return ValueTask.FromResult(Option<IAdventureWorld>.None);
+        return Task.FromResult(Option<IAdventureWorld>.None);
     }
 }

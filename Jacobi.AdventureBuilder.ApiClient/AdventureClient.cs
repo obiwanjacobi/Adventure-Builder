@@ -17,11 +17,13 @@ internal sealed class AdventureClient : IAdventureClient
                 {
                     Id = 1,
                     Name = "Room 1",
+                    Description = "You are in Room 1",
                 },
                 new AdventureRoomInfo()
                 {
                     Id = 2,
                     Name = "Room 2",
+                    Description = "You are in Room 2",
                 }
             ]
         });

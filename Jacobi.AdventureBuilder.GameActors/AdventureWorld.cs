@@ -26,15 +26,26 @@ public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
         return Task.CompletedTask;
     }
 
-    public async Task Start(IPlayerGrain player)
+    public async Task<IRoomGrain> Start(IPlayerGrain player)
     {
         Debug.Assert(this.adventureWorld is not null);
-        var startRoom = this.factory.GetGrain<IRoomGrain>(this.adventureWorld.StartRoom.Id);
+        var startRoom = await GetOrCreateRoom(this.adventureWorld.StartRoom);
         await player.EnterRoom(startRoom);
+        return startRoom;
     }
 
     public Task Stop()
     {
         return Task.CompletedTask;
+    }
+
+    private async Task<IRoomGrain> GetOrCreateRoom(AdventureRoomInfo roomInfo)
+    {
+        var room = this.factory.GetGrain<IRoomGrain>(roomInfo.Id);
+        if (await room.Load(roomInfo))
+        {
+            // initial load
+        }
+        return room;
     }
 }

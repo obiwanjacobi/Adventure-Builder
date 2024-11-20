@@ -13,10 +13,11 @@ builder.AddServiceDefaults();
 builder.AddGameClient();
 
 // Add services to the container.
+builder.Services.AddServerSideBlazor();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddFluentUIComponents();
-builder.Services.AddOutputCache();
+//builder.Services.AddOutputCache();
 //builder.Services.AddHttpClient<WeatherApiClient>(client =>
 //    {
 //        // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
@@ -37,7 +38,7 @@ app.UseHttpsRedirection();
 //app.UseStaticFiles();
 app.MapStaticAssets();
 app.UseAntiforgery();
-app.UseOutputCache();
+//app.UseOutputCache();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 app.MapDefaultEndpoints();

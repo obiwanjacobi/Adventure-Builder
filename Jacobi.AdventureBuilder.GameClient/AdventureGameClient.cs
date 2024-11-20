@@ -7,7 +7,7 @@ public sealed class AdventureGameClient
 {
     private readonly IGrainFactory factory;
 
-    public AdventureGameClient(IGrainFactory factory)
+    public AdventureGameClient(IClusterClient factory)
         => this.factory = factory;
 
     public IWorldManagerGrain WorldManager

@@ -2,9 +2,13 @@
 
 namespace Jacobi.AdventureBuilder.GameContracts;
 
+[Alias("AdventureBuilder.IAdventureWorld")]
 public interface IAdventureWorld : IGrainWithStringKey
 {
+    [Alias("Load")]
     Task Load(AdventureWorldInfo world);
-    Task Start(IPlayerGrain player);
+    [Alias("Start")]
+    Task<IRoomGrain> Start(IPlayerGrain player);
+    [Alias("Stop")]
     Task Stop();
 }

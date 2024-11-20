@@ -13,24 +13,24 @@ public sealed class PlayerGrain : Grain, IPlayerGrain
 
     private PlayerInfo? _playerInfo;
 
-    public ValueTask<PlayerInfo> GetPlayerInfo()
-        => ValueTask.FromResult(_playerInfo!);
+    public Task<PlayerInfo> PlayerInfo()
+        => Task.FromResult(_playerInfo!);
 
-    public ValueTask SetPlayerInfo(Guid accountId, string nickname)
+    public Task SetPlayerInfo(Guid accountId, string nickname)
     {
         _playerInfo = new PlayerInfo(this.GetPrimaryKeyString(), accountId, nickname);
-        return ValueTask.CompletedTask;
+        return Task.CompletedTask;
     }
 
     private IRoomGrain? _room;
 
-    public ValueTask<IRoomGrain?> Room()
-        => ValueTask.FromResult(_room);
+    public Task<IRoomGrain?> Room()
+        => Task.FromResult(_room);
 
-    public ValueTask EnterRoom(IRoomGrain room)
+    public Task EnterRoom(IRoomGrain room)
     {
         _room = room;
-        return ValueTask.CompletedTask;
+        return Task.CompletedTask;
     }
 
     public Task<GameCommandResult> Play(GameCommand command)
