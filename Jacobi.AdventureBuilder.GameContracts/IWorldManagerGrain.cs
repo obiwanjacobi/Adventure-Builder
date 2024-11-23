@@ -8,7 +8,7 @@ namespace Jacobi.AdventureBuilder.GameContracts;
 public interface IWorldManagerGrain : IGrainWithGuidKey
 {
     [Alias("CreateWorld")]
-    Task<IAdventureWorldGrain> CreateWorld(string adventureId);
+    Task<IAdventureWorldGrain> CreateWorld(string worldId);
     [Alias("FindWorld")]
     Task<Option<IAdventureWorldGrain>> FindWorld(string worldNameOrId);
 }

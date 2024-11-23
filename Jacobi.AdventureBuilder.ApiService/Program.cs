@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Jacobi.AdventureBuilder.ApiService.Account;
+using Jacobi.AdventureBuilder.ApiService.Adventure;
 using Jacobi.AdventureBuilder.ApiService.Data;
 
 //
@@ -19,6 +20,7 @@ builder.Services
     // application specific
     .AddDataServices()
     .AddAccountServices()
+    .AddAdventureServices()
     ;
 
 var app = builder.Build();

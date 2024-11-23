@@ -23,7 +23,7 @@ public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
     public Task Load(AdventureWorldInfo world)
     {
         this.adventureWorld = world;
-        return Task.CompletedTask;
+        return WriteStateAsync();
     }
 
     public async Task<IRoomGrain> Start(IPlayerGrain player)
@@ -37,8 +37,8 @@ public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
     public Task<IRoomGrain> GetRoom(long roomId)
     {
         ThrowIfNotLoaded();
-        var room = this.adventureWorld!.Rooms.Find(r => r.Id == roomId).SingleOrDefault();
-        if (room is null) throw new ArgumentOutOfRangeException("Illegal Room Id.");
+        var room = this.adventureWorld!.Rooms.Find(r => r.Id == roomId).SingleOrDefault()
+            ?? throw new ArgumentOutOfRangeException(nameof(roomId), "Illegal Room Id.");
         return GetOrCreateRoom(room);
     }
 

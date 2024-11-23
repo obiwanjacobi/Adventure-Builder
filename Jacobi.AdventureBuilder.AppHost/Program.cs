@@ -7,8 +7,8 @@ using Microsoft.Extensions.Hosting;
 var builder = DistributedApplication.CreateBuilder(args);
 
 // metadata store
-var cosmosDb = builder.AddAzureCosmosDB("adventurebuilder");
-cosmosDb.AddDatabase("adventurebuilder");
+var cosmos = builder.AddAzureCosmosDB("adventurebuilder");
+var cosmosDb = cosmos.AddDatabase("adventurebuilder");
 
 // runtime store
 var storage = builder.AddAzureStorage("stadventurebuilder");
@@ -23,28 +23,27 @@ var orleans = builder.AddOrleans("default")
 
 if (builder.Environment.IsDevelopment())
 {
-    cosmosDb.RunAsEmulator();
+    cosmos.RunAsEmulator();
     // net9 uses a unsupported version
     storage.RunAsEmulator(/*c => c.WithImageTag("3.31.0")*/);
 }
 
 var apiService = builder.AddProject<Projects.Jacobi_AdventureBuilder_ApiService>("apiservice")
-    .WithReference(cosmosDb)
+    .WithReference(cosmos)
     //.WaitFor(cosmosDb)
     ;
 
 var gameServer = builder.AddProject<Projects.Jacobi_AdventureBuilder_GameServer>("gameserver")
-    .WithReference(orleans)
-    .WithReplicas(1)
+    .WithReference(apiService).WaitFor(apiService)
+    .WithReference(orleans).WithReplicas(1)
     ;
 
 builder.AddProject<Projects.Jacobi_AdventureBuilder_Web>("webfrontend")
     .WithExternalHttpEndpoints()
-    .WithReference(apiService)
-    .WaitFor(apiService)
-    .WithReference(orleans.AsClient())
+    .WithReference(apiService).WaitFor(apiService)
+    .WithReference(orleans.AsClient()).WithReplicas(1)
     .WaitFor(gameServer)
-    .WithReplicas(1)
+
     ;
 
 

@@ -17,3 +17,8 @@ Content-Type: application/json
 }
 
 ###
+
+GET https://{{server}}/adventure/worlds/someworld
+
+###
+

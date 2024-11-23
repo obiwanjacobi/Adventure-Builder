@@ -9,13 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddKeyedAzureTableClient("game-clusters");
 builder.AddKeyedAzureBlobClient("game-grains");
-builder.UseOrleans(silo =>
-{
-    silo.ConfigureServices(services =>
-    {
-        services.AddApiClient();
-    });
-});
+builder.AddApiClient();
+builder.UseOrleans();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

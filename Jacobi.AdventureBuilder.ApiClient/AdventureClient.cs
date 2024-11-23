@@ -1,51 +1,33 @@
-﻿using Jacobi.AdventureBuilder.AdventureModel;
+﻿using System.Text.Json;
+using Jacobi.AdventureBuilder.AdventureModel;
 
 namespace Jacobi.AdventureBuilder.ApiClient;
 
+public interface IAdventureClient
+{
+    Task<AdventureWorldInfo> GetAdventureWorldAsync(string worldId, CancellationToken ct);
+}
+
 internal sealed class AdventureClient : IAdventureClient
 {
-    public Task<AdventureWorldInfo> GetAdventureWorldAsync(string adventureId)
+    private static JsonSerializerOptions JsonOptions = new JsonSerializerOptions
     {
-        // TODO: get from metadata database
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
 
-        return Task.FromResult(new AdventureWorldInfo()
-        {
-            Id = adventureId,
-            Name = $"Adventure {adventureId}",
-            Rooms = [
-                new AdventureRoomInfo()
-                {
-                    Id = 1,
-                    Name = "Room 1",
-                    Description = "You are in Room 1",
-                    Commands = [
-                        new AdventureCommandInfo
-                        {
-                            Id = "nav-north",
-                            Kind = "nav-room",
-                            Name = "North",
-                            Description = "To the north there is a door leading to another room.",
-                            Action = "nav:room:2"
-                        }
-                    ]
-                },
-                new AdventureRoomInfo()
-                {
-                    Id = 2,
-                    Name = "Room 2",
-                    Description = "You are in Room 2",
-                    Commands = [
-                        new AdventureCommandInfo
-                        {
-                            Id = "nav-south",
-                            Kind = "nav-room",
-                            Name = "South",
-                            Description = "To the south there is a door leading to another room.",
-                            Action = "nav:room:1"
-                        }
-                    ]
-                }
-            ]
-        });
+    private readonly HttpClient httpClient;
+
+    public AdventureClient(HttpClient client)
+        => this.httpClient = client;
+
+    public async Task<AdventureWorldInfo> GetAdventureWorldAsync(string worldId, CancellationToken ct)
+    {
+        var response = await this.httpClient.GetAsync($"/adventure/worlds/{worldId}", ct);
+        response.EnsureSuccessStatusCode();
+
+        var jsonString = await response.Content.ReadAsStringAsync(ct);
+        var adventureWorld = JsonSerializer.Deserialize<AdventureWorldInfo>(jsonString, JsonOptions);
+
+        return adventureWorld ?? throw new JsonException("Failed to deserialize AdventureWorldInfo.");
     }
 }
