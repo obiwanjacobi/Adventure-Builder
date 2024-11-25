@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Jacobi.AdventureBuilder.Twine": {
+      "commandName": "Project",
+      "commandLineArgs": "-f \"..\\..\\..\\..\\Jacobi.AdventureBuilder.Tests\\Twine\\example.json\""
+    }
+  }
+}

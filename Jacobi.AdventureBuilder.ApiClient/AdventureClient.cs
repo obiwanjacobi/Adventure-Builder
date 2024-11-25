@@ -6,6 +6,7 @@ namespace Jacobi.AdventureBuilder.ApiClient;
 public interface IAdventureClient
 {
     Task<AdventureWorldInfo> GetAdventureWorldAsync(string worldId, CancellationToken ct);
+    Task UpsertAdventureWorldAsync(AdventureWorldInfo adventureWorld, CancellationToken ct);
 }
 
 internal sealed class AdventureClient : IAdventureClient
@@ -28,6 +29,16 @@ internal sealed class AdventureClient : IAdventureClient
         var jsonString = await response.Content.ReadAsStringAsync(ct);
         var adventureWorld = JsonSerializer.Deserialize<AdventureWorldInfo>(jsonString, JsonOptions);
 
-        return adventureWorld ?? throw new JsonException("Failed to deserialize AdventureWorldInfo.");
+        return adventureWorld
+            ?? throw new JsonException("Failed to deserialize AdventureWorldInfo.");
+    }
+
+    public async Task UpsertAdventureWorldAsync(AdventureWorldInfo adventureWorld, CancellationToken ct)
+    {
+        var json = JsonSerializer.Serialize(adventureWorld);
+        var worldId = adventureWorld.Id;
+        var content = new StringContent(json);
+        var response = await this.httpClient.PutAsync($"/adventure/worlds/{worldId}", content, ct);
+        response.EnsureSuccessStatusCode();
     }
 }

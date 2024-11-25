@@ -1,0 +1,58 @@
+{
+  "uuid": "CA59D7B3-C88B-499E-A333-9BC5D2906506",
+  "name": "The Beginning",
+  "creator": "Twine",
+  "creatorVersion": "2.9.2",
+  "schemaName": "Harlowe 3 to JSON",
+  "schemaVersion": "0.0.6",
+  "createdAtMs": 1732437770149,
+  "passages": [
+    {
+      "name": "Let's Start",
+      "tags": "tag1 tag2",
+      "id": "1",
+      "text": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n- [[Option 1]] \n- [[Option 2]]",
+      "links": [
+        {
+          "linkText": "Option 1",
+          "passageName": "Option 1",
+          "original": "[[Option 1]]"
+        },
+        {
+          "linkText": "Option 2",
+          "passageName": "Option 2",
+          "original": "[[Option 2]]"
+        }
+      ],
+      "hooks": [],
+      "cleanText": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n-  \n-"
+    },
+    {
+      "name": "Option 1",
+      "tags": "",
+      "id": "2",
+      "text": "Your first option is to...",
+      "links": [],
+      "hooks": [],
+      "cleanText": "Your first option is to..."
+    },
+    {
+      "name": "Option 2",
+      "tags": "",
+      "id": "3",
+      "text": "Your second option is to...",
+      "links": [],
+      "hooks": [],
+      "cleanText": "Your second option is to..."
+    },
+    {
+      "name": "Untitled Passage",
+      "tags": "",
+      "id": "4",
+      "text": "",
+      "links": [],
+      "hooks": [],
+      "cleanText": ""
+    }
+  ]
+}
