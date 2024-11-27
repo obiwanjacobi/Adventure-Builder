@@ -25,6 +25,6 @@ internal sealed class AccountRepository : IAccountRepository
             NickName: nickname ?? name
         );
 
-        return await _database.CreateAsync(account, ct);
+        return await _database.SaveAsync(account, ct);
     }
 }

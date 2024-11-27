@@ -34,7 +34,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _world = await _gameClient.WorldManager.CreateWorld("testWorld");
+        _world = await _gameClient.WorldManager.CreateWorld("CA59D7B3-C88B-499E-A333-9BC5D2906506");
         _player = _gameClient.GetPlayer("PlayerOne");
         var room = await _world.Start(_player);
         await SetRoom(room);

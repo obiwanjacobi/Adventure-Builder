@@ -5,18 +5,18 @@
   "creatorVersion": "2.9.2",
   "schemaName": "Harlowe 3 to JSON",
   "schemaVersion": "0.0.6",
-  "createdAtMs": 1732437770149,
+  "createdAtMs": 1732712502390,
   "passages": [
     {
       "name": "Let's Start",
       "tags": "tag1 tag2",
       "id": "1",
-      "text": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n- [[Option 1]] \n- [[Option 2]]",
+      "text": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n- [[Goto Option1->Option 1]] \n- [[Option 2]] \n|Option 1>[This could be a description of Option 1]",
       "links": [
         {
-          "linkText": "Option 1",
+          "linkText": "Goto Option1",
           "passageName": "Option 1",
-          "original": "[[Option 1]]"
+          "original": "[[Goto Option1->Option 1]]"
         },
         {
           "linkText": "Option 2",
@@ -24,7 +24,13 @@
           "original": "[[Option 2]]"
         }
       ],
-      "hooks": [],
+      "hooks": [
+        {
+          "hookName": "Option 1",
+          "hookText": "This could be a description of Option 1",
+          "original": "|Option 1>[This could be a description of Option 1]"
+        }
+      ],
       "cleanText": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n-  \n-"
     },
     {

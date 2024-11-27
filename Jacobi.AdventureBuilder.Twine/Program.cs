@@ -41,7 +41,12 @@ public sealed class Program
         });
 
         // Invoke the command line parser
-        return await rootCommand.InvokeAsync(args);
+        var retCode = await rootCommand.InvokeAsync(args);
+
+        Console.WriteLine("Press any key to exit");
+        Console.ReadKey();
+
+        return retCode;
     }
 
     private readonly IConfiguration _configuration;

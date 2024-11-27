@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Text.Json;
 using Jacobi.AdventureBuilder.AdventureModel;
 
 namespace Jacobi.AdventureBuilder.ApiClient;
@@ -23,7 +25,7 @@ internal sealed class AdventureClient : IAdventureClient
 
     public async Task<AdventureWorldInfo> GetAdventureWorldAsync(string worldId, CancellationToken ct)
     {
-        var response = await this.httpClient.GetAsync($"/adventure/worlds/{worldId}", ct);
+        var response = await this.httpClient.GetAsync($"/adventure/worlds/{worldId.ToLowerInvariant()}", ct);
         response.EnsureSuccessStatusCode();
 
         var jsonString = await response.Content.ReadAsStringAsync(ct);
@@ -37,8 +39,8 @@ internal sealed class AdventureClient : IAdventureClient
     {
         var json = JsonSerializer.Serialize(adventureWorld);
         var worldId = adventureWorld.Id;
-        var content = new StringContent(json);
-        var response = await this.httpClient.PutAsync($"/adventure/worlds/{worldId}", content, ct);
+        var content = new StringContent(json, new MediaTypeHeaderValue(MediaTypeNames.Application.Json));
+        var response = await this.httpClient.PutAsync($"/adventure/worlds/{worldId.ToLowerInvariant()}", content, ct);
         response.EnsureSuccessStatusCode();
     }
 }
