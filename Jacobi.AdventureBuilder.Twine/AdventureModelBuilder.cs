@@ -4,11 +4,12 @@ namespace Jacobi.AdventureBuilder.Twine;
 
 internal sealed class AdventureModelBuilder
 {
-    private readonly List<AdventureRoomInfo> _rooms = [];
+    private readonly List<AdventurePassageInfo> _passages = [];
+    private readonly List<AdventureNonPlayerCharacterInfo> _npcs = [];
 
-    public void AddRoom(long id, string name, string description, IReadOnlyCollection<AdventureCommandInfo> commands)
+    public AdventurePassageInfo AddPassage(long id, string name, string description, IReadOnlyCollection<AdventureCommandInfo> commands)
     {
-        var room = new AdventureRoomInfo()
+        var passage = new AdventurePassageInfo()
         {
             Id = id,
             Name = name,
@@ -16,7 +17,8 @@ internal sealed class AdventureModelBuilder
             Commands = commands,
         };
 
-        _rooms.Add(room);
+        _passages.Add(passage);
+        return passage;
     }
 
     public static AdventureCommandInfo CreateNavigateCommand(string id, string name, string description)
@@ -26,8 +28,8 @@ internal sealed class AdventureModelBuilder
             Id = id,
             Name = name,
             Description = description,
-            Kind = "nav-room",
-            Action = $"nav:room:{id}",
+            Kind = "nav-passage",
+            Action = $"nav:passage:{id}",
         };
     }
 
@@ -37,11 +39,27 @@ internal sealed class AdventureModelBuilder
         {
             Id = id,
             Name = name,
-            Rooms = _rooms.ToList()
+            Passages = _passages.ToList(),
+            NonPlayerCharacters = _npcs.ToList()
         };
 
-        _rooms.Clear();
+        _passages.Clear();
+        _npcs.Clear();
 
         return world;
+    }
+
+    public AdventureNonPlayerCharacterInfo AddNonPlayerCharacter(long id, string name, string description, IReadOnlyCollection<AdventurePassageInfo> linkedPassages)
+    {
+        var npc = new AdventureNonPlayerCharacterInfo
+        {
+            Id = id,
+            Name = name,
+            Description = description,
+            LinkedPassages = linkedPassages
+        };
+
+        _npcs.Add(npc);
+        return npc;
     }
 }

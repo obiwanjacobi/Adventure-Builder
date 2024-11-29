@@ -30,31 +30,31 @@
     protected IReadOnlyCollection<GameCommandInfo>? _commands;
     protected IPlayerGrain? _player;
     protected IAdventureWorldGrain? _world;
-    protected IRoomGrain? _room;
+    protected IPassageGrain? _passage;
 
     protected override async Task OnInitializedAsync()
     {
         _world = await _gameClient.WorldManager.CreateWorld("CA59D7B3-C88B-499E-A333-9BC5D2906506");
         _player = _gameClient.GetPlayer("PlayerOne");
-        var room = await _world.Start(_player);
-        await SetRoom(room);
-        _name = await room.Name();
-        _description = await room.Description();
-        _commands = await room.CommandInfos();
+        var passage = await _world.Start(_player);
+        await SetPassage(passage);
+        _name = await passage.Name();
+        _description = await passage.Description();
+        _commands = await passage.CommandInfos();
     }
 
     async Task ExecuteCommand(string commandId)
     {
-        var command = await _room!.GetCommand(commandId);
+        var command = await _passage!.GetCommand(commandId);
         var result = await _player!.Play(_world!, command);
-        await SetRoom(result.Room!);
+        await SetPassage(result.Room!);
     }
 
-    private async Task SetRoom(IRoomGrain room)
+    private async Task SetPassage(IPassageGrain passage)
     {
-        _room = room;
-        _name = await _room.Name();
-        _description = await _room.Description();
-        _commands = await _room.CommandInfos();
+        _passage = passage;
+        _name = await _passage.Name();
+        _description = await _passage.Description();
+        _commands = await _passage.CommandInfos();
     }
 }

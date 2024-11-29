@@ -8,8 +8,8 @@ public interface IAdventureWorldGrain : IGrainWithStringKey
     [Alias("Load")]
     Task Load(AdventureWorldInfo world);
     [Alias("Start")]
-    Task<IRoomGrain> Start(IPlayerGrain player);
+    Task<IPassageGrain> Start(IPlayerGrain player);
     [Alias("Stop")]
 
-    Task<IRoomGrain> GetRoom(long roomId);
+    Task<IPassageGrain> GetPassage(long passageId);
 }

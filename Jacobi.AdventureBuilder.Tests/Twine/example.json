@@ -5,13 +5,13 @@
   "creatorVersion": "2.9.2",
   "schemaName": "Harlowe 3 to JSON",
   "schemaVersion": "0.0.6",
-  "createdAtMs": 1732712502390,
+  "createdAtMs": 1732899415248,
   "passages": [
     {
       "name": "Let's Start",
       "tags": "tag1 tag2",
       "id": "1",
-      "text": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n- [[Goto Option1->Option 1]] \n- [[Option 2]] \n|Option 1>[This could be a description of Option 1]",
+      "text": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n[[Goto Option1->Option 1]] \n$memory[[Option 2]] \n|Option 1>[This could be a description of Option 1]",
       "links": [
         {
           "linkText": "Goto Option1",
@@ -31,14 +31,20 @@
           "original": "|Option 1>[This could be a description of Option 1]"
         }
       ],
-      "cleanText": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n-  \n-"
+      "cleanText": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n \n$memory"
     },
     {
       "name": "Option 1",
       "tags": "",
       "id": "2",
-      "text": "Your first option is to...",
-      "links": [],
+      "text": "Your first option is to...\n\n[[Back->Let's Start]]",
+      "links": [
+        {
+          "linkText": "Back",
+          "passageName": "Let's Start",
+          "original": "[[Back->Let's Start]]"
+        }
+      ],
       "hooks": [],
       "cleanText": "Your first option is to..."
     },
@@ -52,13 +58,13 @@
       "cleanText": "Your second option is to..."
     },
     {
-      "name": "Untitled Passage",
+      "name": "NPC: Wicked Witch of the West",
       "tags": "",
       "id": "4",
-      "text": "",
+      "text": "The Wicked Witch of the West is a nasty piece of work. She'll appear out of nowhere and it will cost you if you do something wrong. The problem is, nobody has been able to find out what that is exactly. Better to avoid her and go somewhere else if she turns up. Or perhaps you're lucky and find out what the one thing is that will kill her. Perhaps not...",
       "links": [],
       "hooks": [],
-      "cleanText": ""
+      "cleanText": "The Wicked Witch of the West is a nasty piece of work. She'll appear out of nowhere and it will cost you if you do something wrong. The problem is, nobody has been able to find out what that is exactly. Better to avoid her and go somewhere else if she turns up. Or perhaps you're lucky and find out what the one thing is that will kill her. Perhaps not..."
     }
   ]
 }

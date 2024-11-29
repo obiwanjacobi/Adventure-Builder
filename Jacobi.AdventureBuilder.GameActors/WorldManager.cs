@@ -29,9 +29,8 @@ public sealed class WorldManager : Grain<WorldManagerState>, IWorldManagerGrain
             return world;
         }
 
-        var ct = new CancellationToken();
         // load adventure meta data
-        var worldInfo = await this.client.GetAdventureWorldAsync(worldId, ct);
+        var worldInfo = await this.client.GetAdventureWorldAsync(worldId);
         var fullWorldId = worldInfo.Id + "-" + Guid.NewGuid().ToString();
         world = this.factory.GetGrain<IAdventureWorldGrain>(fullWorldId);
         await world.Load(worldInfo);

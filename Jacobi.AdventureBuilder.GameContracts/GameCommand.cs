@@ -42,13 +42,13 @@ public sealed class GameCommandResult
     public GameCommandResult()
     { }
 
-    public GameCommandResult(IRoomGrain room)
+    public GameCommandResult(IPassageGrain room)
     {
         Room = room;
     }
 
     [Id(0)]
-    public IRoomGrain? Room { get; }
+    public IPassageGrain? Room { get; }
 }
 
 public sealed class GameCommandHandler
@@ -74,7 +74,7 @@ public sealed class GameCommandHandler
     private async Task<GameCommandResult> ExecuteNavigateRoom(GameCommand command)
     {
         var targetRoomId = ParseRoomId(command.Action);
-        var roomGrain = await this.world.GetRoom(targetRoomId);
+        var roomGrain = await this.world.GetPassage(targetRoomId);
         await this.player.EnterRoom(roomGrain);
         return new GameCommandResult(roomGrain);
 

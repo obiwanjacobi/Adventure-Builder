@@ -9,9 +9,9 @@ public interface IPlayerGrain : IGrainWithStringKey
     Task SetPlayerInfo(Guid accountId, string nickname);
 
     [Alias("Room")]
-    Task<IRoomGrain?> Room();
+    Task<IPassageGrain?> Room();
     [Alias("EnterRoom")]
-    Task EnterRoom(IRoomGrain room);
+    Task EnterRoom(IPassageGrain room);
 
     [Alias("Play")]
     Task<GameCommandResult> Play(IAdventureWorldGrain world, GameCommand command);

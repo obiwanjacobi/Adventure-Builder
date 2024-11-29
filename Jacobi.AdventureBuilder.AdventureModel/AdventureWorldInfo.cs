@@ -10,7 +10,9 @@ public sealed class AdventureWorldInfo
     public required string Name { get; init; }
 
     [JsonIgnore]
-    public AdventureRoomInfo StartRoom => Rooms.First();
+    public AdventurePassageInfo StartPassage => Passages.First();
 
-    public required IReadOnlyCollection<AdventureRoomInfo> Rooms { get; init; }
+    public required IReadOnlyCollection<AdventurePassageInfo> Passages { get; init; }
+
+    public required IReadOnlyCollection<AdventureNonPlayerCharacterInfo> NonPlayerCharacters { get; init; }
 }

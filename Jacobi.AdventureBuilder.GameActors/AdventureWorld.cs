@@ -26,26 +26,26 @@ public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
         return WriteStateAsync();
     }
 
-    public async Task<IRoomGrain> Start(IPlayerGrain player)
+    public async Task<IPassageGrain> Start(IPlayerGrain player)
     {
         Debug.Assert(this.adventureWorld is not null);
-        var startRoom = await GetOrCreateRoom(this.adventureWorld.StartRoom);
-        await player.EnterRoom(startRoom);
-        return startRoom;
+        var startPassage = await GetOrCreatePassage(this.adventureWorld.StartPassage);
+        await player.EnterRoom(startPassage);
+        return startPassage;
     }
 
-    public Task<IRoomGrain> GetRoom(long roomId)
+    public Task<IPassageGrain> GetPassage(long passageId)
     {
         ThrowIfNotLoaded();
-        var room = this.adventureWorld!.Rooms.Find(r => r.Id == roomId).SingleOrDefault()
-            ?? throw new ArgumentOutOfRangeException(nameof(roomId), "Illegal Room Id.");
-        return GetOrCreateRoom(room);
+        var passage = this.adventureWorld!.Passages.Find(r => r.Id == passageId).SingleOrDefault()
+            ?? throw new ArgumentOutOfRangeException(nameof(passageId), "Illegal Passage Id.");
+        return GetOrCreatePassage(passage);
     }
 
-    private async Task<IRoomGrain> GetOrCreateRoom(AdventureRoomInfo roomInfo)
+    private async Task<IPassageGrain> GetOrCreatePassage(AdventurePassageInfo passageInfo)
     {
-        var room = this.factory.GetGrain<IRoomGrain>(roomInfo.Id);
-        if (await room.Load(roomInfo))
+        var room = this.factory.GetGrain<IPassageGrain>(passageInfo.Id);
+        if (await room.Load(passageInfo))
         {
             // initial load
         }

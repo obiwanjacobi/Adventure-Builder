@@ -42,8 +42,8 @@ internal sealed class GetAdventureWorldEndpoint : Endpoint<GetAdventureWorldRequ
         {
             Id = adventureId,
             Name = $"Adventure {adventureId}",
-            Rooms = [
-                        new AdventureRoomInfo()
+            Passages = [
+                new AdventurePassageInfo()
                 {
                     Id = 1,
                     Name = "Room 1",
@@ -59,7 +59,7 @@ internal sealed class GetAdventureWorldEndpoint : Endpoint<GetAdventureWorldRequ
                         }
                     ]
                 },
-                new AdventureRoomInfo()
+                new AdventurePassageInfo()
                 {
                     Id = 2,
                     Name = "Room 2",
@@ -75,7 +75,8 @@ internal sealed class GetAdventureWorldEndpoint : Endpoint<GetAdventureWorldRequ
                         }
                     ]
                 }
-                    ]
+            ],
+            NonPlayerCharacters = []
         };
     }
 }

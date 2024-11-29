@@ -4,25 +4,25 @@ using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
-public sealed class RoomGrainState
+public sealed class PassageGrainState
 {
-    public AdventureRoomInfo? RoomInfo { get; set; }
+    public AdventurePassageInfo? PassageInfo { get; set; }
 }
 
-public sealed class RoomGrain : Grain<RoomGrainState>, IRoomGrain
+public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 {
-    public Task<AdventureRoomInfo> RoomInfo()
+    public Task<AdventurePassageInfo> PassageInfo()
     {
-        Debug.Assert(this.State.RoomInfo is not null);
-        return Task.FromResult(this.State.RoomInfo);
+        Debug.Assert(this.State.PassageInfo is not null);
+        return Task.FromResult(this.State.PassageInfo);
     }
 
-    public async Task<bool> Load(AdventureRoomInfo roomInfo)
+    public async Task<bool> Load(AdventurePassageInfo passageInfo)
     {
-        if (this.State.RoomInfo is not null)
+        if (this.State.PassageInfo is not null)
             return false;
 
-        this.State.RoomInfo = roomInfo;
+        this.State.PassageInfo = passageInfo;
         await WriteStateAsync();
         return true;
     }
@@ -30,20 +30,20 @@ public sealed class RoomGrain : Grain<RoomGrainState>, IRoomGrain
     public Task<string> Name()
     {
         ThrowIfUninitialized();
-        return Task.FromResult(this.State.RoomInfo!.Name);
+        return Task.FromResult(this.State.PassageInfo!.Name);
     }
 
     public Task<string> Description()
     {
         ThrowIfUninitialized();
-        return Task.FromResult(this.State.RoomInfo!.Description);
+        return Task.FromResult(this.State.PassageInfo!.Description);
     }
 
     public Task<IReadOnlyCollection<GameCommandInfo>> CommandInfos()
     {
         ThrowIfUninitialized();
         return Task.FromResult(
-            (IReadOnlyCollection<GameCommandInfo>)this.State.RoomInfo!.Commands
+            (IReadOnlyCollection<GameCommandInfo>)this.State.PassageInfo!.Commands
                 .Map(cmd => new GameCommandInfo(cmd.Id, cmd.Name, cmd.Description))
                 .ToList()
         );
@@ -52,7 +52,7 @@ public sealed class RoomGrain : Grain<RoomGrainState>, IRoomGrain
     public Task<GameCommand> GetCommand(string commandId)
     {
         ThrowIfUninitialized();
-        var commandInfo = this.State.RoomInfo!.Commands
+        var commandInfo = this.State.PassageInfo!.Commands
             .Find(cmd => cmd.Id == commandId)
             .Single();
         var command = new GameCommand(commandId, commandInfo.Kind, commandInfo.Action);
@@ -61,7 +61,7 @@ public sealed class RoomGrain : Grain<RoomGrainState>, IRoomGrain
 
     private void ThrowIfUninitialized()
     {
-        if (this.State.RoomInfo is null)
+        if (this.State.PassageInfo is null)
             throw new InvalidOperationException(
                 "Uninitialized Room grain. The Room info was not loaded.");
     }
