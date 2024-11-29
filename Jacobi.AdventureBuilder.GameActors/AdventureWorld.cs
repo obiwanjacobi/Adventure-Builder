@@ -1,12 +1,11 @@
-﻿using System.Diagnostics;
-using Jacobi.AdventureBuilder.AdventureModel;
+﻿using Jacobi.AdventureBuilder.AdventureModel;
 using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
 public sealed class AdventureWorldState
 {
-    public string WorldId { get; set; } = String.Empty;
+    public AdventureWorldInfo? AdventureWorld { get; set; }
 }
 
 public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorldGrain
@@ -17,19 +16,21 @@ public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
         => this.factory = factory;
 
     public string Id
-        => this.State.WorldId;
+        => this.State.AdventureWorld?.Id
+            ?? throw new InvalidOperationException("The World has not been Loaded.");
 
-    private AdventureWorldInfo? adventureWorld;
     public Task Load(AdventureWorldInfo world)
     {
-        this.adventureWorld = world;
+        this.State.AdventureWorld = world;
         return WriteStateAsync();
     }
 
     public async Task<IPassageGrain> Start(IPlayerGrain player)
     {
-        Debug.Assert(this.adventureWorld is not null);
-        var startPassage = await GetOrCreatePassage(this.adventureWorld.StartPassage);
+        ThrowIfNotLoaded();
+        // TODO: seed the world
+        // - spawn npcs in passage
+        var startPassage = await GetOrCreatePassage(this.State.AdventureWorld!.StartPassage);
         await player.EnterPassage(startPassage);
         return startPassage;
     }
@@ -37,24 +38,24 @@ public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
     public Task<IPassageGrain> GetPassage(long passageId)
     {
         ThrowIfNotLoaded();
-        var passage = this.adventureWorld!.Passages.Find(r => r.Id == passageId).SingleOrDefault()
+        var passage = this.State.AdventureWorld!.Passages.Find(r => r.Id == passageId).SingleOrDefault()
             ?? throw new ArgumentOutOfRangeException(nameof(passageId), "Illegal Passage Id.");
         return GetOrCreatePassage(passage);
     }
 
     private async Task<IPassageGrain> GetOrCreatePassage(AdventurePassageInfo passageInfo)
     {
-        var room = this.factory.GetGrain<IPassageGrain>(passageInfo.Id);
-        if (await room.Load(passageInfo))
+        var passage = this.factory.GetGrain<IPassageGrain>(passageInfo.Id);
+        if (await passage.Load(passageInfo))
         {
             // initial load
         }
-        return room;
+        return passage;
     }
 
     private void ThrowIfNotLoaded()
     {
-        if (this.adventureWorld is null)
+        if (this.State.AdventureWorld is null)
             throw new InvalidOperationException("This AdventureWorld has not been loaded.");
     }
 }

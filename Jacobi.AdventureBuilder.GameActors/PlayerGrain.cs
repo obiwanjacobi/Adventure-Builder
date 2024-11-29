@@ -4,7 +4,7 @@ namespace Jacobi.AdventureBuilder.GameActors;
 
 public sealed class PlayerGrainState
 {
-    public IPassageGrain? Room { get; set; }
+    public IPassageGrain? Passage { get; set; }
 }
 
 public sealed class PlayerGrain : Grain<PlayerGrainState>, IPlayerGrain
@@ -28,11 +28,11 @@ public sealed class PlayerGrain : Grain<PlayerGrainState>, IPlayerGrain
     }
 
     public Task<IPassageGrain?> Passage()
-        => Task.FromResult(this.State.Room);
+        => Task.FromResult(this.State.Passage);
 
-    public Task EnterPassage(IPassageGrain room)
+    public Task EnterPassage(IPassageGrain passage)
     {
-        this.State.Room = room;
+        this.State.Passage = passage;
         return Task.CompletedTask;
     }
 

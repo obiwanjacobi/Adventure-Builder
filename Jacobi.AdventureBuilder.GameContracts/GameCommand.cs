@@ -42,13 +42,13 @@ public sealed class GameCommandResult
     public GameCommandResult()
     { }
 
-    public GameCommandResult(IPassageGrain room)
+    public GameCommandResult(IPassageGrain passage)
     {
-        Room = room;
+        Passage = passage;
     }
 
     [Id(0)]
-    public IPassageGrain? Room { get; }
+    public IPassageGrain? Passage { get; }
 }
 
 public sealed class GameCommandHandler
@@ -66,22 +66,22 @@ public sealed class GameCommandHandler
     {
         return command.Kind switch
         {
-            "nav-room" => ExecuteNavigateRoom(command),
+            "nav-passage" => ExecuteNavigatePassage(command),
             _ => Task.FromResult(new GameCommandResult()),
         };
     }
 
-    private async Task<GameCommandResult> ExecuteNavigateRoom(GameCommand command)
+    private async Task<GameCommandResult> ExecuteNavigatePassage(GameCommand command)
     {
-        var targetRoomId = ParseRoomId(command.Action);
-        var roomGrain = await this.world.GetPassage(targetRoomId);
-        await this.player.EnterPassage(roomGrain);
-        return new GameCommandResult(roomGrain);
+        var targetPassageId = ParsePassageId(command.Action);
+        var passageGrain = await this.world.GetPassage(targetPassageId);
+        await this.player.EnterPassage(passageGrain);
+        return new GameCommandResult(passageGrain);
 
-        static long ParseRoomId(string navRoomAction)
+        static long ParsePassageId(string navPassageAction)
         {
-            var index = navRoomAction.LastIndexOf(':');
-            return Int64.Parse(navRoomAction[(index + 1)..]);
+            var index = navPassageAction.LastIndexOf(':');
+            return Int64.Parse(navPassageAction[(index + 1)..]);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Jacobi.AdventureBuilder.GameContracts;
 public interface IPassageGrain : IGrainWithIntegerKey
 {
     [Alias("Load")]
-    Task<bool> Load(AdventurePassageInfo room);
+    Task<bool> Load(AdventurePassageInfo passage);
 
     [Alias("Name")]
     Task<string> Name();

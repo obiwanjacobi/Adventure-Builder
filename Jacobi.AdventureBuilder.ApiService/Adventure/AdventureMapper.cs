@@ -17,7 +17,7 @@ internal static class AdventureMapper
                 Name = commandData.Name,
                 Description = commandData.Description ?? String.Empty,
                 Action = commandData.Action,
-                Kind = "nav-room"
+                Kind = "nav-passage"
             }).ToList()
         }).ToList();
 
@@ -44,12 +44,12 @@ internal static class AdventureMapper
         {
             Name = worldInfo.Name,
             Description = "",
-            Passages = worldInfo.Passages.Select(roomInfo => new AdventureWorldData.AdventurePassageData
+            Passages = worldInfo.Passages.Select(passageInfo => new AdventureWorldData.AdventurePassageData
             {
-                Id = roomInfo.Id,
-                Name = roomInfo.Name,
-                Description = roomInfo.Description,
-                Commands = roomInfo.Commands.Select(commandInfo => new AdventureWorldData.AdventureCommandData
+                Id = passageInfo.Id,
+                Name = passageInfo.Name,
+                Description = passageInfo.Description,
+                Commands = passageInfo.Commands.Select(commandInfo => new AdventureWorldData.AdventureCommandData
                 {
                     Name = commandInfo.Name,
                     Description = commandInfo.Description,

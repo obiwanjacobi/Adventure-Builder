@@ -52,10 +52,10 @@ internal sealed class GetAdventureWorldEndpoint : Endpoint<GetAdventureWorldRequ
                         new AdventureCommandInfo
                         {
                             Id = "nav-north",
-                            Kind = "nav-room",
+                            Kind = "nav-passage",
                             Name = "North",
                             Description = "To the north there is a door leading to another room.",
-                            Action = "nav:room:2"
+                            Action = "nav:passage:2"
                         }
                     ]
                 },
@@ -68,10 +68,10 @@ internal sealed class GetAdventureWorldEndpoint : Endpoint<GetAdventureWorldRequ
                         new AdventureCommandInfo
                         {
                             Id = "nav-south",
-                            Kind = "nav-room",
+                            Kind = "nav-passage",
                             Name = "South",
                             Description = "To the south there is a door leading to another room.",
-                            Action = "nav:room:1"
+                            Action = "nav:passage:1"
                         }
                     ]
                 }

@@ -11,7 +11,7 @@ public interface IPlayerGrain : IGrainWithStringKey
     [Alias("Passage")]
     Task<IPassageGrain?> Passage();
     [Alias("EnterPassage")]
-    Task EnterPassage(IPassageGrain room);
+    Task EnterPassage(IPassageGrain passage);
 
     [Alias("Play")]
     Task<GameCommandResult> Play(IAdventureWorldGrain world, GameCommand command);

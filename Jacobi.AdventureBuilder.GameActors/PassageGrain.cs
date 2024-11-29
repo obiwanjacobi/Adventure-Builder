@@ -63,6 +63,6 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
     {
         if (this.State.PassageInfo is null)
             throw new InvalidOperationException(
-                "Uninitialized Room grain. The Room info was not loaded.");
+                "Uninitialized Passage grain. The Passage info was not loaded.");
     }
 }

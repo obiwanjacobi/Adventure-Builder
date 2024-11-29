@@ -47,7 +47,7 @@
     {
         var command = await _passage!.GetCommand(commandId);
         var result = await _player!.Play(_world!, command);
-        await SetPassage(result.Room!);
+        await SetPassage(result.Passage!);
     }
 
     private async Task SetPassage(IPassageGrain passage)
