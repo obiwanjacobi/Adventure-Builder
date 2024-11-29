@@ -8,10 +8,10 @@ public interface IPlayerGrain : IGrainWithStringKey
     [Alias("SetPlayerInfo")]
     Task SetPlayerInfo(Guid accountId, string nickname);
 
-    [Alias("Room")]
-    Task<IPassageGrain?> Room();
-    [Alias("EnterRoom")]
-    Task EnterRoom(IPassageGrain room);
+    [Alias("Passage")]
+    Task<IPassageGrain?> Passage();
+    [Alias("EnterPassage")]
+    Task EnterPassage(IPassageGrain room);
 
     [Alias("Play")]
     Task<GameCommandResult> Play(IAdventureWorldGrain world, GameCommand command);

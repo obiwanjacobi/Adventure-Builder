@@ -30,7 +30,7 @@ public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorld
     {
         Debug.Assert(this.adventureWorld is not null);
         var startPassage = await GetOrCreatePassage(this.adventureWorld.StartPassage);
-        await player.EnterRoom(startPassage);
+        await player.EnterPassage(startPassage);
         return startPassage;
     }
 

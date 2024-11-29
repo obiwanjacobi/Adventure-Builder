@@ -27,10 +27,10 @@ public sealed class PlayerGrain : Grain<PlayerGrainState>, IPlayerGrain
         return Task.CompletedTask;
     }
 
-    public Task<IPassageGrain?> Room()
+    public Task<IPassageGrain?> Passage()
         => Task.FromResult(this.State.Room);
 
-    public Task EnterRoom(IPassageGrain room)
+    public Task EnterPassage(IPassageGrain room)
     {
         this.State.Room = room;
         return Task.CompletedTask;

@@ -75,7 +75,7 @@ public sealed class GameCommandHandler
     {
         var targetRoomId = ParseRoomId(command.Action);
         var roomGrain = await this.world.GetPassage(targetRoomId);
-        await this.player.EnterRoom(roomGrain);
+        await this.player.EnterPassage(roomGrain);
         return new GameCommandResult(roomGrain);
 
         static long ParseRoomId(string navRoomAction)
