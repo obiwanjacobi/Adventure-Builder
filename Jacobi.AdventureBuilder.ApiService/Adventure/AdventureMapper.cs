@@ -18,7 +18,8 @@ internal static class AdventureMapper
                 Description = commandData.Description ?? String.Empty,
                 Action = commandData.Action,
                 Kind = "nav-passage"
-            }).ToList()
+            }).ToList(),
+            Extras = []
         }).ToList();
 
         return new AdventureWorldInfo

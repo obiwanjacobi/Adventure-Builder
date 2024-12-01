@@ -39,14 +39,14 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
         return Task.FromResult(this.State.PassageInfo!.Description);
     }
 
-    public Task<IReadOnlyCollection<GameCommandInfo>> CommandInfos()
+    public Task<IReadOnlyList<GameCommandInfo>> CommandInfos()
     {
         ThrowIfUninitialized();
-        return Task.FromResult(
-            (IReadOnlyCollection<GameCommandInfo>)this.State.PassageInfo!.Commands
+        var commands = this.State.PassageInfo!.Commands
                 .Map(cmd => new GameCommandInfo(cmd.Id, cmd.Name, cmd.Description))
-                .ToList()
-        );
+                .ToList();
+
+        return Task.FromResult((IReadOnlyList<GameCommandInfo>)commands);
     }
 
     public Task<GameCommand> GetCommand(string commandId)
@@ -57,6 +57,15 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
             .Single();
         var command = new GameCommand(commandId, commandInfo.Kind, commandInfo.Action);
         return Task.FromResult(command);
+    }
+
+    public Task<IReadOnlyList<GameExtraInfo>> Extras()
+    {
+        ThrowIfUninitialized();
+        var extras = this.State.PassageInfo!.Extras
+            .Map(e => new GameExtraInfo { Name = e.Name, Description = e.Description })
+            .ToList();
+        return Task.FromResult((IReadOnlyList<GameExtraInfo>)extras);
     }
 
     private void ThrowIfUninitialized()

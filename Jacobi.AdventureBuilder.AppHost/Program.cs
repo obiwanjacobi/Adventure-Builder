@@ -26,7 +26,9 @@ if (builder.Environment.IsDevelopment())
     cosmos.WithHttpsEndpoint(8081, 8081, "emulator-port")
         .RunAsEmulator(config => config.WithLifetime(ContainerLifetime.Persistent));
 
-    storage.RunAsEmulator(config => config.WithLifetime(ContainerLifetime.Persistent));
+    // Seems to cause problems when debugging (and stopping half way).
+    //storage.RunAsEmulator(config => config.WithLifetime(ContainerLifetime.Persistent));
+    storage.RunAsEmulator();
 }
 
 var apiService = builder.AddProject<Projects.Jacobi_AdventureBuilder_ApiService>("apiservice")

@@ -8,26 +8,38 @@
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, Adventure World!</h1>
-<div>Welcome to your new Adventure.</div>
-
-<FluentLabel>@_name</FluentLabel>
 <FluentDivider />
+<FluentLabel>@_name</FluentLabel>
 <div>@_description</div>
+
+<FluentDivider />
 
 @if (@_commands is not null)
 {
-    @foreach (var command in @_commands!)
+    @foreach (var command in _commands!)
     {
         <div>@command.Description</div>
         <FluentButton @onclick="@(() => ExecuteCommand(command.Id))">@command.Name</FluentButton>
+    }
+}
 
+<FluentDivider />
+
+@if (@_extras is not null)
+{
+  <div>You also see:</div>
+    @foreach (var extra in _extras!)
+    {
+        <div>@extra.Name</div>
+        <div>@extra.Description</div>
     }
 }
 
 @code {
     protected string? _name;
     protected string? _description;
-    protected IReadOnlyCollection<GameCommandInfo>? _commands;
+    protected IReadOnlyList<GameCommandInfo>? _commands;
+    protected IReadOnlyList<GameExtraInfo>? _extras;
     protected IPlayerGrain? _player;
     protected IWorldGrain? _world;
     protected IPassageGrain? _passage;
@@ -38,29 +50,28 @@
         _player = _gameClient.GetPlayer("PlayerOne");
         var passage = await _world.Start(_player);
         await SetPassage(passage);
-        _name = await passage.Name();
-        _description = await passage.Description();
-        _commands = await passage.CommandInfos();
     }
 
     async Task ExecuteCommand(string commandId)
     {
         var command = await _passage!.GetCommand(commandId);
         var result = await _player!.Play(_world!, command);
-        await SetPassage(result.Passage);
-    }
-
-    private async Task SetPassage(IPassageGrain? passage)
-    {
-        if (passage is null)
+        if (result.Passage is null)
         {
+            _name = "Error";
             _description = "There is a configuration error. This navigation option does not result in a Passage.";
             return;
         }
 
+        await SetPassage(result.Passage);
+    }
+
+    private async Task SetPassage(IPassageGrain passage)
+    {
         _passage = passage;
         _name = await _passage.Name();
         _description = await _passage.Description();
         _commands = await _passage.CommandInfos();
+        _extras = await _passage.Extras();
     }
 }

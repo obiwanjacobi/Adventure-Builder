@@ -12,7 +12,7 @@ public sealed class AdventureWorldInfo
     [JsonIgnore]
     public AdventurePassageInfo StartPassage => Passages.First();
 
-    public required IReadOnlyCollection<AdventurePassageInfo> Passages { get; init; }
+    public required IReadOnlyList<AdventurePassageInfo> Passages { get; init; }
 
-    public required IReadOnlyCollection<AdventureNonPlayerCharacterInfo> NonPlayerCharacters { get; init; }
+    public required IReadOnlyList<AdventureNonPlayerCharacterInfo> NonPlayerCharacters { get; init; }
 }

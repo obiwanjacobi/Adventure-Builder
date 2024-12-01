@@ -13,6 +13,8 @@ public interface IPassageGrain : IGrainWithIntegerKey
     [Alias("Description")]
     Task<string> Description();
 
-    Task<IReadOnlyCollection<GameCommandInfo>> CommandInfos();
+    Task<IReadOnlyList<GameCommandInfo>> CommandInfos();
     Task<GameCommand> GetCommand(string commandId);
+
+    Task<IReadOnlyList<GameExtraInfo>> Extras();
 }

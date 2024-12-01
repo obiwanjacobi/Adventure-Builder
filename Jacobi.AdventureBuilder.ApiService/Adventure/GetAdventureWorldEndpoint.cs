@@ -35,48 +35,4 @@ internal sealed class GetAdventureWorldEndpoint : Endpoint<GetAdventureWorldRequ
         var world = AdventureMapper.ToWorldInfo(worldData);
         await SendAsync(world, cancellation: ct);
     }
-
-    private static AdventureWorldInfo CreateTestWorld(string adventureId)
-    {
-        return new AdventureWorldInfo()
-        {
-            Id = adventureId,
-            Name = $"Adventure {adventureId}",
-            Passages = [
-                new AdventurePassageInfo()
-                {
-                    Id = 1,
-                    Name = "Room 1",
-                    Description = "You are in Room 1",
-                    Commands = [
-                        new AdventureCommandInfo
-                        {
-                            Id = "nav-north",
-                            Kind = "nav-passage",
-                            Name = "North",
-                            Description = "To the north there is a door leading to another room.",
-                            Action = "nav:passage:2"
-                        }
-                    ]
-                },
-                new AdventurePassageInfo()
-                {
-                    Id = 2,
-                    Name = "Room 2",
-                    Description = "You are in Room 2",
-                    Commands = [
-                        new AdventureCommandInfo
-                        {
-                            Id = "nav-south",
-                            Kind = "nav-passage",
-                            Name = "South",
-                            Description = "To the south there is a door leading to another room.",
-                            Action = "nav:passage:1"
-                        }
-                    ]
-                }
-            ],
-            NonPlayerCharacters = []
-        };
-    }
 }

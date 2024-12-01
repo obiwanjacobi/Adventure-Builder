@@ -26,6 +26,8 @@ At the bottom, add the navigation options that are accessable from this Passage.
 
 Passage Tags...
 
+A tag to indicate player spawning passages? (yes, multiple)
+
 ### Passage Navigation
 
 There are a couple of ways you can define a link from the current Passage to another Passage.

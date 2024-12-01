@@ -30,6 +30,9 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
         ThrowIfNotLoaded();
         // TODO: seed the world
         // - spawn npcs in passage
+        this.State.AdventureWorld = NPC.SpawnNPCs(this.State.AdventureWorld!);
+        await this.WriteStateAsync();
+
         var startPassage = await GetOrCreatePassage(this.State.AdventureWorld!.StartPassage);
         await player.EnterPassage(startPassage);
         return startPassage;

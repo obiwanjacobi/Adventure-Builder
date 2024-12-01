@@ -3,11 +3,8 @@
 namespace Jacobi.AdventureBuilder.AdventureModel;
 
 [GenerateSerializer, Immutable]
-public sealed class AdventureNonPlayerCharacterInfo
+public sealed class AdventureExtraInfo
 {
-    public required long Id { get; init; }
     public required string Name { get; init; }
     public required string Description { get; init; }
-
-    public required IReadOnlyList<AdventurePassageInfo> LinkedPassages { get; init; }
 }
