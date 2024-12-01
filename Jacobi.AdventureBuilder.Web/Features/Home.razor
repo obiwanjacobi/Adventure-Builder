@@ -29,7 +29,7 @@
     protected string? _description;
     protected IReadOnlyCollection<GameCommandInfo>? _commands;
     protected IPlayerGrain? _player;
-    protected IAdventureWorldGrain? _world;
+    protected IWorldGrain? _world;
     protected IPassageGrain? _passage;
 
     protected override async Task OnInitializedAsync()
@@ -47,11 +47,17 @@
     {
         var command = await _passage!.GetCommand(commandId);
         var result = await _player!.Play(_world!, command);
-        await SetPassage(result.Passage!);
+        await SetPassage(result.Passage);
     }
 
-    private async Task SetPassage(IPassageGrain passage)
+    private async Task SetPassage(IPassageGrain? passage)
     {
+        if (passage is null)
+        {
+            _description = "There is a configuration error. This navigation option does not result in a Passage.";
+            return;
+        }
+
         _passage = passage;
         _name = await _passage.Name();
         _description = await _passage.Description();

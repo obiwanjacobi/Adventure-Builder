@@ -3,16 +3,16 @@ using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
-public sealed class AdventureWorldState
+public sealed class WorldGrainState
 {
     public AdventureWorldInfo? AdventureWorld { get; set; }
 }
 
-public sealed class AdventureWorld : Grain<AdventureWorldState>, IAdventureWorldGrain
+public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
 {
     private readonly IGrainFactory factory;
 
-    public AdventureWorld(IGrainFactory factory)
+    public WorldGrain(IGrainFactory factory)
         => this.factory = factory;
 
     public string Id

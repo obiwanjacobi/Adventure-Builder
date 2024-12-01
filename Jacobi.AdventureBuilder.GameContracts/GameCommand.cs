@@ -53,10 +53,10 @@ public sealed class GameCommandResult
 
 public sealed class GameCommandHandler
 {
-    private readonly IAdventureWorldGrain world;
+    private readonly IWorldGrain world;
     private readonly IPlayerGrain player;
 
-    public GameCommandHandler(IAdventureWorldGrain world, IPlayerGrain player)
+    public GameCommandHandler(IWorldGrain world, IPlayerGrain player)
     {
         this.world = world;
         this.player = player;

@@ -36,7 +36,7 @@ public sealed class PlayerGrain : Grain<PlayerGrainState>, IPlayerGrain
         return Task.CompletedTask;
     }
 
-    public async Task<GameCommandResult> Play(IAdventureWorldGrain world, GameCommand command)
+    public async Task<GameCommandResult> Play(IWorldGrain world, GameCommand command)
     {
         var commandHandler = new GameCommandHandler(world, this);
         return await commandHandler.ExecuteAsync(command);

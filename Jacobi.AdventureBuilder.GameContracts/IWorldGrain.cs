@@ -2,8 +2,8 @@
 
 namespace Jacobi.AdventureBuilder.GameContracts;
 
-[Alias("AdventureBuilder.IAdventureWorld")]
-public interface IAdventureWorldGrain : IGrainWithStringKey
+[Alias("AdventureBuilder.IWorldGrain")]
+public interface IWorldGrain : IGrainWithStringKey
 {
     [Alias("Load")]
     Task Load(AdventureWorldInfo world);
