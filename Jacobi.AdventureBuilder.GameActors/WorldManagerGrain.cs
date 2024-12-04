@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
@@ -12,16 +11,14 @@ public sealed class WorldManagerState
 
 public sealed class WorldManagerGrain : Grain<WorldManagerState>, IWorldManagerGrain
 {
-    private readonly IGrainFactory factory;
-    private readonly IAdventureClient client;
+    private readonly IGrainFactory _factory;
 
-    public WorldManagerGrain(IGrainFactory factory, IAdventureClient client)
+    public WorldManagerGrain(IGrainFactory factory)
     {
-        this.factory = factory;
-        this.client = client;
+        _factory = factory;
     }
 
-    public Task<IWorldGrain> CreateNewWorld(string worldId)
+    public Task<IWorldGrain> CreateNewWorld(string worldId, string name)
     {
         // for now
         if (State.WorldsById.TryGetValue(worldId, out var world))
@@ -30,12 +27,8 @@ public sealed class WorldManagerGrain : Grain<WorldManagerState>, IWorldManagerG
             return Task.FromResult(world);
         }
 
-        // load adventure meta data
-        //var worldInfo = await this.client.GetAdventureWorldAsync(worldId);
-        var key = new WorldKey(worldId, Guid.NewGuid().ToString());
-
-        world = this.factory.GetGrain<IWorldGrain>(key);
-        //await world.Load(worldInfo);
+        var key = new WorldKey(worldId, name);
+        world = _factory.GetGrain<IWorldGrain>(key);
 
         State.WorldsById.Add(worldId, world);
         return Task.FromResult(world);

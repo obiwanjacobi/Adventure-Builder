@@ -4,13 +4,13 @@ namespace Jacobi.AdventureBuilder.GameActors;
 
 public sealed class GameCommandHandler
 {
-    private readonly IWorldGrain world;
-    private readonly IPlayerGrain player;
+    private readonly IWorldGrain _world;
+    private readonly IPlayerGrain _player;
 
     public GameCommandHandler(IWorldGrain world, IPlayerGrain player)
     {
-        this.world = world;
-        this.player = player;
+        _world = world;
+        _player = player;
     }
 
     public Task<GameCommandResult> ExecuteAsync(GameCommand command)
@@ -25,8 +25,8 @@ public sealed class GameCommandHandler
     private async Task<GameCommandResult> ExecuteNavigatePassage(GameCommand command)
     {
         var targetPassageId = ParsePassageId(command.Action);
-        var passageGrain = await this.world.GetPassage(targetPassageId);
-        await this.player.EnterPassage(passageGrain);
+        var passageGrain = await _world.GetPassage(targetPassageId);
+        await _player.EnterPassage(passageGrain);
         return new GameCommandResult(passageGrain);
 
         static long ParsePassageId(string navPassageAction)

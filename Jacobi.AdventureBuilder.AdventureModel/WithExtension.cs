@@ -29,7 +29,7 @@ public static class WithExtensions
         return world.With(newPassages);
     }
 
-    public static AdventurePassageInfo With(this AdventurePassageInfo passage, IEnumerable<AdventureExtraInfo> extra)
+    public static AdventurePassageInfo Add(this AdventurePassageInfo passage, IEnumerable<AdventureExtraInfo> extra)
         => new()
         {
             Id = passage.Id,

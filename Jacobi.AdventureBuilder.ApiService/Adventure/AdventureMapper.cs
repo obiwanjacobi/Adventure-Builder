@@ -18,7 +18,9 @@ internal static class AdventureMapper
                 Commands = [],
                 Extras = []
             }).ToList(),
-            NonPlayerCharacters = []
+            NonPlayerCharacters = worldData.NonPlayerCharacters
+                .Select(ToNonPlayerCharacterInfo)
+                .ToList()
         };
     }
 
@@ -31,15 +33,9 @@ internal static class AdventureMapper
             Id = worldData.id,
             Name = worldData.Name,
             Passages = passages,
-            NonPlayerCharacters = worldData.NonPlayerCharacters.Select(npc => new AdventureNonPlayerCharacterInfo
-            {
-                Id = npc.Id,
-                Name = npc.Name,
-                Description = npc.Description,
-                LinkedPassages = npc.LinkedPassageIds
-                    .Select(id => passages.First(p => p.Id == id))
-                    .ToList()
-            }).ToList()
+            NonPlayerCharacters = worldData.NonPlayerCharacters
+                .Select(ToNonPlayerCharacterInfo)
+                .ToList()
         };
     }
 
@@ -68,6 +64,17 @@ internal static class AdventureMapper
         };
     }
 
+    private static AdventureNonPlayerCharacterInfo ToNonPlayerCharacterInfo(AdventureWorldData.AdventureNonPlayerCharacterData npcData)
+    {
+        return new AdventureNonPlayerCharacterInfo
+        {
+            Id = npcData.Id,
+            Name = npcData.Name,
+            Description = npcData.Description,
+            LinkedPassageIds = npcData.LinkedPassageIds
+        };
+    }
+
     //-------------------------------------------------------------------------
 
     public static AdventureWorldData ToWorldData(AdventureWorldInfo worldInfo)
@@ -93,7 +100,7 @@ internal static class AdventureMapper
                 Id = npc.Id,
                 Name = npc.Name,
                 Description = npc.Description,
-                LinkedPassageIds = npc.LinkedPassages.Select(p => p.Id).ToList()
+                LinkedPassageIds = [.. npc.LinkedPassageIds]
             }
             ).ToList()
         };

@@ -4,6 +4,8 @@ namespace Jacobi.AdventureBuilder.GameActors;
 
 public sealed class PlayerGrainState
 {
+    public bool IsLoaded { get; set; }
+    public PlayerInfo? PlayerInfo { get; set; }
     public IPassageGrain? Passage { get; set; }
 }
 
@@ -11,29 +13,31 @@ public sealed class PlayerGrain : Grain<PlayerGrainState>, IPlayerGrain
 {
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        _playerInfo = new(this.GetPrimaryKeyString(), Guid.Empty, "John Doe");
-
+        if (!State.IsLoaded)
+        {
+            State.IsLoaded = true;
+            State.PlayerInfo = new(this.GetPrimaryKeyString(), Guid.Empty, "John Doe");
+        }
         return base.OnActivateAsync(cancellationToken);
     }
 
-    private PlayerInfo? _playerInfo;
-
     public Task<PlayerInfo> PlayerInfo()
-        => Task.FromResult(_playerInfo!);
+        => Task.FromResult(State.PlayerInfo!);
 
     public Task SetPlayerInfo(Guid accountId, string nickname)
     {
-        _playerInfo = new PlayerInfo(this.GetPrimaryKeyString(), accountId, nickname);
-        return Task.CompletedTask;
+        State.IsLoaded = true;
+        State.PlayerInfo = new PlayerInfo(this.GetPrimaryKeyString(), accountId, nickname);
+        return WriteStateAsync();
     }
 
     public Task<IPassageGrain?> Passage()
-        => Task.FromResult(this.State.Passage);
+        => Task.FromResult(State.Passage);
 
     public Task EnterPassage(IPassageGrain passage)
     {
-        this.State.Passage = passage;
-        return Task.CompletedTask;
+        State.Passage = passage;
+        return WriteStateAsync();
     }
 
     public async Task<GameCommandResult> Play(IWorldGrain world, GameCommand command)

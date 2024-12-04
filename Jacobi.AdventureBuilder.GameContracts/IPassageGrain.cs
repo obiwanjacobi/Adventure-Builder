@@ -1,11 +1,10 @@
-﻿namespace Jacobi.AdventureBuilder.GameContracts;
+﻿using Jacobi.AdventureBuilder.AdventureModel;
+
+namespace Jacobi.AdventureBuilder.GameContracts;
 
 [Alias("AdventureBuilder.IPassageGrain")]
 public interface IPassageGrain : IGrainWithStringKey
 {
-    //[Alias("Load")]
-    //Task<bool> Load(AdventurePassageInfo passage);
-
     [Alias("Name")]
     Task<string> Name();
     [Alias("Description")]
@@ -16,6 +15,8 @@ public interface IPassageGrain : IGrainWithStringKey
     [Alias("GetCommand")]
     Task<GameCommand> GetCommand(string commandId);
 
+    [Alias("AddExtraInfo")]
+    Task AddExtraInfo(AdventureExtraInfo extraInfo);
     [Alias("Extras")]
     Task<IReadOnlyList<GameExtraInfo>> Extras();
 }

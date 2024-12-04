@@ -9,5 +9,5 @@ public sealed class AdventureNonPlayerCharacterInfo
     public required string Name { get; init; }
     public required string Description { get; init; }
 
-    public required IReadOnlyList<AdventurePassageInfo> LinkedPassages { get; init; }
+    public required IReadOnlyList<long> LinkedPassageIds { get; init; }
 }

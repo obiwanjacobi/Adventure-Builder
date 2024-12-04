@@ -1,4 +1,5 @@
-﻿using Jacobi.AdventureBuilder.ApiClient;
+﻿using Jacobi.AdventureBuilder.AdventureModel;
+using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
@@ -13,13 +14,13 @@ public sealed class WorldGrainState
 //[StorageProvider(ProviderName = "GameWorld")]
 public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
 {
-    private readonly IGrainFactory factory;
-    private readonly IAdventureClient client;
+    private readonly IGrainFactory _factory;
+    private readonly IAdventureClient _client;
 
     public WorldGrain(IGrainFactory factory, IAdventureClient client)
     {
-        this.factory = factory;
-        this.client = client;
+        _factory = factory;
+        _client = client;
     }
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
@@ -28,13 +29,14 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
         {
             State.IsLoaded = true;
             var key = WorldKey.Parse(this.GetPrimaryKeyString());
-            var world = await this.client.GetAdventureWorldSummaryAsync(key.WorldId, cancellationToken);
+            var world = await _client.GetAdventureWorldSummaryAsync(key.WorldId, cancellationToken);
             State.Name = world.Name;
             State.PassageIds = world.Passages.Select(p => p.Id).ToList();
 
             // TODO: seed the world
             // - spawn npcs in passage
-            //this.State.AdventureWorld = NPC.SpawnNPCs(this.State.AdventureWorld!);
+            var spawnedNpcs = NPC.SpawnNPCs(world);
+            await AssignExtaInfoAsync(spawnedNpcs);
             await WriteStateAsync();
         }
         await base.OnActivateAsync(cancellationToken);
@@ -56,8 +58,19 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
 
         var worldKey = WorldKey.Parse(this.GetPrimaryKeyString());
         var key = new PassageKey(worldKey, passageId);
-        var passage = this.factory.GetGrain<IPassageGrain>(key);
+        var passage = _factory.GetGrain<IPassageGrain>(key);
         return Task.FromResult(passage);
+    }
+
+    private async Task AssignExtaInfoAsync(IReadOnlyList<AdventureExtraInfo> extraInfos)
+    {
+        var worldKey = WorldKey.Parse(this.GetPrimaryKeyString());
+        foreach (var extraInfo in extraInfos)
+        {
+            var key = new PassageKey(worldKey, extraInfo.PassageId);
+            var passage = _factory.GetGrain<IPassageGrain>(key);
+            await passage.AddExtraInfo(extraInfo);
+        }
     }
 
     private void ThrowIfNotLoaded()

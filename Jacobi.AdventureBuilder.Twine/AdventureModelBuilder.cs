@@ -57,7 +57,7 @@ internal sealed class AdventureModelBuilder
             Id = id,
             Name = name,
             Description = description,
-            LinkedPassages = linkedPassages
+            LinkedPassageIds = linkedPassages.Select(p => p.Id).ToList()
         };
 
         _npcs.Add(npc);
