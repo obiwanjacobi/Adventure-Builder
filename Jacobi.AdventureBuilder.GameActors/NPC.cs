@@ -10,31 +10,33 @@ internal static class NPC
 
         foreach (var npc in world.NonPlayerCharacters)
         {
-            AdventurePassageInfo? passage = null;
-
-            if (npc.LinkedPassageIds.Count > 0)
+            AdventurePassageInfo passage = SpawnInPassage(world, npc);
+            spawnings.Add(new AdventureExtraInfo
             {
-                var linkedPassageIndex = Random.Shared.Next(npc.LinkedPassageIds.Count);
-                passage = world.Passages[linkedPassageIndex];
-            }
-            else
-            {
-                var passageIndex = Random.Shared.Next(world.Passages.Count);
-                passage = world.Passages[passageIndex];
-            }
-
-            if (passage is not null)
-            {
-                var extraInfo = new AdventureExtraInfo
-                {
-                    PassageId = passage.Id,
-                    Name = npc.Name,
-                    Description = npc.Description,
-                };
-                spawnings.Add(extraInfo);
-            }
+                PassageId = passage.Id,
+                Name = npc.Name,
+                Description = npc.Description,
+            });
         }
 
         return spawnings;
+    }
+
+    public static AdventurePassageInfo SpawnInPassage(AdventureWorldInfo world, AdventureNonPlayerCharacterInfo npc)
+    {
+        AdventurePassageInfo? passage = null;
+
+        if (npc.LinkedPassageIds.Count > 0)
+        {
+            var linkedPassageIndex = Random.Shared.Next(npc.LinkedPassageIds.Count);
+            passage = world.Passages[linkedPassageIndex];
+        }
+        else
+        {
+            var passageIndex = Random.Shared.Next(world.Passages.Count);
+            passage = world.Passages[passageIndex];
+        }
+
+        return passage;
     }
 }

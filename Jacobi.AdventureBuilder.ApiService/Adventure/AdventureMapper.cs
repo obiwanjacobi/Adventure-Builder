@@ -45,6 +45,12 @@ internal static class AdventureMapper
         return ToPassageInfo(passageData);
     }
 
+    public static AdventureNonPlayerCharacterInfo ToNonPlayerCharacterInfo(AdventureWorldData worldData, long npcId)
+    {
+        var npcData = worldData.NonPlayerCharacters.First(npc => npc.Id == npcId);
+        return ToNonPlayerCharacterInfo(npcData);
+    }
+
     private static AdventurePassageInfo ToPassageInfo(AdventureWorldData.AdventurePassageData passageData)
     {
         return new AdventurePassageInfo

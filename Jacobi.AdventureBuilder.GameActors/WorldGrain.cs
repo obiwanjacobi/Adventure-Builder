@@ -9,6 +9,7 @@ public sealed class WorldGrainState
     public bool IsLoaded { get; set; }
     public string Name { get; set; } = String.Empty;
     public List<long> PassageIds { get; set; } = [];
+    public List<long> NonPlayerCharacterIds { get; set; } = [];
 }
 
 //[StorageProvider(ProviderName = "GameWorld")]
@@ -28,15 +29,28 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
         if (!State.IsLoaded)
         {
             State.IsLoaded = true;
-            var key = WorldKey.Parse(this.GetPrimaryKeyString());
-            var world = await _client.GetAdventureWorldSummaryAsync(key.WorldId, cancellationToken);
+            var worldKey = WorldKey.Parse(this.GetPrimaryKeyString());
+            var world = await _client.GetAdventureWorldSummaryAsync(worldKey.WorldId, cancellationToken);
             State.Name = world.Name;
             State.PassageIds = world.Passages.Select(p => p.Id).ToList();
+            State.NonPlayerCharacterIds = world.NonPlayerCharacters.Select(npc => npc.Id).ToList();
 
             // TODO: seed the world
-            // - spawn npcs in passage
-            var spawnedNpcs = NPC.SpawnNPCs(world);
-            await AssignExtaInfoAsync(spawnedNpcs);
+            // - spawn npcs in passages
+            foreach (var npc in world.NonPlayerCharacters)
+            {
+                var passage = NPC.SpawnInPassage(world, npc);
+                var passageKey = new PassageKey(worldKey, passage.Id);
+                var passageGrain = _factory.GetGrain<IPassageGrain>(passageKey);
+
+                var npcKey = new NonPlayerCharacterKey(worldKey, npc.Id);
+                var npcGrain = _factory.GetGrain<INonPlayerCharacterGrain>(npcKey);
+
+                await npcGrain.EnterPassage(passageGrain);
+            }
+
+            //var spawnedNpcs = NPC.SpawnNPCs(world);
+            //await AssignExtaInfoAsync(spawnedNpcs);
             await WriteStateAsync();
         }
         await base.OnActivateAsync(cancellationToken);

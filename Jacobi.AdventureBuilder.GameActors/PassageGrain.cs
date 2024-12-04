@@ -70,14 +70,27 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
         return Task.FromResult(command);
     }
 
-    public Task AddExtraInfo(AdventureExtraInfo extraInfo)
+    public async Task<long> AddExtraInfo(AdventureExtraInfo extraInfo)
     {
         ThrowIfNotLoaded();
         var key = PassageKey.Parse(this.GetPrimaryKeyString());
-        if (key.PassageId != extraInfo.PassageId)
+        if (extraInfo.PassageId != 0 && key.PassageId != extraInfo.PassageId)
             throw new ArgumentException($"The ExtraInfo does not belong to this Passage: {extraInfo}", nameof(extraInfo));
 
+        var extraId = State.PassageInfo!.Extras.Count;
         State.PassageInfo = State.PassageInfo!.Add([extraInfo]);
+        await WriteStateAsync();
+        return extraId;
+    }
+
+    public Task RemoveExtraInfo(long extraId)
+    {
+        ThrowIfNotLoaded();
+        if (extraId < 0 || extraId >= State.PassageInfo!.Extras.Count)
+            throw new ArgumentException($"Invalid ExtraInfo Id: {extraId}", nameof(extraId));
+
+        var extraInfo = State.PassageInfo!.Extras[(int)extraId]!;
+        State.PassageInfo = State.PassageInfo!.RemoveExtraInfo(extraInfo);
         return WriteStateAsync();
     }
 
@@ -92,7 +105,7 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
     private void ThrowIfNotLoaded()
     {
-        if (State.PassageInfo is null)
+        if (!State.IsLoaded)
             throw new InvalidOperationException(
                 "Uninitialized Passage grain. The Passage info was not loaded.");
     }

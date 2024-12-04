@@ -16,7 +16,9 @@ public interface IPassageGrain : IGrainWithStringKey
     Task<GameCommand> GetCommand(string commandId);
 
     [Alias("AddExtraInfo")]
-    Task AddExtraInfo(AdventureExtraInfo extraInfo);
+    Task<long> AddExtraInfo(AdventureExtraInfo extraInfo);
+    [Alias("RemoveExtraInfo")]
+    Task RemoveExtraInfo(long extraId);
     [Alias("Extras")]
     Task<IReadOnlyList<GameExtraInfo>> Extras();
 }
