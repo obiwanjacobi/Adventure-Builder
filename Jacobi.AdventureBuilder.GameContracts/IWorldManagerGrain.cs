@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameContracts;
 
@@ -8,7 +7,5 @@ namespace Jacobi.AdventureBuilder.GameContracts;
 public interface IWorldManagerGrain : IGrainWithGuidKey
 {
     [Alias("CreateWorld")]
-    Task<IWorldGrain> CreateWorld(string worldId);
-    [Alias("FindWorld")]
-    Task<Option<IWorldGrain>> FindWorld(string worldNameOrId);
+    Task<IWorldGrain> CreateNewWorld(string worldId);
 }

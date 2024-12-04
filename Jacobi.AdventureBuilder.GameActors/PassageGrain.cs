@@ -1,30 +1,41 @@
 ﻿using System.Diagnostics;
 using Jacobi.AdventureBuilder.AdventureModel;
+using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
 public sealed class PassageGrainState
 {
+    public bool IsLoaded { get; set; }
     public AdventurePassageInfo? PassageInfo { get; set; }
 }
 
 public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 {
+    private readonly IAdventureClient client;
+
+    public PassageGrain(IAdventureClient client)
+        => this.client = client;
+
+    public override async Task OnActivateAsync(CancellationToken cancellationToken)
+    {
+        if (!State.IsLoaded)
+        {
+            State.IsLoaded = true;
+
+            var key = PassageKey.Parse(this.GetPrimaryKeyString());
+            State.PassageInfo = await this.client.GetAdventurePassageAsync(key.WorldKey.WorldId, key.PassageId);
+
+            await WriteStateAsync();
+        }
+        await base.OnActivateAsync(cancellationToken);
+    }
+
     public Task<AdventurePassageInfo> PassageInfo()
     {
         Debug.Assert(this.State.PassageInfo is not null);
         return Task.FromResult(this.State.PassageInfo);
-    }
-
-    public async Task<bool> Load(AdventurePassageInfo passageInfo)
-    {
-        if (this.State.PassageInfo is not null)
-            return false;
-
-        this.State.PassageInfo = passageInfo;
-        await WriteStateAsync();
-        return true;
     }
 
     public Task<string> Name()

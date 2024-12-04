@@ -11,6 +11,7 @@
     <PackageReference Include="Azure.Identity" Version="1.13.1" />
     <PackageReference Include="FastEndpoints" Version="5.31.0" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.45.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.0.0-preview.9.24556.5" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 

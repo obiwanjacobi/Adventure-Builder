@@ -31,8 +31,12 @@ internal sealed class GetAdventureWorldEndpoint : Endpoint<GetAdventureWorldRequ
 
     public override async Task HandleAsync(GetAdventureWorldRequest req, CancellationToken ct)
     {
+        var isSummary = Query<bool>("summary", isRequired: false);
+
         var worldData = await _repository.GetAdventureWorldAsync(req.WorldId, ct);
-        var world = AdventureMapper.ToWorldInfo(worldData);
+        var world = isSummary
+            ? AdventureMapper.ToWorldInfoSummary(worldData)
+            : AdventureMapper.ToWorldInfo(worldData);
         await SendAsync(world, cancellation: ct);
     }
 }

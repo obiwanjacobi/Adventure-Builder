@@ -3,7 +3,7 @@ using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameClient;
 
-public sealed class AdventureGameClient
+public sealed class AdventureGameClient : IGame
 {
     private readonly IGrainFactory factory;
 
@@ -24,7 +24,11 @@ public sealed class AdventureGameClient
     }
 
     public IPlayerGrain GetPlayer(string playerId)
-    {
-        return this.factory.GetGrain<IPlayerGrain>(playerId);
-    }
+        => this.factory.GetGrain<IPlayerGrain>(playerId);
+
+    public IWorldGrain GetWorld(WorldKey key)
+        => this.factory.GetGrain<IWorldGrain>(key);
+
+    public IPassageGrain GetPassage(PassageKey key)
+        => this.factory.GetGrain<IPassageGrain>(key);
 }

@@ -4,23 +4,27 @@ namespace Jacobi.AdventureBuilder.ApiService.Adventure;
 
 internal static class AdventureMapper
 {
+    public static AdventureWorldInfo ToWorldInfoSummary(AdventureWorldData worldData)
+    {
+        return new AdventureWorldInfo
+        {
+            Id = worldData.id,
+            Name = worldData.Name,
+            Passages = worldData.Passages.Select(passageData => new AdventurePassageInfo
+            {
+                Id = passageData.Id,
+                Name = passageData.Name,
+                Description = String.Empty,
+                Commands = [],
+                Extras = []
+            }).ToList(),
+            NonPlayerCharacters = []
+        };
+    }
+
     public static AdventureWorldInfo ToWorldInfo(AdventureWorldData worldData)
     {
-        var passages = worldData.Passages.Select(passageData => new AdventurePassageInfo
-        {
-            Id = passageData.Id,
-            Name = passageData.Name,
-            Description = passageData.Description ?? String.Empty,
-            Commands = passageData.Commands.Select(commandData => new AdventureCommandInfo
-            {
-                Id = $"nav-{commandData.Name}",
-                Name = commandData.Name,
-                Description = commandData.Description ?? String.Empty,
-                Action = commandData.Action,
-                Kind = "nav-passage"
-            }).ToList(),
-            Extras = []
-        }).ToList();
+        var passages = worldData.Passages.Select(ToPassageInfo).ToList();
 
         return new AdventureWorldInfo
         {
@@ -38,6 +42,33 @@ internal static class AdventureMapper
             }).ToList()
         };
     }
+
+    public static AdventurePassageInfo ToPassageInfo(AdventureWorldData worldData, long passageId)
+    {
+        var passageData = worldData.Passages.First(p => p.Id == passageId);
+        return ToPassageInfo(passageData);
+    }
+
+    private static AdventurePassageInfo ToPassageInfo(AdventureWorldData.AdventurePassageData passageData)
+    {
+        return new AdventurePassageInfo
+        {
+            Id = passageData.Id,
+            Name = passageData.Name,
+            Description = passageData.Description ?? String.Empty,
+            Commands = passageData.Commands.Select(commandData => new AdventureCommandInfo
+            {
+                Id = $"nav-{commandData.Name}",
+                Name = commandData.Name,
+                Description = commandData.Description ?? String.Empty,
+                Action = commandData.Action,
+                Kind = "nav-passage"
+            }).ToList(),
+            Extras = []
+        };
+    }
+
+    //-------------------------------------------------------------------------
 
     public static AdventureWorldData ToWorldData(AdventureWorldInfo worldInfo)
     {

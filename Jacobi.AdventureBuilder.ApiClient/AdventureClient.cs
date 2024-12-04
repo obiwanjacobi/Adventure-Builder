@@ -7,13 +7,18 @@ namespace Jacobi.AdventureBuilder.ApiClient;
 
 public interface IAdventureClient
 {
+    // full hierarchy
     Task<AdventureWorldInfo> GetAdventureWorldAsync(string worldId, CancellationToken ct = default);
     Task UpsertAdventureWorldAsync(AdventureWorldInfo adventureWorld, CancellationToken ct = default);
+
+    // single objects
+    Task<AdventureWorldInfo> GetAdventureWorldSummaryAsync(string worldId, CancellationToken ct = default);
+    Task<AdventurePassageInfo> GetAdventurePassageAsync(string worldId, long passageId, CancellationToken ct = default);
 }
 
 internal sealed class AdventureClient : IAdventureClient
 {
-    private static JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+    private static JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
@@ -23,17 +28,8 @@ internal sealed class AdventureClient : IAdventureClient
     public AdventureClient(HttpClient client)
         => this.httpClient = client;
 
-    public async Task<AdventureWorldInfo> GetAdventureWorldAsync(string worldId, CancellationToken ct = default)
-    {
-        var response = await this.httpClient.GetAsync($"/adventure/worlds/{worldId.ToLowerInvariant()}", ct);
-        response.EnsureSuccessStatusCode();
-
-        var jsonString = await response.Content.ReadAsStringAsync(ct);
-        var adventureWorld = JsonSerializer.Deserialize<AdventureWorldInfo>(jsonString, JsonOptions);
-
-        return adventureWorld
-            ?? throw new JsonException("Failed to deserialize AdventureWorldInfo.");
-    }
+    public Task<AdventureWorldInfo> GetAdventureWorldAsync(string worldId, CancellationToken ct = default)
+        => GetRequest<AdventureWorldInfo>($"/adventure/worlds/{worldId.ToLowerInvariant()}", ct);
 
     public async Task UpsertAdventureWorldAsync(AdventureWorldInfo adventureWorld, CancellationToken ct = default)
     {
@@ -42,5 +38,24 @@ internal sealed class AdventureClient : IAdventureClient
         var content = new StringContent(json, new MediaTypeHeaderValue(MediaTypeNames.Application.Json));
         var response = await this.httpClient.PutAsync($"/adventure/worlds/{worldId.ToLowerInvariant()}", content, ct);
         response.EnsureSuccessStatusCode();
+    }
+
+    public Task<AdventureWorldInfo> GetAdventureWorldSummaryAsync(string worldId, CancellationToken ct = default)
+        => GetRequest<AdventureWorldInfo>($"/adventure/worlds/{worldId.ToLowerInvariant()}?summary=true", ct);
+
+
+    public Task<AdventurePassageInfo> GetAdventurePassageAsync(string worldId, long passageId, CancellationToken ct = default)
+        => GetRequest<AdventurePassageInfo>($"/adventure/worlds/{worldId.ToLowerInvariant()}/passages/{passageId}", ct);
+
+    private async Task<T> GetRequest<T>(string resource, CancellationToken cancellationToken)
+    {
+        var response = await this.httpClient.GetAsync(resource, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var jsonString = await response.Content.ReadAsStringAsync(cancellationToken);
+        var adventurePassage = JsonSerializer.Deserialize<T>(jsonString, JsonOptions);
+
+        return adventurePassage
+            ?? throw new JsonException($"Failed to deserialize {typeof(T).Name}.");
     }
 }
