@@ -17,6 +17,8 @@ builder.AddAzureCosmosClient("cmos-adventurebuilder");
 builder.Services
     .AddProblemDetails()
     .AddFastEndpoints()
+    .AddOpenApi()
+    .AddEndpointsApiExplorer()
     // application specific
     .AddDataServices()
     .AddAccountServices()
@@ -31,6 +33,11 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
 app.MapDefaultEndpoints();
 app.UseFastEndpoints();
 
