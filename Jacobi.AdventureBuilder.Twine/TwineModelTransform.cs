@@ -20,14 +20,18 @@ internal class TwineModelTransform
         if (passages is null) return;
 
         var npcs = new List<Passage>();
+        var assets = new List<Passage>();
         var passageInfos = new List<AdventurePassageInfo>();
 
         foreach (var passage in passages)
         {
             if (IsNPC(passage))
             {
-                // for later processing
                 npcs.Add(passage);
+            }
+            else if (IsAsset(passage))
+            {
+                assets.Add(passage);
             }
             else
             {
@@ -43,11 +47,20 @@ internal class TwineModelTransform
             var linkedPassages = nps.Links.Select(l => passageInfos.First(p => p.Name == l.PassageName));
             _builder.AddNonPlayerCharacter(Int64.Parse(nps.Id), GetNpcName(nps.Name), nps.CleanText, linkedPassages.ToList());
         }
+        foreach (var asset in assets)
+        {
+            var linkedPassages = asset.Links.Select(l => passageInfos.First(p => p.Name == l.PassageName));
+            _builder.AddAsset(Int64.Parse(asset.Id), GetAssetName(asset.Name), asset.CleanText, linkedPassages.ToList());
+        }
 
         static bool IsNPC(Passage passage)
             => passage.Name.StartsWith("NPC:");
         static string GetNpcName(string npcName)
             => npcName[4..].Trim();
+        static bool IsAsset(Passage passage)
+            => passage.Name.StartsWith("ASSET:");
+        static string GetAssetName(string npcName)
+            => npcName[6..].Trim();
     }
 
     private List<AdventureCommandInfo> CreateCommands(Passage passage)

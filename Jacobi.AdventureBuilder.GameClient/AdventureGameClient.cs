@@ -24,7 +24,11 @@ public sealed class AdventureGameClient : IGame
     }
 
     public IPlayerGrain GetPlayer(string playerId)
-        => this.factory.GetGrain<IPlayerGrain>(playerId);
+    {
+        // TODO: AccountId
+        var key = new PlayerKey(Guid.Empty, playerId);
+        return this.factory.GetGrain<IPlayerGrain>(key);
+    }
 
     public IWorldGrain GetWorld(WorldKey key)
         => this.factory.GetGrain<IWorldGrain>(key);

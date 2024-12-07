@@ -6,6 +6,7 @@ internal sealed class AdventureModelBuilder
 {
     private readonly List<AdventurePassageInfo> _passages = [];
     private readonly List<AdventureNonPlayerCharacterInfo> _npcs = [];
+    private readonly List<AdventureAssetInfo> _assets = [];
 
     public AdventurePassageInfo AddPassage(long id, string name, string description, IReadOnlyList<AdventureCommandInfo> commands)
     {
@@ -41,11 +42,13 @@ internal sealed class AdventureModelBuilder
             Id = id,
             Name = name,
             Passages = _passages.ToList(),
-            NonPlayerCharacters = _npcs.ToList()
+            NonPlayerCharacters = _npcs.ToList(),
+            Assets = _assets.ToList(),
         };
 
         _passages.Clear();
         _npcs.Clear();
+        _assets.Clear();
 
         return world;
     }
@@ -62,5 +65,19 @@ internal sealed class AdventureModelBuilder
 
         _npcs.Add(npc);
         return npc;
+    }
+
+    public AdventureAssetInfo AddAsset(long id, string name, string description, IReadOnlyList<AdventurePassageInfo> linkedPassages)
+    {
+        var asset = new AdventureAssetInfo
+        {
+            Id = id,
+            Name = name,
+            Description = description,
+            LinkedPassageIds = linkedPassages.Select(p => p.Id).ToList()
+        };
+
+        _assets.Add(asset);
+        return asset;
     }
 }

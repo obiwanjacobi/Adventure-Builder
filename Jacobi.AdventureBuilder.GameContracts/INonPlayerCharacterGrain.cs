@@ -1,7 +1,6 @@
 ﻿namespace Jacobi.AdventureBuilder.GameContracts;
 
-public interface INonPlayerCharacterGrain : IGrainWithStringKey
+public interface INonPlayerCharacterGrain : IAmInPassage, IGrainWithStringKey
 {
-    [Alias("EnterPassage")]
-    Task EnterPassage(IPassageGrain passage);
+
 }

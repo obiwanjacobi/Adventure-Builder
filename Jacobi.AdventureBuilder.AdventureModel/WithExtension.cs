@@ -9,7 +9,8 @@ public static class WithExtensions
             Id = world.Id,
             Name = world.Name,
             NonPlayerCharacters = world.NonPlayerCharacters,
-            Passages = passages
+            Passages = passages,
+            Assets = world.Assets,
         };
     }
 

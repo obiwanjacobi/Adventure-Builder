@@ -42,6 +42,10 @@ There are a couple of ways you can define a link from the current Passage to ano
 
 ### Non-Player Characters (NPC)
 
+- [ ] Linked Commands. The commands (being in) the precense of the NPC adds to the palette.
+- [ ] Health. The strength of the NPC. Healty / wounded / dying / dead.
+- [ ] Navigations/movement. Some NPCs walk around quite a bit. Others are stationary.
+
 Create a Passage in Twine and start its name with `NPC:`. Now put a description in the passage that will describe the NPC. If you put no links in this passage, the NPC can popup anywhere. If you put links on this NPC to other passages, the NPC will only appear there.
 
 Any text or description you give the links to other passages will be ignored for the moment. So just a simple `[[Passage]]` will do.
@@ -50,7 +54,25 @@ Any text or description you give the links to other passages will be ignored for
 
 #### Non-Player Character Tags
 
-Non-Player Character Tags...
+| Tag | Description |
+| -- | -- |
+| Fixed | The NPC is fixed to a single location and cannot / will not move or be moved. |
+
+### Assets
+
+- [ ] Linked Commands. The commands (being in) the precense of the Asset adds to the palette.
+
+A thing that is in a Passage. Some things can be picked up and carried (inventory), some things are stationary / fixed.
+
+Create a Passage in Twine and start its name with `ASSET:`. Now put a description in the passage that will describe the Asset. If you put no links in this passage, the Asset can popup anywhere. If you put links on this Asset to other passages, the Asset will only appear there.
+
+Any text or description you give the links to other passages will be ignored for the moment. So just a simple `[[Passage]]` will do.
+
+#### Asset Tags
+
+| Tag | Description |
+| -- | -- |
+| Fixed | The Asset is fixed to a single location and cannot be picked up. |
 
 ### Generating JSON
 

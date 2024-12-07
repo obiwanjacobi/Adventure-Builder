@@ -4,23 +4,23 @@ using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
-public class NonPlayerCharacterGrainState : AmInPassageGrainState
+public class AssetGrainState : AmInPassageGrainState
 {
     public bool IsLoaded { get; set; }
-    public AdventureNonPlayerCharacterInfo? NpcInfo { get; set; }
+    public AdventureAssetInfo? AssetInfo { get; set; }
 }
 
-public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacterGrainState>, INonPlayerCharacterGrain
+public sealed class AssetGrain : AmInPassageGrain<AssetGrainState>, IAssetGrain
 {
     private readonly IAdventureClient _client;
 
-    public NonPlayerCharacterGrain(IAdventureClient client)
+    public AssetGrain(IAdventureClient client)
         => _client = client;
 
     protected override string Name
-        => State.NpcInfo!.Name;
+        => State.AssetInfo!.Name;
     protected override string Description
-        => State.NpcInfo!.Description;
+        => State.AssetInfo!.Description;
 
     public async override Task OnActivateAsync(CancellationToken cancellationToken)
     {
@@ -28,8 +28,8 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
         {
             State.IsLoaded = true;
 
-            var key = NonPlayerCharacterKey.Parse(this.GetPrimaryKeyString());
-            State.NpcInfo = await _client.GetAdventureNonPlayerCharacter(key.WorldKey.WorldId, key.NpcId, cancellationToken);
+            var key = AssetKey.Parse(this.GetPrimaryKeyString());
+            State.AssetInfo = await _client.GetAdventureAsset(key.WorldKey.WorldId, key.AssetId, cancellationToken);
         }
 
         await base.OnActivateAsync(cancellationToken);

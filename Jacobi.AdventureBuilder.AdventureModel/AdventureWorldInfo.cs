@@ -13,6 +13,6 @@ public sealed class AdventureWorldInfo
     public AdventurePassageInfo StartPassage => Passages.First();
 
     public required IReadOnlyList<AdventurePassageInfo> Passages { get; init; }
-
     public required IReadOnlyList<AdventureNonPlayerCharacterInfo> NonPlayerCharacters { get; init; }
+    public required IReadOnlyList<AdventureAssetInfo> Assets { get; init; }
 }

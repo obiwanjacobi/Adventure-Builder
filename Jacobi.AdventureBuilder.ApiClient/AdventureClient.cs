@@ -15,6 +15,7 @@ public interface IAdventureClient
     Task<AdventureWorldInfo> GetAdventureWorldSummaryAsync(string worldId, CancellationToken ct = default);
     Task<AdventurePassageInfo> GetAdventurePassageAsync(string worldId, long passageId, CancellationToken ct = default);
     Task<AdventureNonPlayerCharacterInfo> GetAdventureNonPlayerCharacter(string worldId, long npcId, CancellationToken ct = default);
+    Task<AdventureAssetInfo> GetAdventureAsset(string worldId, long assetId, CancellationToken ct = default);
 }
 
 internal sealed class AdventureClient : IAdventureClient
@@ -44,12 +45,14 @@ internal sealed class AdventureClient : IAdventureClient
     public Task<AdventureWorldInfo> GetAdventureWorldSummaryAsync(string worldId, CancellationToken ct = default)
         => GetRequest<AdventureWorldInfo>($"/adventure/worlds/{worldId.ToLowerInvariant()}?summary=true", ct);
 
-
     public Task<AdventurePassageInfo> GetAdventurePassageAsync(string worldId, long passageId, CancellationToken ct = default)
         => GetRequest<AdventurePassageInfo>($"/adventure/worlds/{worldId.ToLowerInvariant()}/passages/{passageId}", ct);
 
     public Task<AdventureNonPlayerCharacterInfo> GetAdventureNonPlayerCharacter(string worldId, long npcId, CancellationToken ct = default)
         => GetRequest<AdventureNonPlayerCharacterInfo>($"/adventure/worlds/{worldId.ToLowerInvariant()}/npcs/{npcId}", ct);
+
+    public Task<AdventureAssetInfo> GetAdventureAsset(string worldId, long assetId, CancellationToken ct = default)
+        => GetRequest<AdventureAssetInfo>($"/adventure/worlds/{worldId.ToLowerInvariant()}/assets/{assetId}", ct);
 
     private async Task<T> GetRequest<T>(string resource, CancellationToken cancellationToken)
     {

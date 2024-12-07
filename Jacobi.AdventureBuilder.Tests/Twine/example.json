@@ -5,7 +5,7 @@
   "creatorVersion": "2.9.2",
   "schemaName": "Harlowe 3 to JSON",
   "schemaVersion": "0.0.6",
-  "createdAtMs": 1732899415248,
+  "createdAtMs": 1733428013662,
   "passages": [
     {
       "name": "Let's Start",
@@ -65,6 +65,21 @@
       "links": [],
       "hooks": [],
       "cleanText": "The Wicked Witch of the West is a nasty piece of work. She'll appear out of nowhere and it will cost you if you do something wrong. The problem is, nobody has been able to find out what that is exactly. Better to avoid her and go somewhere else if she turns up. Or perhaps you're lucky and find out what the one thing is that will kill her. Perhaps not..."
+    },
+    {
+      "name": "ASSET: Bottle",
+      "tags": "",
+      "id": "5",
+      "text": "This bottle looks like an ordanairy wine bottle. It has a cap but appears to be empy.\n[[Option 2]]",
+      "links": [
+        {
+          "linkText": "Option 2",
+          "passageName": "Option 2",
+          "original": "[[Option 2]]"
+        }
+      ],
+      "hooks": [],
+      "cleanText": "This bottle looks like an ordanairy wine bottle. It has a cap but appears to be empy."
     }
   ]
 }

@@ -1,5 +1,4 @@
-﻿using Jacobi.AdventureBuilder.AdventureModel;
-using Jacobi.AdventureBuilder.ApiClient;
+﻿using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
@@ -35,11 +34,10 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
             State.PassageIds = world.Passages.Select(p => p.Id).ToList();
             State.NonPlayerCharacterIds = world.NonPlayerCharacters.Select(npc => npc.Id).ToList();
 
-            // TODO: seed the world
-            // - spawn npcs in passages
+            // - place npcs and assets in passages
             foreach (var npc in world.NonPlayerCharacters)
             {
-                var passage = NPC.SpawnInPassage(world, npc);
+                var passage = Placement.PlaceInPassage(world, npc.LinkedPassageIds);
                 var passageKey = new PassageKey(worldKey, passage.Id);
                 var passageGrain = _factory.GetGrain<IPassageGrain>(passageKey);
 
@@ -48,17 +46,28 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
 
                 await npcGrain.EnterPassage(passageGrain);
             }
+            foreach (var asset in world.Assets)
+            {
+                var passage = Placement.PlaceInPassage(world, asset.LinkedPassageIds);
+                var passageKey = new PassageKey(worldKey, passage.Id);
+                var passageGrain = _factory.GetGrain<IPassageGrain>(passageKey);
 
-            //var spawnedNpcs = NPC.SpawnNPCs(world);
-            //await AssignExtaInfoAsync(spawnedNpcs);
+                var assetKey = new AssetKey(worldKey, asset.Id);
+                var assetGrain = _factory.GetGrain<IAssetGrain>(assetKey);
+
+                await assetGrain.EnterPassage(passageGrain);
+            }
+
             await WriteStateAsync();
         }
         await base.OnActivateAsync(cancellationToken);
     }
 
+    public Task<string> Name()
+        => Task.FromResult(State.Name);
+
     public async Task<IPassageGrain> Start(IPlayerGrain player)
     {
-        ThrowIfNotLoaded();
         var startPassage = await GetPassage(State.PassageIds[0]);
         await player.EnterPassage(startPassage);
         return startPassage;
@@ -66,7 +75,6 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
 
     public Task<IPassageGrain> GetPassage(long passageId)
     {
-        ThrowIfNotLoaded();
         if (!State.PassageIds.Contains(passageId))
             throw new ArgumentException($"Illegal Passage Id: {passageId} not found in this world.", nameof(passageId));
 
@@ -74,22 +82,5 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
         var key = new PassageKey(worldKey, passageId);
         var passage = _factory.GetGrain<IPassageGrain>(key);
         return Task.FromResult(passage);
-    }
-
-    private async Task AssignExtaInfoAsync(IReadOnlyList<AdventureExtraInfo> extraInfos)
-    {
-        var worldKey = WorldKey.Parse(this.GetPrimaryKeyString());
-        foreach (var extraInfo in extraInfos)
-        {
-            var key = new PassageKey(worldKey, extraInfo.PassageId);
-            var passage = _factory.GetGrain<IPassageGrain>(key);
-            await passage.AddExtraInfo(extraInfo);
-        }
-    }
-
-    private void ThrowIfNotLoaded()
-    {
-        if (!State.IsLoaded)
-            throw new InvalidOperationException("This AdventureWorld has not been loaded.");
     }
 }

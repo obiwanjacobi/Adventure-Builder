@@ -20,7 +20,10 @@ internal static class AdventureMapper
             }).ToList(),
             NonPlayerCharacters = worldData.NonPlayerCharacters
                 .Select(ToNonPlayerCharacterInfo)
-                .ToList()
+                .ToList(),
+            Assets = worldData.Assets
+                .Select(ToAssetInfo)
+                .ToList(),
         };
     }
 
@@ -35,7 +38,10 @@ internal static class AdventureMapper
             Passages = passages,
             NonPlayerCharacters = worldData.NonPlayerCharacters
                 .Select(ToNonPlayerCharacterInfo)
-                .ToList()
+                .ToList(),
+            Assets = worldData.Assets
+                .Select(ToAssetInfo)
+                .ToList(),
         };
     }
 
@@ -49,6 +55,12 @@ internal static class AdventureMapper
     {
         var npcData = worldData.NonPlayerCharacters.First(npc => npc.Id == npcId);
         return ToNonPlayerCharacterInfo(npcData);
+    }
+
+    public static AdventureAssetInfo ToAssetInfo(AdventureWorldData worldData, long assetId)
+    {
+        var assetData = worldData.Assets.First(asset => asset.Id == assetId);
+        return ToAssetInfo(assetData);
     }
 
     private static AdventurePassageInfo ToPassageInfo(AdventureWorldData.AdventurePassageData passageData)
@@ -81,6 +93,17 @@ internal static class AdventureMapper
         };
     }
 
+    private static AdventureAssetInfo ToAssetInfo(AdventureWorldData.AdventureAssetData assetData)
+    {
+        return new AdventureAssetInfo
+        {
+            Id = assetData.Id,
+            Name = assetData.Name,
+            Description = assetData.Description,
+            LinkedPassageIds = assetData.LinkedPassageIds,
+        };
+    }
+
     //-------------------------------------------------------------------------
 
     public static AdventureWorldData ToWorldData(AdventureWorldInfo worldInfo)
@@ -108,7 +131,14 @@ internal static class AdventureMapper
                 Description = npc.Description,
                 LinkedPassageIds = [.. npc.LinkedPassageIds]
             }
-            ).ToList()
+            ).ToList(),
+            Assets = worldInfo.Assets.Select(asset => new AdventureWorldData.AdventureAssetData
+            {
+                Id = asset.Id,
+                Name = asset.Name,
+                Description = asset.Description,
+                LinkedPassageIds = [.. asset.LinkedPassageIds]
+            }).ToList()
         };
     }
 }

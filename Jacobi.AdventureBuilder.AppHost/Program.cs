@@ -23,8 +23,14 @@ var orleans = builder.AddOrleans("default")
 
 if (builder.Environment.IsDevelopment())
 {
-    cosmos.WithHttpsEndpoint(8081, 8081, "emulator-port")
-        .RunAsEmulator(config => config.WithLifetime(ContainerLifetime.Persistent));
+    cosmos
+        .RunAsEmulator(config => config
+            //.WithHttpEndpoint(targetPort: 1234, name: "explorer-port")
+            //.WithImageRegistry("mcr.microsoft.com")
+            //.WithImage("cosmosdb/linux/azure-cosmos-emulator")
+            //.WithImageTag("vnext-preview")
+            .WithLifetime(ContainerLifetime.Persistent)
+        );
 
     // Seems to cause problems when debugging (and stopping half way).
     //storage.RunAsEmulator(config => config.WithLifetime(ContainerLifetime.Persistent));

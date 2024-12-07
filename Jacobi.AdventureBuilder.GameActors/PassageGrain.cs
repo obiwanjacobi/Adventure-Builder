@@ -39,20 +39,13 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
     }
 
     public Task<string> Name()
-    {
-        ThrowIfNotLoaded();
-        return Task.FromResult(State.PassageInfo!.Name);
-    }
+        => Task.FromResult(State.PassageInfo!.Name);
 
     public Task<string> Description()
-    {
-        ThrowIfNotLoaded();
-        return Task.FromResult(State.PassageInfo!.Description);
-    }
+        => Task.FromResult(State.PassageInfo!.Description);
 
     public Task<IReadOnlyList<GameCommandInfo>> CommandInfos()
     {
-        ThrowIfNotLoaded();
         var commands = State.PassageInfo!.Commands
                 .Map(cmd => new GameCommandInfo(cmd.Id, cmd.Name, cmd.Description))
                 .ToList();
@@ -62,7 +55,6 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
     public Task<GameCommand> GetCommand(string commandId)
     {
-        ThrowIfNotLoaded();
         var commandInfo = State.PassageInfo!.Commands
             .Find(cmd => cmd.Id == commandId)
             .Single();
@@ -72,7 +64,6 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
     public async Task<long> AddExtraInfo(AdventureExtraInfo extraInfo)
     {
-        ThrowIfNotLoaded();
         var key = PassageKey.Parse(this.GetPrimaryKeyString());
         if (extraInfo.PassageId != 0 && key.PassageId != extraInfo.PassageId)
             throw new ArgumentException($"The ExtraInfo does not belong to this Passage: {extraInfo}", nameof(extraInfo));
@@ -85,7 +76,6 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
     public Task RemoveExtraInfo(long extraId)
     {
-        ThrowIfNotLoaded();
         if (extraId < 0 || extraId >= State.PassageInfo!.Extras.Count)
             throw new ArgumentException($"Invalid ExtraInfo Id: {extraId}", nameof(extraId));
 
@@ -96,17 +86,9 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
     public Task<IReadOnlyList<GameExtraInfo>> Extras()
     {
-        ThrowIfNotLoaded();
         var extras = State.PassageInfo!.Extras
             .Map(e => new GameExtraInfo { Name = e.Name, Description = e.Description })
             .ToList();
         return Task.FromResult((IReadOnlyList<GameExtraInfo>)extras);
-    }
-
-    private void ThrowIfNotLoaded()
-    {
-        if (!State.IsLoaded)
-            throw new InvalidOperationException(
-                "Uninitialized Passage grain. The Passage info was not loaded.");
     }
 }
