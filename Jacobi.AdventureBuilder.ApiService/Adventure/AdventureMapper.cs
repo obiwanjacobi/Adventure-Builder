@@ -89,7 +89,8 @@ internal static class AdventureMapper
             Id = npcData.Id,
             Name = npcData.Name,
             Description = npcData.Description,
-            LinkedPassageIds = npcData.LinkedPassageIds
+            LinkedPassageIds = npcData.LinkedPassageIds,
+            Properties = ToPropertyInfos(npcData.Properties),
         };
     }
 
@@ -101,7 +102,17 @@ internal static class AdventureMapper
             Name = assetData.Name,
             Description = assetData.Description,
             LinkedPassageIds = assetData.LinkedPassageIds,
+            Properties = ToPropertyInfos(assetData.Properties),
         };
+    }
+
+    private static IReadOnlyList<AdventurePropertyInfo> ToPropertyInfos(IEnumerable<AdventureWorldData.AdventurePropertyData> properties)
+    {
+        return properties.Select(p => new AdventurePropertyInfo
+        {
+            Name = p.Name,
+            Value = p.Value
+        }).ToList();
     }
 
     //-------------------------------------------------------------------------
@@ -121,15 +132,16 @@ internal static class AdventureMapper
                 {
                     Name = commandInfo.Name,
                     Description = commandInfo.Description,
-                    Action = commandInfo.Action
-                }).ToList()
+                    Action = commandInfo.Action,
+                }).ToList(),
             }).ToList(),
             NonPlayerCharacters = worldInfo.NonPlayerCharacters.Select(npc => new AdventureWorldData.AdventureNonPlayerCharacterData
             {
                 Id = npc.Id,
                 Name = npc.Name,
                 Description = npc.Description,
-                LinkedPassageIds = [.. npc.LinkedPassageIds]
+                LinkedPassageIds = [.. npc.LinkedPassageIds],
+                Properties = ToPropertyData(npc.Properties),
             }
             ).ToList(),
             Assets = worldInfo.Assets.Select(asset => new AdventureWorldData.AdventureAssetData
@@ -137,8 +149,15 @@ internal static class AdventureMapper
                 Id = asset.Id,
                 Name = asset.Name,
                 Description = asset.Description,
-                LinkedPassageIds = [.. asset.LinkedPassageIds]
-            }).ToList()
+                LinkedPassageIds = [.. asset.LinkedPassageIds],
+                Properties = ToPropertyData(asset.Properties),
+            }).ToList(),
         };
     }
+
+    private static List<AdventureWorldData.AdventurePropertyData> ToPropertyData(IEnumerable<AdventurePropertyInfo> properties)
+        => properties
+            .Select(p => new AdventureWorldData.AdventurePropertyData
+            { Name = p.Name, Value = p.Value })
+            .ToList();
 }

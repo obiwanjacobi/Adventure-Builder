@@ -41,16 +41,18 @@ internal class TwineModelTransform
             }
         }
 
-        // now all the passages are known, process npcs
-        foreach (var nps in npcs)
+        // now all the passages are known, process npcs and assets
+        foreach (var npc in npcs)
         {
-            var linkedPassages = nps.Links.Select(l => passageInfos.First(p => p.Name == l.PassageName));
-            _builder.AddNonPlayerCharacter(Int64.Parse(nps.Id), GetNpcName(nps.Name), nps.CleanText, linkedPassages.ToList());
+            var properties = CreateProperties(npc.Tags);
+            var linkedPassageIds = npc.Links.Select(l => passageInfos.First(p => p.Name == l.PassageName).Id);
+            _builder.AddNonPlayerCharacter(Int64.Parse(npc.Id), GetNpcName(npc.Name), npc.CleanText, linkedPassageIds.ToList(), properties);
         }
         foreach (var asset in assets)
         {
-            var linkedPassages = asset.Links.Select(l => passageInfos.First(p => p.Name == l.PassageName));
-            _builder.AddAsset(Int64.Parse(asset.Id), GetAssetName(asset.Name), asset.CleanText, linkedPassages.ToList());
+            var properties = CreateProperties(asset.Tags);
+            var linkedPassageIds = asset.Links.Select(l => passageInfos.First(p => p.Name == l.PassageName).Id);
+            _builder.AddAsset(Int64.Parse(asset.Id), GetAssetName(asset.Name), asset.CleanText, linkedPassageIds.ToList(), properties);
         }
 
         static bool IsNPC(Passage passage)
@@ -61,6 +63,20 @@ internal class TwineModelTransform
             => passage.Name.StartsWith("ASSET:");
         static string GetAssetName(string npcName)
             => npcName[6..].Trim();
+    }
+
+    private List<AdventurePropertyInfo> CreateProperties(string tagString)
+    {
+        var tags = tagString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return tags.Select(tag =>
+        {
+            var nameValue = tag.Split(':');
+            return new AdventurePropertyInfo
+            {
+                Name = nameValue[0],
+                Value = nameValue[1]
+            };
+        }).ToList();
     }
 
     private List<AdventureCommandInfo> CreateCommands(Passage passage)

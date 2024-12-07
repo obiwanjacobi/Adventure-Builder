@@ -54,6 +54,7 @@ internal sealed record AdventureWorldData : Entity, ILogicalPartition
 
         [JsonProperty("linkedPassages")]
         public List<long> LinkedPassageIds { get; set; } = [];
+        public List<AdventurePropertyData> Properties { get; set; } = [];
     }
 
     internal sealed record AdventureAssetData
@@ -69,6 +70,7 @@ internal sealed record AdventureWorldData : Entity, ILogicalPartition
 
         [JsonProperty("linkedPassages")]
         public List<long> LinkedPassageIds { get; set; } = [];
+        public List<AdventurePropertyData> Properties { get; set; } = [];
     }
 
     internal sealed record AdventureCommandData
@@ -81,5 +83,14 @@ internal sealed record AdventureWorldData : Entity, ILogicalPartition
 
         [JsonProperty("action")]
         public string Action { get; set; } = String.Empty;
+    }
+
+    internal sealed record AdventurePropertyData
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; } = String.Empty;
+
+        [JsonProperty("value")]
+        public string? Value { get; set; }
     }
 }

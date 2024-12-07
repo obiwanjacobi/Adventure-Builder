@@ -14,22 +14,6 @@ public static class WithExtensions
         };
     }
 
-    public static AdventureWorldInfo Replace(this AdventureWorldInfo world, IList<AdventurePassageInfo> passages)
-    {
-        var newPassages = new List<AdventurePassageInfo>(world.Passages.Count);
-
-        foreach (var passage in world.Passages)
-        {
-            var passageFound = passages.SingleOrDefault(p => passage.Id == p.Id);
-            if (passageFound is not null)
-                newPassages.Add(passageFound);
-            else
-                newPassages.Add(passage);
-        }
-
-        return world.With(newPassages);
-    }
-
     public static AdventurePassageInfo Add(this AdventurePassageInfo passage, IEnumerable<AdventureExtraInfo> extra)
         => new()
         {
@@ -40,7 +24,7 @@ public static class WithExtensions
             Extras = [.. passage.Extras, .. extra]
         };
 
-    public static AdventurePassageInfo RemoveExtraInfo(this AdventurePassageInfo passage, AdventureExtraInfo extraInfo)
+    public static AdventurePassageInfo Remove(this AdventurePassageInfo passage, AdventureExtraInfo extraInfo)
     {
         var extras = passage.Extras.ToList();
         extras.Remove(extraInfo);

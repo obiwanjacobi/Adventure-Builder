@@ -10,4 +10,5 @@ public sealed class AdventureAssetInfo
     public required string Description { get; init; }
 
     public required IReadOnlyList<long> LinkedPassageIds { get; init; }
+    public required IReadOnlyList<AdventurePropertyInfo> Properties { get; init; }
 }

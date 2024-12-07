@@ -80,7 +80,7 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
             throw new ArgumentException($"Invalid ExtraInfo Id: {extraId}", nameof(extraId));
 
         var extraInfo = State.PassageInfo!.Extras[(int)extraId]!;
-        State.PassageInfo = State.PassageInfo!.RemoveExtraInfo(extraInfo);
+        State.PassageInfo = State.PassageInfo!.Remove(extraInfo);
         return WriteStateAsync();
     }
 

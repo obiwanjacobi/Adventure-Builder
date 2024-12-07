@@ -56,7 +56,7 @@ Any text or description you give the links to other passages will be ignored for
 
 | Tag | Description |
 | -- | -- |
-| Fixed | The NPC is fixed to a single location and cannot / will not move or be moved. |
+| NavEvery:n | The NPC will navigate the passages every `n` seconds. |
 
 ### Assets
 
@@ -72,7 +72,7 @@ Any text or description you give the links to other passages will be ignored for
 
 | Tag | Description |
 | -- | -- |
-| Fixed | The Asset is fixed to a single location and cannot be picked up. |
+| PinnedToLoc | The Asset is fixed to a single location and cannot be picked up. |
 
 ### Generating JSON
 

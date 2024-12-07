@@ -53,28 +53,30 @@ internal sealed class AdventureModelBuilder
         return world;
     }
 
-    public AdventureNonPlayerCharacterInfo AddNonPlayerCharacter(long id, string name, string description, IReadOnlyList<AdventurePassageInfo> linkedPassages)
+    public AdventureNonPlayerCharacterInfo AddNonPlayerCharacter(long id, string name, string description, IReadOnlyList<long> linkedPassageIds, IReadOnlyList<AdventurePropertyInfo> properties)
     {
         var npc = new AdventureNonPlayerCharacterInfo
         {
             Id = id,
             Name = name,
             Description = description,
-            LinkedPassageIds = linkedPassages.Select(p => p.Id).ToList()
+            LinkedPassageIds = linkedPassageIds,
+            Properties = properties
         };
 
         _npcs.Add(npc);
         return npc;
     }
 
-    public AdventureAssetInfo AddAsset(long id, string name, string description, IReadOnlyList<AdventurePassageInfo> linkedPassages)
+    public AdventureAssetInfo AddAsset(long id, string name, string description, IReadOnlyList<long> linkedPassageIds, IReadOnlyList<AdventurePropertyInfo> properties)
     {
         var asset = new AdventureAssetInfo
         {
             Id = id,
             Name = name,
             Description = description,
-            LinkedPassageIds = linkedPassages.Select(p => p.Id).ToList()
+            LinkedPassageIds = linkedPassageIds,
+            Properties = properties
         };
 
         _assets.Add(asset);
