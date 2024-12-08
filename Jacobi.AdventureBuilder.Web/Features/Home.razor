@@ -2,8 +2,12 @@
 @rendermode InteractiveServer
 @using Jacobi.AdventureBuilder.GameClient
 @using Jacobi.AdventureBuilder.GameContracts
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.WebUtilities
 
 @inject AdventureGameClient _gameClient
+@* @attribute [Authorize] *@
 
 <PageTitle>Home</PageTitle>
 

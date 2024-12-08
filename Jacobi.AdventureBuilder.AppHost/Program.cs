@@ -1,3 +1,4 @@
+using Jacobi.AdventureBuilder.AppHost;
 using Microsoft.Extensions.Hosting;
 
 //
@@ -20,6 +21,11 @@ var orleans = builder.AddOrleans("default")
     .WithClustering(gameClusters)
     .WithGrainStorage("Default", grainBlobs)
     ;
+
+// Identity Provider
+// https://github.com/dotnet-presentations/eshop-app-workshop/tree/main/labs/3-Add-Identity
+var identityProvider = builder.AddKeycloakContainer("IdentityProvider" /*, tag: "23.0"*/)
+    .ImportRealms("./Keycloak/data");
 
 if (builder.Environment.IsDevelopment())
 {
@@ -47,12 +53,20 @@ var gameServer = builder.AddProject<Projects.Jacobi_AdventureBuilder_GameServer>
     .WithReference(orleans).WithReplicas(1)
     ;
 
-builder.AddProject<Projects.Jacobi_AdventureBuilder_Web>("webfrontend")
+var webApp = builder.AddProject<Projects.Jacobi_AdventureBuilder_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(apiService).WaitFor(apiService)
     .WithReference(orleans.AsClient()).WithReplicas(1)
     .WaitFor(gameServer)
+    .WithReference(identityProvider, env: "Identity__ClientSecret")
     ;
+
+var webAppHttp = webApp.GetEndpoint("http");
+identityProvider.WithEnvironment("WEBAPP_HTTP_CONTAINERHOST", webAppHttp);
+identityProvider.WithEnvironment("WEBAPP_HTTP", () => $"{webAppHttp.Scheme}://{webAppHttp.Host}:{webAppHttp.Port}");
+var webAppHttps = webApp.GetEndpoint("https");
+identityProvider.WithEnvironment("WEBAPP_HTTPS_CONTAINERHOST", webAppHttps);
+identityProvider.WithEnvironment("WEBAPP_HTTPS", () => $"{webAppHttps.Scheme}://{webAppHttps.Host}:{webAppHttps.Port}");
 
 using var app = builder.Build();
 await app.RunAsync();

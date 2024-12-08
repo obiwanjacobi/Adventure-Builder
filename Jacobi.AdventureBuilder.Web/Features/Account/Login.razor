@@ -1,0 +1,16 @@
+﻿<h3>Login</h3>
+
+<EditForm Model="@loginModel" OnValidSubmit="@OnUserLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <FluentTextField @bind-Value="loginModel.Email" Label="User Email" Placeholder="User email address" Required TextFieldType="@TextFieldType.Email" />
+    <FluentTextField @bind-Value="loginModel.Password" Label="Password" Placeholder="Your Adventure Builder password" Required TextFieldType="@TextFieldType.Password" />
+
+    <FluentButton Type="@ButtonType.Submit">Login</FluentButton>
+</EditForm>
+
+<FluentDivider />
+
+<FluentNavLink>Forgot Password</FluentNavLink>
+<FluentNavLink>Signup for an Account</FluentNavLink>

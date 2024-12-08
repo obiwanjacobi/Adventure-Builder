@@ -1,4 +1,5 @@
 using Jacobi.AdventureBuilder.GameClient;
+using Jacobi.AdventureBuilder.ServiceDefaults;
 using Jacobi.AdventureBuilder.Web;
 using Microsoft.FluentUI.AspNetCore.Components;
 
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
+builder.AddAuthenticationServices();
 builder.AddGameClient();
 
 // Add services to the container.
