@@ -23,9 +23,17 @@ var orleans = builder.AddOrleans("default")
     ;
 
 // Identity Provider
+// https://learn.microsoft.com/en-us/dotnet/aspire/authentication/keycloak-integration
 // https://github.com/dotnet-presentations/eshop-app-workshop/tree/main/labs/3-Add-Identity
-var identityProvider = builder.AddKeycloakContainer("IdentityProvider" /*, tag: "23.0"*/)
-    .ImportRealms("./Keycloak/data");
+//var identityProvider = builder.AddKeycloakContainer("IdentityProvider" /*, tag: "23.0"*/)
+//    .WithLifetime(ContainerLifetime.Persistent)
+//    .ImportRealms("./Keycloak/data");
+
+// parameters in appsettings.json
+var keycloakAdmin = builder.AddParameter("KeycloakAdmin");
+var keycloakAdminPwd = builder.AddParameter("KeycloakAdminPassword", secret: true);
+var identityProvider = builder.AddKeycloak("IdentityProvider", 8080, keycloakAdmin, keycloakAdmin)
+    .WithLifetime(ContainerLifetime.Persistent);
 
 if (builder.Environment.IsDevelopment())
 {
@@ -58,15 +66,16 @@ var webApp = builder.AddProject<Projects.Jacobi_AdventureBuilder_Web>("webfronte
     .WithReference(apiService).WaitFor(apiService)
     .WithReference(orleans.AsClient()).WithReplicas(1)
     .WaitFor(gameServer)
-    .WithReference(identityProvider, env: "Identity__ClientSecret")
+    .WithReference(identityProvider)
+    //.WithReference(identityProvider, env: "Identity__ClientSecret")
     ;
 
-var webAppHttp = webApp.GetEndpoint("http");
-identityProvider.WithEnvironment("WEBAPP_HTTP_CONTAINERHOST", webAppHttp);
-identityProvider.WithEnvironment("WEBAPP_HTTP", () => $"{webAppHttp.Scheme}://{webAppHttp.Host}:{webAppHttp.Port}");
-var webAppHttps = webApp.GetEndpoint("https");
-identityProvider.WithEnvironment("WEBAPP_HTTPS_CONTAINERHOST", webAppHttps);
-identityProvider.WithEnvironment("WEBAPP_HTTPS", () => $"{webAppHttps.Scheme}://{webAppHttps.Host}:{webAppHttps.Port}");
+//var webAppHttp = webApp.GetEndpoint("http");
+//identityProvider.WithEnvironment("WEBAPP_HTTP_CONTAINERHOST", webAppHttp);
+//identityProvider.WithEnvironment("WEBAPP_HTTP", () => $"{webAppHttp.Scheme}://{webAppHttp.Host}:{webAppHttp.Port}");
+//var webAppHttps = webApp.GetEndpoint("https");
+//identityProvider.WithEnvironment("WEBAPP_HTTPS_CONTAINERHOST", webAppHttps);
+//identityProvider.WithEnvironment("WEBAPP_HTTPS", () => $"{webAppHttps.Scheme}://{webAppHttps.Host}:{webAppHttps.Port}");
 
 using var app = builder.Build();
 await app.RunAsync();

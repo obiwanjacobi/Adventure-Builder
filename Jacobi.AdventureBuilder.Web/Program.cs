@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
-builder.AddAuthenticationServices();
+builder.AddIdentityAuthentication();
 builder.AddGameClient();
 
 // Add services to the container.
@@ -40,6 +40,8 @@ app.UseHttpsRedirection();
 //app.UseStaticFiles();
 app.MapStaticAssets();
 app.UseAntiforgery();
+app.UseAuthentication();
+app.UseAuthorization();
 //app.UseOutputCache();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
