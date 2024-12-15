@@ -7,11 +7,16 @@ using Microsoft.FluentUI.AspNetCore.Components;
 // Web
 //
 
+DotEnv.Load();
+
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
-builder.AddIdentityAuthentication();
+builder.AddIdentityAuthentication(
+    configuration.GetRequiredValue<string>("WebClientId"),
+    configuration.GetRequiredValue<string>("WebClientSecret"));
 builder.AddGameClient();
 
 // Add services to the container.

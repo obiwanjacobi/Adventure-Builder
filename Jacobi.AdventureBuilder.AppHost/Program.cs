@@ -1,4 +1,3 @@
-using Jacobi.AdventureBuilder.AppHost;
 using Microsoft.Extensions.Hosting;
 
 //
@@ -24,12 +23,7 @@ var orleans = builder.AddOrleans("default")
 
 // Identity Provider
 // https://learn.microsoft.com/en-us/dotnet/aspire/authentication/keycloak-integration
-// https://github.com/dotnet-presentations/eshop-app-workshop/tree/main/labs/3-Add-Identity
-//var identityProvider = builder.AddKeycloakContainer("IdentityProvider" /*, tag: "23.0"*/)
-//    .WithLifetime(ContainerLifetime.Persistent)
-//    .ImportRealms("./Keycloak/data");
-
-// parameters in appsettings.json
+// parameters are stored in appsettings.json
 var keycloakAdmin = builder.AddParameter("KeycloakAdmin");
 var keycloakAdminPwd = builder.AddParameter("KeycloakAdminPassword", secret: true);
 var identityProvider = builder.AddKeycloak("IdentityProvider", 8080, keycloakAdmin, keycloakAdmin)
@@ -37,14 +31,14 @@ var identityProvider = builder.AddKeycloak("IdentityProvider", 8080, keycloakAdm
 
 if (builder.Environment.IsDevelopment())
 {
-    cosmos
-        .RunAsEmulator(config => config
-            //.WithHttpEndpoint(targetPort: 1234, name: "explorer-port")
-            //.WithImageRegistry("mcr.microsoft.com")
-            //.WithImage("cosmosdb/linux/azure-cosmos-emulator")
-            //.WithImageTag("vnext-preview")
-            .WithLifetime(ContainerLifetime.Persistent)
-        );
+    cosmos.RunAsEmulator(config => config
+        .WithHttpEndpoint(targetPort: 1234, name: "explorer-port", isProxied: false)
+        .WithImageRegistry("mcr.microsoft.com")
+        .WithImage("cosmosdb/linux/azure-cosmos-emulator")
+        .WithImageTag("vnext-preview")
+        .WithArgs("--protocol", "https")
+        .WithLifetime(ContainerLifetime.Persistent)
+    );
 
     // Seems to cause problems when debugging (and stopping half way).
     //storage.RunAsEmulator(config => config.WithLifetime(ContainerLifetime.Persistent));
@@ -67,15 +61,7 @@ var webApp = builder.AddProject<Projects.Jacobi_AdventureBuilder_Web>("webfronte
     .WithReference(orleans.AsClient()).WithReplicas(1)
     .WaitFor(gameServer)
     .WithReference(identityProvider)
-    //.WithReference(identityProvider, env: "Identity__ClientSecret")
     ;
-
-//var webAppHttp = webApp.GetEndpoint("http");
-//identityProvider.WithEnvironment("WEBAPP_HTTP_CONTAINERHOST", webAppHttp);
-//identityProvider.WithEnvironment("WEBAPP_HTTP", () => $"{webAppHttp.Scheme}://{webAppHttp.Host}:{webAppHttp.Port}");
-//var webAppHttps = webApp.GetEndpoint("https");
-//identityProvider.WithEnvironment("WEBAPP_HTTPS_CONTAINERHOST", webAppHttps);
-//identityProvider.WithEnvironment("WEBAPP_HTTPS", () => $"{webAppHttps.Scheme}://{webAppHttps.Host}:{webAppHttps.Port}");
 
 using var app = builder.Build();
 await app.RunAsync();
