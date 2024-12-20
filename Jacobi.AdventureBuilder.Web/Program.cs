@@ -1,3 +1,4 @@
+using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameClient;
 using Jacobi.AdventureBuilder.ServiceDefaults;
 using Jacobi.AdventureBuilder.Web;
@@ -17,8 +18,12 @@ builder.AddServiceDefaults();
 builder.AddIdentityAuthentication(
     configuration.GetRequiredValue<string>("WebClientId"),
     configuration.GetRequiredValue<string>("WebClientSecret"));
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddHttpContextAccessor()
+    .AddTransient<BearerAuthorizationHandler>();
 builder.AddGameClient();
-
+builder.AddApiClient()
+    .AddHttpMessageHandler<BearerAuthorizationHandler>();
 // Add services to the container.
 builder.Services.AddServerSideBlazor();
 builder.Services.AddRazorComponents()
@@ -51,5 +56,6 @@ app.UseAuthorization();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 app.MapDefaultEndpoints();
+app.MapLoginAndLogout();
 
 await app.RunAsync();

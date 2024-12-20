@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Jacobi.AdventureBuilder.ApiClient\Jacobi.AdventureBuilder.ApiClient.csproj" />
     <ProjectReference Include="..\Jacobi.AdventureBuilder.GameClient\Jacobi.AdventureBuilder.GameClient.csproj" />
     <ProjectReference Include="..\Jacobi.AdventureBuilder.ServiceDefaults\Jacobi.AdventureBuilder.ServiceDefaults.csproj" />
   </ItemGroup>

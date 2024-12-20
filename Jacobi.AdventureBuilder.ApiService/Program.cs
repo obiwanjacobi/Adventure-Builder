@@ -2,6 +2,7 @@ using FastEndpoints;
 using Jacobi.AdventureBuilder.ApiService.Account;
 using Jacobi.AdventureBuilder.ApiService.Adventure;
 using Jacobi.AdventureBuilder.ApiService.Data;
+using Jacobi.AdventureBuilder.ServiceDefaults;
 
 //
 // API Service
@@ -12,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
 builder.AddAzureCosmosClient("cmos-adventurebuilder");
+
+builder.AddJwtAuthentication("api-service");
 
 // Add services to the container.
 builder.Services

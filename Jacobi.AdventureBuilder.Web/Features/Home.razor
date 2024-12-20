@@ -1,41 +1,43 @@
 ﻿@page "/"
 @rendermode InteractiveServer
-@using Jacobi.AdventureBuilder.GameClient
-@using Jacobi.AdventureBuilder.GameContracts
-@using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.WebUtilities
-
-@inject AdventureGameClient _gameClient
+@using Microsoft.AspNetCore.Components.Authorization
 @* @attribute [Authorize] *@
 
 <PageTitle>Home</PageTitle>
 
-<h1>@_worldName</h1>
-<h3>@_playerNickname</h3>
-<FluentDivider />
-<FluentLabel>@_name</FluentLabel>
-<div>@_description</div>
+<AuthorizeView>
+    <Authorized>
+        <h1>@_worldName</h1>
+        <h3>@_playerNickname</h3>
+        <FluentDivider />
+        <FluentLabel>@_name</FluentLabel>
+        <div>@_description</div>
 
-<FluentDivider />
+        <FluentDivider />
 
-@if (@_commands is not null)
-{
-    @foreach (var command in _commands!)
-    {
-        <div>@command.Description</div>
-        <FluentButton @onclick="@(() => ExecuteCommand(command.Id))">@command.Name</FluentButton>
-    }
-}
+        @if (@_commands is not null)
+        {
+            @foreach (var command in _commands!)
+            {
+                <div>@command.Description</div>
+                <FluentButton @onclick="@(() => ExecuteCommand(command.Id))">@command.Name</FluentButton>
+            }
+        }
 
-<FluentDivider />
+        <FluentDivider />
 
-@if (@_extras is not null)
-{
-  <div>You also see:</div>
-    @foreach (var extra in _extras!)
-    {
-        <div>@extra.Name</div>
-        <div>@extra.Description</div>
-    }
-}
+        @if (@_extras is not null)
+        {
+            <div>You also see:</div>
+            @foreach (var extra in _extras!)
+            {
+                <div>@extra.Name</div>
+                <div>@extra.Description</div>
+            }
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p><strong>Please <a href="authentication/login">log in</a>.</strong></p>
+    </NotAuthorized>
+</AuthorizeView>

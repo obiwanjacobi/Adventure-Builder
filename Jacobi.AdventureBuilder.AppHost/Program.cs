@@ -23,10 +23,8 @@ var orleans = builder.AddOrleans("default")
 
 // Identity Provider
 // https://learn.microsoft.com/en-us/dotnet/aspire/authentication/keycloak-integration
-// parameters are stored in appsettings.json
-var keycloakAdmin = builder.AddParameter("KeycloakAdmin");
-var keycloakAdminPwd = builder.AddParameter("KeycloakAdminPassword", secret: true);
-var identityProvider = builder.AddKeycloak("IdentityProvider", 8080, keycloakAdmin, keycloakAdmin)
+// Open resource details in the dashboard for the IdentityProvider and view env vars for admin + pwd.
+var identityProvider = builder.AddKeycloak("IdentityProvider", 8080)
     .WithLifetime(ContainerLifetime.Persistent);
 
 if (builder.Environment.IsDevelopment())
