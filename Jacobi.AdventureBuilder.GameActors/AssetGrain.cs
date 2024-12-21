@@ -15,7 +15,9 @@ public sealed class AssetGrain : AmInPassageGrain<AssetGrainState>, IAssetGrain
     private readonly IAdventureClient _client;
 
     public AssetGrain(IAdventureClient client)
-        => _client = client;
+    {
+        _client = client;
+    }
 
     protected override string Name
         => State.AssetInfo!.Name;

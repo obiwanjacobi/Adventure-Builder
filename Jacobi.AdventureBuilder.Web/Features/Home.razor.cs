@@ -34,7 +34,7 @@ public partial class Home : ComponentBase
         {
             _world = await _gameClient.WorldManager.CreateNewWorld("CA59D7B3-C88B-499E-A333-9BC5D2906506", "My First Little Adventure World");
             _worldName = await _world.Name();
-            _player = _gameClient.GetPlayer("PlayerOne");
+            _player = _gameClient.GetPlayer(user.Identity.Name!);
             _playerNickname = PlayerKey.Parse(_player.GetPrimaryKeyString()).Nickname;
             var passage = await _world.Start(_player);
             await SetPassage(passage);

@@ -47,7 +47,7 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
     public Task<IReadOnlyList<GameCommandInfo>> CommandInfos()
     {
         var commands = State.PassageInfo!.Commands
-                .Map(cmd => new GameCommandInfo(cmd.Id, cmd.Name, cmd.Description))
+                .Map(cmd => new GameCommandInfo(cmd.Id, cmd.Kind, cmd.Name, cmd.Description))
                 .ToList();
 
         return Task.FromResult((IReadOnlyList<GameCommandInfo>)commands);
