@@ -1,7 +1,9 @@
-﻿namespace Jacobi.AdventureBuilder.GameContracts;
+﻿using LanguageExt;
+
+namespace Jacobi.AdventureBuilder.GameContracts;
 
 public interface IAmInPassage
 {
     [Alias("EnterPassage")]
-    Task EnterPassage(IPassageGrain passage);
+    Task EnterPassage(IPassageGrain passage, Option<INotifyPassage> notifyPassage);
 }

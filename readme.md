@@ -1,16 +1,14 @@
 # Adventure Builder
 
-Web - Player Frontend
-API - manages game meta data
-GameServer - Running game state
+--- 
 
-## Start a new Game
+## TODO
 
-The Player selects one of the games and starts it up.
-
-Web -> API
-
-Web - Game Library - Select Game - Show game details - press Start New
+- [ ] Setup SignalR to notify the web site when new characters enter a passage.
+  https://learn.microsoft.com/en-us/dotnet/aspire/real-time/azure-signalr-scenario
+- [ ] Setup authentication on Orleans similar to how the api-service works.
+- [ ] Activity Log. Lets the player review all the moves that he/she played and events that occured.
+- [ ] 
 
 ---
 
@@ -27,3 +25,4 @@ In Azure Storage Explorer:
 - Right-click on the 'Storage Accounts' in the Explorer tree and choose 'Connect to Azure Storage'
 - Select the 'Local storage emulator' option at the bottom
 - Replace the default port values with the 'target port' values from the Aspire dashboard
+- Create the connection.

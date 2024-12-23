@@ -1,5 +1,6 @@
 ﻿using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameContracts;
+using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -44,7 +45,7 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
                 var npcKey = new NonPlayerCharacterKey(worldKey, npc.Id);
                 var npcGrain = _factory.GetGrain<INonPlayerCharacterGrain>(npcKey);
 
-                await npcGrain.EnterPassage(passageGrain);
+                await npcGrain.EnterPassage(passageGrain, Option<INotifyPassage>.None);
             }
             foreach (var asset in world.Assets)
             {
@@ -55,7 +56,7 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
                 var assetKey = new AssetKey(worldKey, asset.Id);
                 var assetGrain = _factory.GetGrain<IAssetGrain>(assetKey);
 
-                await assetGrain.EnterPassage(passageGrain);
+                await assetGrain.EnterPassage(passageGrain, Option<INotifyPassage>.None);
             }
 
             await WriteStateAsync();
@@ -69,7 +70,7 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
     public async Task<IPassageGrain> Start(IPlayerGrain player)
     {
         var startPassage = await GetPassage(State.PassageIds[0]);
-        await player.EnterPassage(startPassage);
+        await player.EnterPassage(startPassage, Option<INotifyPassage>.None);
         return startPassage;
     }
 

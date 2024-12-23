@@ -1,4 +1,5 @@
 using Jacobi.AdventureBuilder.ApiClient;
+using Jacobi.AdventureBuilder.GameServer;
 
 //
 // Game Server
@@ -10,6 +11,7 @@ builder.AddServiceDefaults();
 builder.AddKeyedAzureTableClient("game-clusters");
 builder.AddKeyedAzureBlobClient("game-grains");
 builder.AddApiClient();
+builder.AddNotifyPassage();
 builder.UseOrleans();
 
 // Add services to the container.

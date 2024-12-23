@@ -18,17 +18,14 @@ public interface IAdventureClient
     Task<AdventureAssetInfo> GetAdventureAsset(string worldId, long assetId, CancellationToken ct = default);
 }
 
-internal sealed class AdventureClient : IAdventureClient
+internal sealed class AdventureClient(HttpClient client) : IAdventureClient
 {
     private static JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    private readonly HttpClient httpClient;
-
-    public AdventureClient(HttpClient client)
-        => this.httpClient = client;
+    private readonly HttpClient _httpClient = client;
 
     public Task<AdventureWorldInfo> GetAdventureWorldAsync(string worldId, CancellationToken ct = default)
         => GetRequest<AdventureWorldInfo>($"/adventure/worlds/{worldId.ToLowerInvariant()}", ct);
@@ -38,7 +35,7 @@ internal sealed class AdventureClient : IAdventureClient
         var json = JsonSerializer.Serialize(adventureWorld);
         var worldId = adventureWorld.Id;
         var content = new StringContent(json, new MediaTypeHeaderValue(MediaTypeNames.Application.Json));
-        var response = await this.httpClient.PutAsync($"/adventure/worlds/{worldId.ToLowerInvariant()}", content, ct);
+        var response = await _httpClient.PutAsync($"/adventure/worlds/{worldId.ToLowerInvariant()}", content, ct);
         response.EnsureSuccessStatusCode();
     }
 
@@ -56,7 +53,7 @@ internal sealed class AdventureClient : IAdventureClient
 
     private async Task<T> GetRequest<T>(string resource, CancellationToken cancellationToken)
     {
-        var response = await this.httpClient.GetAsync(resource, cancellationToken);
+        var response = await _httpClient.GetAsync(resource, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var jsonString = await response.Content.ReadAsStringAsync(cancellationToken);

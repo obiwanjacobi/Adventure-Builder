@@ -16,9 +16,15 @@ public abstract class AmInPassageGrain<T> : Grain<T>, IAmInPassage
     protected abstract string Name { get; }
     protected abstract string Description { get; }
 
-    public async Task EnterPassage(IPassageGrain passage)
+    public async Task EnterPassage(IPassageGrain passage, Option<INotifyPassage> notifyPassage)
     {
-        State.Passage.IfSome(passage => passage.RemoveExtraInfo(State.ExtraId));
+        State.Passage.IfSome(passage =>
+        {
+            passage.RemoveExtraInfo(State.ExtraId);
+            notifyPassage.IfSome(notify =>
+                notify.NotifyPassageExit(passage.GetPrimaryKeyString(), this.GetPrimaryKeyString()));
+        });
+
         State.ExtraId = await passage.AddExtraInfo(new AdventureExtraInfo
         {
             Name = Name,
@@ -28,5 +34,8 @@ public abstract class AmInPassageGrain<T> : Grain<T>, IAmInPassage
 
         State.Passage = Option<IPassageGrain>.Some(passage);
         await WriteStateAsync();
+
+        notifyPassage.IfSome(notify =>
+            notify.NotifyPassageEnter(passage.GetPrimaryKeyString(), this.GetPrimaryKeyString()));
     }
 }

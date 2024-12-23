@@ -1,7 +1,9 @@
+using FastEndpoints;
 using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameClient;
 using Jacobi.AdventureBuilder.ServiceDefaults;
 using Jacobi.AdventureBuilder.Web;
+using Jacobi.AdventureBuilder.Web.Features.Notification;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 //
@@ -29,6 +31,10 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddFluentUIComponents();
+
+builder.Services.AddFastEndpoints();
+builder.Services.AddNotifications();
+
 //builder.Services.AddOutputCache();
 //builder.Services.AddHttpClient<WeatherApiClient>(client =>
 //    {
@@ -57,5 +63,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 app.MapDefaultEndpoints();
 app.MapLoginAndLogout();
+app.MapNotifications();
+app.UseFastEndpoints();
 
 await app.RunAsync();

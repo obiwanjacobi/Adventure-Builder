@@ -1,0 +1,23 @@
+@Server = https://localhost:7028
+
+# Notify Passage Enter / Exit
+
+POST {{Server}}/notify/passage/enter
+Content-Type: application/json
+
+{
+  "passageKey": "CA59D7B3-C88B-499E-A333-9BC5D2906506;My First Little Adventure World;1",
+  "characterKey": "00000000-0000-0000-0000-000000000000;test user"
+}
+
+###
+
+POST {{Server}}/notify/passage/exit
+Content-Type: application/json
+
+{
+  "passageKey": "CA59D7B3-C88B-499E-A333-9BC5D2906506;My First Little Adventure World;1",
+  "characterKey": "00000000-0000-0000-0000-000000000000;test user"
+}
+
+###

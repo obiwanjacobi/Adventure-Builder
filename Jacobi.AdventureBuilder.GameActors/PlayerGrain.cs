@@ -7,8 +7,11 @@ public sealed class PlayerGrainState : AmInPassageGrainState
     public bool IsLoaded { get; set; }
 }
 
-public sealed class PlayerGrain : AmInPassageGrain<PlayerGrainState>, IPlayerGrain
+public sealed class PlayerGrain(INotifyPassage notifyPassage)
+    : AmInPassageGrain<PlayerGrainState>, IPlayerGrain
 {
+    private readonly INotifyPassage _notifyPassage = notifyPassage;
+
     protected override string Name
         => PlayerKey.Parse(this.GetPrimaryKeyString()).Nickname;
     protected override string Description
@@ -25,7 +28,7 @@ public sealed class PlayerGrain : AmInPassageGrain<PlayerGrainState>, IPlayerGra
 
     public async Task<GameCommandResult> Play(IWorldGrain world, GameCommand command)
     {
-        var commandHandler = new GameCommandHandler(world, this);
+        var commandHandler = new GameCommandHandler(world, this, _notifyPassage);
         return await commandHandler.ExecuteAsync(command);
     }
 }

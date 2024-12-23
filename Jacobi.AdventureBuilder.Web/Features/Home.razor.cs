@@ -1,5 +1,6 @@
 ﻿using Jacobi.AdventureBuilder.GameClient;
 using Jacobi.AdventureBuilder.GameContracts;
+using Jacobi.AdventureBuilder.Web.Features.Notification;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -9,6 +10,7 @@ public partial class Home : ComponentBase
 {
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly AdventureGameClient _gameClient;
+    private NotificationClient _notificationClient;
     private string? _name;
     private string? _description;
     private IReadOnlyList<GameCommandInfo>? _commands;
@@ -19,10 +21,11 @@ public partial class Home : ComponentBase
     private string? _worldName;
     private string? _playerNickname;
 
-    public Home(AuthenticationStateProvider authenticationStateProvider, AdventureGameClient gameClient)
+    public Home(AuthenticationStateProvider authenticationStateProvider, AdventureGameClient gameClient, NavigationManager navigationManager)
     {
         _authenticationStateProvider = authenticationStateProvider;
         _gameClient = gameClient;
+        _notificationClient = new NotificationClient(navigationManager);
     }
 
     protected override async Task OnInitializedAsync()
@@ -38,7 +41,22 @@ public partial class Home : ComponentBase
             _playerNickname = PlayerKey.Parse(_player.GetPrimaryKeyString()).Nickname;
             var passage = await _world.Start(_player);
             await SetPassage(passage);
+
+            _notificationClient.OnPassageEnter = OnPassageEnter;
+            _notificationClient.OnPassageExit = OnPassageExit;
+            await _notificationClient.StartAsync(_player.GetPrimaryKeyString(), passage?.GetPrimaryKeyString());
         }
+    }
+
+    private Task OnPassageExit(string characterId)
+    {
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private Task OnPassageEnter(string characterId)
+    {
+        _description += characterId;
+        return InvokeAsync(StateHasChanged);
     }
 
     private async Task ExecuteCommand(string commandId)
@@ -63,5 +81,4 @@ public partial class Home : ComponentBase
         _commands = await _passage.CommandInfos();
         _extras = await _passage.Extras();
     }
-
 }

@@ -1,6 +1,7 @@
 ﻿using Jacobi.AdventureBuilder.AdventureModel;
 using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameContracts;
+using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -15,11 +16,13 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
     private IDisposable? _navigationTimer;
     private readonly IGrainFactory _factory;
     private readonly IAdventureClient _client;
+    private readonly INotifyPassage _notifyPassage;
 
-    public NonPlayerCharacterGrain(IGrainFactory factory, IAdventureClient client)
+    public NonPlayerCharacterGrain(IGrainFactory factory, IAdventureClient client, INotifyPassage notifyPassage)
     {
         _factory = factory;
         _client = client;
+        _notifyPassage = notifyPassage;
     }
 
     protected override string Name
@@ -68,7 +71,7 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
 
         var key = AssetKey.Parse(this.GetPrimaryKeyString());
         var world = _factory.GetGrain<IWorldGrain>(key.WorldKey);
-        var cmdHandler = new GameCommandHandler(world, this);
+        var cmdHandler = new GameCommandHandler(world, this, _notifyPassage);
         var result = await cmdHandler.ExecuteAsync(cmd);
     }
 }

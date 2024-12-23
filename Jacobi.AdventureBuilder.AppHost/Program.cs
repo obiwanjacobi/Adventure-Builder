@@ -61,5 +61,8 @@ var webApp = builder.AddProject<Projects.Jacobi_AdventureBuilder_Web>("webfronte
     .WithReference(identityProvider)
     ;
 
+// notifications back to web app
+gameServer.WithReference(webApp);
+
 using var app = builder.Build();
-await app.RunAsync();
+app.Run();
