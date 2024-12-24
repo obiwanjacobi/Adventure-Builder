@@ -2,7 +2,7 @@
 
 internal static class Key
 {
-    private const char Separator = ';';
+    public const char Separator = ';';
 
     public static string[] Split(string key)
         => key.Split(Separator);

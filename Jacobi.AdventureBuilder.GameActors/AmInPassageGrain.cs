@@ -1,5 +1,4 @@
-﻿using Jacobi.AdventureBuilder.AdventureModel;
-using Jacobi.AdventureBuilder.GameContracts;
+﻿using Jacobi.AdventureBuilder.GameContracts;
 using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
@@ -7,35 +6,29 @@ namespace Jacobi.AdventureBuilder.GameActors;
 public abstract class AmInPassageGrainState
 {
     public Option<IPassageGrain> Passage { get; set; } = Option<IPassageGrain>.None;
-    public long ExtraId { get; set; }
 }
 
 public abstract class AmInPassageGrain<T> : Grain<T>, IAmInPassage
     where T : AmInPassageGrainState
 {
-    protected abstract string Name { get; }
-    protected abstract string Description { get; }
+    public abstract Task<string> Name();
+    public abstract Task<string> Description();
 
     public async Task EnterPassage(IPassageGrain passage, Option<INotifyPassage> notifyPassage)
     {
-        State.Passage.IfSome(passage =>
+        var key = this.GetPrimaryKeyString();
+        State.Passage.IfSome(currentPassage =>
         {
-            passage.RemoveExtraInfo(State.ExtraId);
+            currentPassage.Exit(key);
             notifyPassage.IfSome(notify =>
-                notify.NotifyPassageExit(passage.GetPrimaryKeyString(), this.GetPrimaryKeyString()));
+                    notify.NotifyPassageExit(currentPassage.GetPrimaryKeyString(), key));
         });
 
-        State.ExtraId = await passage.AddExtraInfo(new AdventureExtraInfo
-        {
-            Name = Name,
-            Description = Description,
-            PassageId = 0
-        });
-
+        await passage.Enter(key);
         State.Passage = Option<IPassageGrain>.Some(passage);
         await WriteStateAsync();
 
         notifyPassage.IfSome(notify =>
-            notify.NotifyPassageEnter(passage.GetPrimaryKeyString(), this.GetPrimaryKeyString()));
+            notify.NotifyPassageEnter(passage.GetPrimaryKeyString(), key));
     }
 }

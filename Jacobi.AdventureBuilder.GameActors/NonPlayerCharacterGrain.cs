@@ -25,10 +25,10 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
         _notifyPassage = notifyPassage;
     }
 
-    protected override string Name
-        => State.NpcInfo!.Name;
-    protected override string Description
-        => State.NpcInfo!.Description;
+    public override Task<string> Name()
+        => Task.FromResult(State.NpcInfo!.Name);
+    public override Task<string> Description()
+        => Task.FromResult(State.NpcInfo!.Description);
 
     public async override Task OnActivateAsync(CancellationToken cancellationToken)
     {
@@ -69,7 +69,7 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
         var index = Random.Shared.Next(navCommands.Length);
         var cmd = await passage.GetCommand(navCommands[index].Id);
 
-        var key = AssetKey.Parse(this.GetPrimaryKeyString());
+        var key = NonPlayerCharacterKey.Parse(this.GetPrimaryKeyString());
         var world = _factory.GetGrain<IWorldGrain>(key.WorldKey);
         var cmdHandler = new GameCommandHandler(world, this, _notifyPassage);
         var result = await cmdHandler.ExecuteAsync(cmd);

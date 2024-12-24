@@ -14,7 +14,7 @@ public partial class Home : ComponentBase
     private string? _name;
     private string? _description;
     private IReadOnlyList<GameCommandInfo>? _commands;
-    private IReadOnlyList<GameExtraInfo>? _extras;
+    private IReadOnlyList<Occupant>? _occupants;
     private IPlayerGrain? _player;
     private IWorldGrain? _world;
     private IPassageGrain? _passage;
@@ -44,7 +44,7 @@ public partial class Home : ComponentBase
 
             _notificationClient.OnPassageEnter = OnPassageEnter;
             _notificationClient.OnPassageExit = OnPassageExit;
-            await _notificationClient.StartAsync(_player.GetPrimaryKeyString(), passage?.GetPrimaryKeyString());
+            await _notificationClient.StartAsync(_player.GetPrimaryKeyString(), passage.GetPrimaryKeyString());
         }
     }
 
@@ -55,7 +55,7 @@ public partial class Home : ComponentBase
 
     private Task OnPassageEnter(string characterId)
     {
-        _description += characterId;
+        _description += "<br/>" + characterId;
         return InvokeAsync(StateHasChanged);
     }
 
@@ -79,6 +79,26 @@ public partial class Home : ComponentBase
         _name = await _passage.Name();
         _description = await _passage.Description();
         _commands = await _passage.CommandInfos();
-        _extras = await _passage.Extras();
+        _occupants = (IReadOnlyList<Occupant>)(await GetOccupants(passage)).ToList();
     }
+
+    private async Task<IEnumerable<Occupant>> GetOccupants(IPassageGrain passage)
+    {
+        var occupants = new List<Occupant>();
+        foreach (var occupant in await passage.Occupants())
+        {
+            var amInPassage = _gameClient.GetAmInPassage(occupant);
+            occupants.Add(new Occupant(
+                await amInPassage.Name(),
+                await amInPassage.Description()
+            ));
+        }
+
+        return occupants;
+    }
+
+    // ------------------------------------------------------------------------
+
+    private sealed record class Occupant(string Name, string Description);
 }
+

@@ -12,10 +12,10 @@ public sealed class PlayerGrain(INotifyPassage notifyPassage)
 {
     private readonly INotifyPassage _notifyPassage = notifyPassage;
 
-    protected override string Name
-        => PlayerKey.Parse(this.GetPrimaryKeyString()).Nickname;
-    protected override string Description
-        => "(Player)";
+    public override Task<string> Name()
+        => Task.FromResult(PlayerKey.Parse(this.GetPrimaryKeyString()).Nickname);
+    public override Task<string> Description()
+        => Task.FromResult("(Player)");
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {

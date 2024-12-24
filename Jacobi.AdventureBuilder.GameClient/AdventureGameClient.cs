@@ -5,10 +5,10 @@ namespace Jacobi.AdventureBuilder.GameClient;
 
 public sealed class AdventureGameClient : IGame
 {
-    private readonly IGrainFactory factory;
+    private readonly IGrainFactory _factory;
 
     public AdventureGameClient(IClusterClient factory)
-        => this.factory = factory;
+        => _factory = factory;
 
     public IWorldManagerGrain WorldManager
     {
@@ -19,7 +19,7 @@ public sealed class AdventureGameClient : IGame
                 .OfType<GuidAttribute>()
                 .Single();
 
-            return this.factory.GetGrain<IWorldManagerGrain>(Guid.Parse(guidAttr.Value.AsSpan()));
+            return _factory.GetGrain<IWorldManagerGrain>(Guid.Parse(guidAttr.Value.AsSpan()));
         }
     }
 
@@ -27,12 +27,24 @@ public sealed class AdventureGameClient : IGame
     {
         // TODO: AccountId
         var key = new PlayerKey(Guid.Empty, playerId);
-        return this.factory.GetGrain<IPlayerGrain>(key);
+        return _factory.GetGrain<IPlayerGrain>(key);
     }
 
     public IWorldGrain GetWorld(WorldKey key)
-        => this.factory.GetGrain<IWorldGrain>(key);
+        => _factory.GetGrain<IWorldGrain>(key);
 
     public IPassageGrain GetPassage(PassageKey key)
-        => this.factory.GetGrain<IPassageGrain>(key);
+        => _factory.GetGrain<IPassageGrain>(key);
+
+    public IAmInPassage GetAmInPassage(string key)
+    {
+        if (PlayerKey.IsValidKey(key))
+            return _factory.GetGrain<IPlayerGrain>(key);
+
+        if (NonPlayerCharacterKey.IsValidKey(key))
+            return _factory.GetGrain<INonPlayerCharacterGrain>(key);
+
+        throw new InvalidOperationException(
+            $"The key '{key}' did not resolve to a Player or a Non-Player Character.");
+    }
 }

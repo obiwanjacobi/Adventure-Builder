@@ -2,6 +2,7 @@
 using Jacobi.AdventureBuilder.AdventureModel;
 using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameContracts;
+using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -9,6 +10,7 @@ public sealed class PassageGrainState
 {
     public bool IsLoaded { get; set; }
     public AdventurePassageInfo? PassageInfo { get; set; }
+    public List<string> OccupantKeys { get; } = [];
 }
 
 public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
@@ -62,33 +64,23 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
         return Task.FromResult(command);
     }
 
-    public async Task<long> AddExtraInfo(AdventureExtraInfo extraInfo)
+    public async Task Enter(string amInPassageKey)
     {
-        var key = PassageKey.Parse(this.GetPrimaryKeyString());
-        if (extraInfo.PassageId != 0 && key.PassageId != extraInfo.PassageId)
-            throw new ArgumentException($"The ExtraInfo does not belong to this Passage: {extraInfo}", nameof(extraInfo));
+        if (State.OccupantKeys.Contains(amInPassageKey))
+            throw new InvalidOperationException($"There is already a '{amInPassageKey}' in this passage.");
 
-        var extraId = State.PassageInfo!.Extras.Count;
-        State.PassageInfo = State.PassageInfo!.Add([extraInfo]);
+        State.OccupantKeys.Add(amInPassageKey);
         await WriteStateAsync();
-        return extraId;
     }
 
-    public Task RemoveExtraInfo(long extraId)
+    public Task Exit(string amInPassageKey)
     {
-        if (extraId < 0 || extraId >= State.PassageInfo!.Extras.Count)
-            throw new ArgumentException($"Invalid ExtraInfo Id: {extraId}", nameof(extraId));
-
-        var extraInfo = State.PassageInfo!.Extras[(int)extraId]!;
-        State.PassageInfo = State.PassageInfo!.Remove(extraInfo);
-        return WriteStateAsync();
+        State.OccupantKeys.Remove(amInPassageKey);
+        return Task.CompletedTask;
     }
 
-    public Task<IReadOnlyList<GameExtraInfo>> Extras()
+    public Task<IReadOnlyList<string>> Occupants()
     {
-        var extras = State.PassageInfo!.Extras
-            .Map(e => new GameExtraInfo { Name = e.Name, Description = e.Description })
-            .ToList();
-        return Task.FromResult((IReadOnlyList<GameExtraInfo>)extras);
+        return Task.FromResult((IReadOnlyList<string>)State.OccupantKeys);
     }
 }

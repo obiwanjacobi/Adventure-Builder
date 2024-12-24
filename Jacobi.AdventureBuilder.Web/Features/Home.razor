@@ -27,13 +27,13 @@
 
         <FluentDivider />
 
-        @if (@_extras is not null)
+        @if (_occupants is not null)
         {
             <div>You also see:</div>
-            @foreach (var extra in _extras!)
+            @foreach (var occupant in _occupants!)
             {
-                <div>@extra.Name</div>
-                <div>@extra.Description</div>
+                <div>@occupant.Name</div>
+                <div>@occupant.Description</div>
             }
         }
     </Authorized>

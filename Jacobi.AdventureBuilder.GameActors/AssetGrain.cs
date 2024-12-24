@@ -19,10 +19,10 @@ public sealed class AssetGrain : AmInPassageGrain<AssetGrainState>, IAssetGrain
         _client = client;
     }
 
-    protected override string Name
-        => State.AssetInfo!.Name;
-    protected override string Description
-        => State.AssetInfo!.Description;
+    public override Task<string> Name()
+        => Task.FromResult(State.AssetInfo!.Name);
+    public override Task<string> Description()
+        => Task.FromResult(State.AssetInfo!.Description);
 
     public async override Task OnActivateAsync(CancellationToken cancellationToken)
     {
