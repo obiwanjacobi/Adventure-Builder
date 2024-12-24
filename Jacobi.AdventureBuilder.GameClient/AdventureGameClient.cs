@@ -44,6 +44,9 @@ public sealed class AdventureGameClient : IGame
         if (NonPlayerCharacterKey.IsValidKey(key))
             return _factory.GetGrain<INonPlayerCharacterGrain>(key);
 
+        if (AssetKey.IsValidKey(key))
+            return _factory.GetGrain<IAssetGrain>(key);
+
         throw new InvalidOperationException(
             $"The key '{key}' did not resolve to a Player or a Non-Player Character.");
     }

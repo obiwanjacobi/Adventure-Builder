@@ -55,7 +55,7 @@ public partial class Home : ComponentBase
 
     private Task OnPassageEnter(string characterId)
     {
-        _description += "<br/>" + characterId;
+        _description += " - " + characterId;
         return InvokeAsync(StateHasChanged);
     }
 
@@ -79,10 +79,10 @@ public partial class Home : ComponentBase
         _name = await _passage.Name();
         _description = await _passage.Description();
         _commands = await _passage.CommandInfos();
-        _occupants = (IReadOnlyList<Occupant>)(await GetOccupants(passage)).ToList();
+        _occupants = await GetOccupants(passage);
     }
 
-    private async Task<IEnumerable<Occupant>> GetOccupants(IPassageGrain passage)
+    private async Task<List<Occupant>> GetOccupants(IPassageGrain passage)
     {
         var occupants = new List<Occupant>();
         foreach (var occupant in await passage.Occupants())
