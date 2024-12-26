@@ -1,0 +1,10 @@
+﻿<FluentCard>
+    <FluentAccordion>
+        @foreach (var item in Items)
+        {
+            <FluentAccordionItem Heading="@item.Name">
+                @item.Description
+            </FluentAccordionItem>
+        }
+    </FluentAccordion>
+</FluentCard>

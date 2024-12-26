@@ -18,11 +18,12 @@ public readonly record struct NonPlayerCharacterKey
     public static NonPlayerCharacterKey Parse(string key)
     {
         var parts = Key.Split(key);
-        Debug.Assert(parts.Length == 4);
-        Debug.Assert(parts[2] == Tag);
+        Debug.Assert(parts.Length == 5);
+        Debug.Assert(parts[1] == WorldKey.Tag);
+        Debug.Assert(parts[3] == Tag);
         return new NonPlayerCharacterKey(
-            new WorldKey(parts[0], parts[1]),
-            Int64.Parse(parts[3])
+            new WorldKey(parts[0], parts[2]),
+            Int64.Parse(parts[4])
         );
     }
 

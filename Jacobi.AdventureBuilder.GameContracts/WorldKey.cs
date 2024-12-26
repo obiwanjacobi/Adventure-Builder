@@ -27,10 +27,10 @@ public readonly record struct WorldKey
     public static implicit operator string(WorldKey key)
         => key.ToString();
     public override string ToString()
-        => Key.Join(WorldId, Tag, InstanceId);
+        => Key.Join(Tag, WorldId, InstanceId);
 
     public static bool IsValidKey(string key)
-        => key.Contains($"{Key.Separator}{Tag}{Key.Separator}");
+        => Key.HasTag(key, Tag);
 
     public static Option<WorldKey> TryParse(string key)
     {

@@ -29,7 +29,7 @@ public readonly record struct PlayerKey
         => Key.Join(AccountId, Tag, Nickname);
 
     public static bool IsValidKey(string key)
-        => key.Contains($"{Key.Separator}{Tag}{Key.Separator}");
+        => Key.HasTag(key, Tag);
 
     public static Option<PlayerKey> TryParse(string key)
     {

@@ -18,11 +18,12 @@ public readonly record struct AssetKey
     public static AssetKey Parse(string key)
     {
         var parts = Key.Split(key);
-        Debug.Assert(parts.Length == 3);
-        Debug.Assert(parts[2] == Tag);
+        Debug.Assert(parts.Length == 5);
+        Debug.Assert(parts[1] == WorldKey.Tag);
+        Debug.Assert(parts[3] == Tag);
         return new AssetKey(
-            new WorldKey(parts[0], parts[1]),
-            Int64.Parse(parts[3])
+            new WorldKey(parts[0], parts[2]),
+            Int64.Parse(parts[4])
         );
     }
 
@@ -32,7 +33,7 @@ public readonly record struct AssetKey
         => Key.Join(WorldKey, Tag, AssetId);
 
     public static bool IsValidKey(string key)
-        => key.Contains($"{Key.Separator}{Tag}{Key.Separator}");
+        => Key.HasTag(key, Tag);
 
     public static Option<AssetKey> TryParse(string key)
     {

@@ -18,24 +18,12 @@
 
         @if (@_commands is not null)
         {
-            @foreach (var command in _commands!)
-            {
-                <div>@command.Description</div>
-                <FluentButton @onclick="@(() => ExecuteCommand(command.Id))">@command.Name</FluentButton>
-            }
+            <CommandBar CommandInfos="@_commands" ExecuteCommandAsync="@ExecuteCommand" />
         }
 
+        <StoryLine Items="_storyItems"></StoryLine>
         <FluentDivider />
 
-        @if (_occupants is not null)
-        {
-            <div>You also see:</div>
-            @foreach (var occupant in _occupants!)
-            {
-                <div>@occupant.Name</div>
-                <div>@occupant.Description</div>
-            }
-        }
     </Authorized>
     <NotAuthorized>
         <p><strong>Please <a href="authentication/login">log in</a>.</strong></p>
