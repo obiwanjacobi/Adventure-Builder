@@ -1,6 +1,13 @@
-﻿<FluentAppBar Orientation="Orientation.Horizontal">
+﻿<FluentOverflow>
     @foreach (var cmd in CommandInfos)
     {
-        <FluentAppBarItem IconRest="new Icons.Regular.Size24.Navigation()" Text="@cmd.Name" OnClick="@(() => ExecuteCommandAsync(cmd.Id))" Tooltip="@cmd.Description" />
+        <FluentOverflowItem Fixed="OverflowItemFixed.Ellipsis">
+            <FluentBadge>
+                <FluentButton OnClick="@(() => ExecuteCommandAsync(cmd.Id))">
+                    @cmd.Name
+                </FluentButton>
+                @cmd.Description
+            </FluentBadge>
+        </FluentOverflowItem>
     }
-</FluentAppBar>
+</FluentOverflow>
