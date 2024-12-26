@@ -1,33 +1,40 @@
-﻿namespace Jacobi.AdventureBuilder.GameContracts;
+﻿using System.Diagnostics;
+
+namespace Jacobi.AdventureBuilder.GameContracts;
 
 internal static class Key
 {
-    public const char Separator = ';';
-
-    public static string[] Split(string key)
-        => key.Split(Separator);
-
-    public static string Join(params object[] parts)
-        => String.Join(Separator, parts);
-
-    public static bool HasTag(string key, string tag)
-        => key.Contains($"{Separator}{tag}{Separator}");
-
     public const char KeySeparator = ';';
     public const char ValueSeparator = ',';
 
-    public static IEnumerable<string[]> Split2(string key)
+    /// <summary>
+    /// Returns an array of keys and for each key a value array.
+    /// </summary>
+    public static string[][] Split(string key)
     {
-        var keys = key.Split(KeySeparator);
-        return keys.Select(key => key.Split(ValueSeparator));
+        return key.Split(KeySeparator)
+            .Select(key => key.Split(ValueSeparator))
+            .ToArray();
     }
 
-    public static string Join2(params object[] parts)
+    /// <summary>
+    /// Join the value parts of a key.
+    /// </summary>
+    public static string Join(params object[] parts)
         => String.Join(ValueSeparator, parts);
 
+    /// <summary>
+    /// Join one key with the parts of another.
+    /// </summary>
     public static string Join<T>(T key, params object[] parts) where T : struct
-        => $"{key}{KeySeparator}{Join2(parts)}";
+    {
+        Debug.Assert(typeof(T).Name.EndsWith("Key"));
+        return $"{key}{KeySeparator}{Join(parts)}";
+    }
 
-    public static bool HasTag2(string key, string tag)
+    /// <summary>
+    /// Does the key contain the tag followed by a ValueSeparator?
+    /// </summary>
+    public static bool HasTag(string key, string tag)
         => key.Contains($"{tag}{ValueSeparator}");
 }

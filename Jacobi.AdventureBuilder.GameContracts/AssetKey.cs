@@ -17,20 +17,16 @@ public readonly record struct AssetKey
 
     public static AssetKey Parse(string key)
     {
-        var parts = Key.Split(key);
-        Debug.Assert(parts.Length == 5);
-        Debug.Assert(parts[1] == WorldKey.Tag);
-        Debug.Assert(parts[3] == Tag);
-        return new AssetKey(
-            new WorldKey(parts[0], parts[2]),
-            Int64.Parse(parts[4])
-        );
+        var keyParts = Key.Split(key);
+        Debug.Assert(keyParts.Length == 2);
+        var worldKey = WorldKey.Construct(keyParts[0]);
+        return Construct(worldKey, keyParts[1]);
     }
 
     public static implicit operator string(AssetKey key)
         => key.ToString();
     public override string ToString()
-        => Key.Join(WorldKey, Tag, AssetId);
+        => Key.Join<WorldKey>(WorldKey, Tag, AssetId);
 
     public static bool IsValidKey(string key)
         => Key.HasTag(key, Tag);
@@ -41,5 +37,15 @@ public readonly record struct AssetKey
             return Option<AssetKey>.None;
 
         return Option<AssetKey>.Some(Parse(key));
+    }
+
+    private static AssetKey Construct(WorldKey worldKey, string[] parts)
+    {
+        Debug.Assert(parts.Length == 2);
+        Debug.Assert(parts[0] == Tag);
+        return new AssetKey(
+            worldKey,
+            Int64.Parse(parts[1])
+        );
     }
 }

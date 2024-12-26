@@ -17,23 +17,19 @@ public readonly record struct NonPlayerCharacterKey
 
     public static NonPlayerCharacterKey Parse(string key)
     {
-        var parts = Key.Split(key);
-        Debug.Assert(parts.Length == 5);
-        Debug.Assert(parts[1] == WorldKey.Tag);
-        Debug.Assert(parts[3] == Tag);
-        return new NonPlayerCharacterKey(
-            new WorldKey(parts[0], parts[2]),
-            Int64.Parse(parts[4])
-        );
+        var keyParts = Key.Split(key);
+        Debug.Assert(keyParts.Length == 2);
+        var worldKey = WorldKey.Construct(keyParts[0]);
+        return Construct(worldKey, keyParts[1]);
     }
 
     public static implicit operator string(NonPlayerCharacterKey key)
         => key.ToString();
     public override string ToString()
-        => Key.Join(WorldKey, Tag, NpcId);
+        => Key.Join<WorldKey>(WorldKey, Tag, NpcId);
 
     public static bool IsValidKey(string key)
-        => key.Contains($"{Key.Separator}{Tag}{Key.Separator}");
+        => Key.HasTag(key, Tag);
 
     public static Option<NonPlayerCharacterKey> TryParse(string key)
     {
@@ -41,5 +37,15 @@ public readonly record struct NonPlayerCharacterKey
             return Option<NonPlayerCharacterKey>.None;
 
         return Option<NonPlayerCharacterKey>.Some(Parse(key));
+    }
+
+    private static NonPlayerCharacterKey Construct(WorldKey worldKey, string[] parts)
+    {
+        Debug.Assert(parts.Length == 2);
+        Debug.Assert(parts[0] == Tag);
+        return new NonPlayerCharacterKey(
+            worldKey,
+            Int64.Parse(parts[1])
+        );
     }
 }

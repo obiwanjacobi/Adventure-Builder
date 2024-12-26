@@ -19,9 +19,8 @@ public readonly record struct WorldKey
     public static WorldKey Parse(string key)
     {
         var parts = Key.Split(key);
-        Debug.Assert(parts.Length == 3);
-        Debug.Assert(parts[1] == Tag);
-        return new WorldKey(parts[0], parts[2]);
+        Debug.Assert(parts.Length == 1);
+        return Construct(parts[0]);
     }
 
     public static implicit operator string(WorldKey key)
@@ -38,5 +37,12 @@ public readonly record struct WorldKey
             return Option<WorldKey>.None;
 
         return Option<WorldKey>.Some(Parse(key));
+    }
+
+    public static WorldKey Construct(string[] parts)
+    {
+        Debug.Assert(parts.Length == 3);
+        Debug.Assert(parts[0] == Tag);
+        return new WorldKey(parts[1], parts[2]);
     }
 }

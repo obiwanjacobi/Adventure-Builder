@@ -17,16 +17,18 @@ public readonly record struct PlayerKey
 
     public static PlayerKey Parse(string key)
     {
-        var parts = Key.Split(key);
+        var keyParts = Key.Split(key);
+        Debug.Assert(keyParts.Length == 1);
+        var parts = keyParts[0];
         Debug.Assert(parts.Length == 3);
-        Debug.Assert(parts[1] == Tag);
-        return new PlayerKey(Guid.Parse(parts[0]), parts[2]);
+        Debug.Assert(parts[0] == Tag);
+        return new PlayerKey(Guid.Parse(parts[1]), parts[2]);
     }
 
     public static implicit operator string(PlayerKey key)
         => key.ToString();
     public override string ToString()
-        => Key.Join(AccountId, Tag, Nickname);
+        => Key.Join(Tag, AccountId, Nickname);
 
     public static bool IsValidKey(string key)
         => Key.HasTag(key, Tag);
