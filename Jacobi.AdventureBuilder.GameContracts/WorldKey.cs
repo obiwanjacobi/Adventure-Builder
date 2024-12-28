@@ -3,18 +3,9 @@ using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameContracts;
 
-public readonly record struct WorldKey
+public readonly record struct WorldKey(string WorldId, string InstanceId)
 {
     public const string Tag = "w";
-
-    public WorldKey(string worldId, string instanceId)
-    {
-        WorldId = worldId;
-        InstanceId = instanceId;
-    }
-
-    public string WorldId { get; }
-    public string InstanceId { get; }
 
     public static WorldKey Parse(string key)
     {

@@ -9,5 +9,5 @@ public partial class CommandBar : ComponentBase
     public Func<string, Task>? ExecuteCommandAsync { get; set; }
 
     [Parameter]
-    public IReadOnlyList<GameCommandInfo> CommandInfos { get; set; } = [];
+    public IReadOnlyList<GameCommand> Commands { get; set; } = [];
 }

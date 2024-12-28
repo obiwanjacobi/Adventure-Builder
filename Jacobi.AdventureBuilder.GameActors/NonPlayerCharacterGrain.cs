@@ -16,13 +16,11 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
     private IDisposable? _navigationTimer;
     private readonly IGrainFactory _factory;
     private readonly IAdventureClient _client;
-    private readonly INotifyPassage _notifyPassage;
 
-    public NonPlayerCharacterGrain(IGrainFactory factory, IAdventureClient client, INotifyPassage notifyPassage)
+    public NonPlayerCharacterGrain(IGrainFactory factory, IAdventureClient client)
     {
         _factory = factory;
         _client = client;
-        _notifyPassage = notifyPassage;
     }
 
     public override Task<string> Name()
@@ -53,6 +51,12 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
         if (periodTimer is AdventurePropertyInfo navProp
             && Int32.TryParse(navProp.Value, out var val))
         {
+            if (_navigationTimer is not null)
+            {
+                _navigationTimer.Dispose();
+                _navigationTimer = null;
+            }
+
             var timeSpan = TimeSpan.FromSeconds(val);
             _navigationTimer = this.RegisterGrainTimer(NavigateRandom, timeSpan, timeSpan);
         }
@@ -60,18 +64,18 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
 
     private async Task NavigateRandom(CancellationToken ct)
     {
-        if (!State.Passage.TryGetValue(out var passage)) return;
+        if (State.Passage is null) return;
 
-        var commands = await passage.CommandInfos();
+        var commands = await State.Passage.Commands();
         var navCommands = commands.Where(cmd => cmd.Kind == GameCommands.NavigatePassage).ToArray();
         if (navCommands.Length == 0) return;
 
         var index = Random.Shared.Next(navCommands.Length);
-        var cmd = await passage.GetCommand(navCommands[index].Id);
+        var cmd = await State.Passage.GetCommand(navCommands[index].Id);
 
         var key = NonPlayerCharacterKey.Parse(this.GetPrimaryKeyString());
         var world = _factory.GetGrain<IWorldGrain>(key.WorldKey);
-        var cmdHandler = new GameCommandHandler(world, this, _notifyPassage);
+        var cmdHandler = new GameCommandHandler(world, this);
         var result = await cmdHandler.ExecuteAsync(cmd);
     }
 }

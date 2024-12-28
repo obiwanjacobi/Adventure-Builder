@@ -13,13 +13,13 @@ public partial class Home : ComponentBase
     private NotificationClient _notificationClient;
     private string? _name;
     private string? _description;
-    private IReadOnlyList<GameCommandInfo>? _commands;
+    private IReadOnlyList<GameCommand>? _commands;
     private IPlayerGrain? _player;
     private IWorldGrain? _world;
     private IPassageGrain? _passage;
     private string? _worldName;
     private string? _playerNickname;
-    private List<StoryLineItem> _storyItems = [];
+    private IReadOnlyList<PlayerLogLine> _storyItems = [];
 
     public Home(AuthenticationStateProvider authenticationStateProvider, AdventureGameClient gameClient, NavigationManager navigationManager)
     {
@@ -76,30 +76,13 @@ public partial class Home : ComponentBase
 
     private async Task SetPassage(IPassageGrain passage)
     {
+        var log = await _player!.Log();
+
         _passage = passage;
         _name = await _passage.Name();
         _description = await _passage.Description();
-        _commands = await _passage.CommandInfos();
-        _storyItems = await GetStoryItems(passage);
-    }
-
-    private async Task<List<StoryLineItem>> GetStoryItems(IPassageGrain passage)
-    {
-        var items = new List<StoryLineItem>
-        {
-            new(_name!, _description!)
-        };
-
-        foreach (var occupant in await passage.Occupants())
-        {
-            var amInPassage = _gameClient.GetAmInPassage(occupant);
-            items.Add(new StoryLineItem(
-                await amInPassage.Name(),
-                await amInPassage.Description()
-            ));
-        }
-
-        return items;
+        _commands = await _passage.Commands();
+        _storyItems = await log.Lines();
     }
 }
 

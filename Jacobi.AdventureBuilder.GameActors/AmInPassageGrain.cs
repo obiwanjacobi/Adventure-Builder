@@ -1,11 +1,10 @@
 ﻿using Jacobi.AdventureBuilder.GameContracts;
-using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
 public abstract class AmInPassageGrainState
 {
-    public Option<IPassageGrain> Passage { get; set; } = Option<IPassageGrain>.None;
+    public IPassageGrain? Passage { get; set; }
 }
 
 public abstract class AmInPassageGrain<T> : Grain<T>, IAmInPassage
@@ -14,21 +13,29 @@ public abstract class AmInPassageGrain<T> : Grain<T>, IAmInPassage
     public abstract Task<string> Name();
     public abstract Task<string> Description();
 
-    public async Task EnterPassage(IPassageGrain passage, Option<INotifyPassage> notifyPassage)
+    public async Task EnterPassage(IPassageGrain passage)
     {
         var key = this.GetPrimaryKeyString();
-        State.Passage.IfSome(currentPassage =>
+        if (State.Passage is not null)
         {
-            currentPassage.Exit(key);
-            notifyPassage.IfSome(notify =>
-                    notify.NotifyPassageExit(currentPassage.GetPrimaryKeyString(), key));
-        });
+            await State.Passage.Exit(key);
+            await OnPassageExit(State.Passage);
+        }
 
+        State.Passage = passage;
         await passage.Enter(key);
-        State.Passage = Option<IPassageGrain>.Some(passage);
-        await WriteStateAsync();
+        await OnPassageEnter(passage);
 
-        notifyPassage.IfSome(notify =>
-            notify.NotifyPassageEnter(passage.GetPrimaryKeyString(), key));
+        await WriteStateAsync();
+    }
+
+    protected virtual Task OnPassageEnter(IPassageGrain passage)
+    {
+        return Task.CompletedTask;
+    }
+
+    protected virtual Task OnPassageExit(IPassageGrain passage)
+    {
+        return Task.CompletedTask;
     }
 }

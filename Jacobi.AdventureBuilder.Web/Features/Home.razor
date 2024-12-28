@@ -18,7 +18,7 @@
 
         @if (@_commands is not null)
         {
-            <CommandBar CommandInfos="@_commands" ExecuteCommandAsync="@ExecuteCommand" />
+            <CommandBar Commands="@_commands" ExecuteCommandAsync="@ExecuteCommand" />
         }
 
         <StoryLine Items="_storyItems"></StoryLine>

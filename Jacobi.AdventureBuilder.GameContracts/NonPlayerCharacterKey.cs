@@ -3,17 +3,9 @@ using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameContracts;
 
-public readonly record struct NonPlayerCharacterKey
+public readonly record struct NonPlayerCharacterKey(WorldKey WorldKey, long NpcId)
 {
     public const string Tag = "npc";
-
-    public NonPlayerCharacterKey(WorldKey worldKey, long npcId)
-    {
-        WorldKey = worldKey;
-        NpcId = npcId;
-    }
-    public WorldKey WorldKey { get; }
-    public long NpcId { get; }
 
     public static NonPlayerCharacterKey Parse(string key)
     {

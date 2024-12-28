@@ -1,5 +1,4 @@
 ﻿using Jacobi.AdventureBuilder.GameContracts;
-using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -7,13 +6,11 @@ public sealed class GameCommandHandler
 {
     private readonly IWorldGrain _world;
     private readonly IAmInPassage _issuer;
-    private readonly Option<INotifyPassage> _notifyPassage;
 
-    public GameCommandHandler(IWorldGrain world, IAmInPassage issuer, INotifyPassage notifyPassage)
+    public GameCommandHandler(IWorldGrain world, IAmInPassage issuer)
     {
         _world = world;
         _issuer = issuer;
-        _notifyPassage = Option<INotifyPassage>.Some(notifyPassage);
     }
 
     public Task<GameCommandResult> ExecuteAsync(GameCommand command)
@@ -29,7 +26,7 @@ public sealed class GameCommandHandler
     {
         var cmdAction = new CommandAction(command.Action);
         var passageGrain = await _world.GetPassage(cmdAction.PassageId);
-        await _issuer.EnterPassage(passageGrain, _notifyPassage);
+        await _issuer.EnterPassage(passageGrain);
         return new GameCommandResult(passageGrain);
     }
 }

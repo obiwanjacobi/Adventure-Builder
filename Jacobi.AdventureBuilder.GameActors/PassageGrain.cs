@@ -16,9 +16,13 @@ public sealed class PassageGrainState
 public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 {
     private readonly IAdventureClient _client;
+    private readonly INotifyPassage _notify;
 
-    public PassageGrain(IAdventureClient client)
-        => _client = client;
+    public PassageGrain(IAdventureClient client, INotifyPassage notify)
+    {
+        _client = client;
+        _notify = notify;
+    }
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
@@ -46,13 +50,13 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
     public Task<string> Description()
         => Task.FromResult(State.PassageInfo!.Description);
 
-    public Task<IReadOnlyList<GameCommandInfo>> CommandInfos()
+    public Task<IReadOnlyList<GameCommand>> Commands()
     {
         var commands = State.PassageInfo!.Commands
-                .Map(cmd => new GameCommandInfo(cmd.Id, cmd.Kind, cmd.Name, cmd.Description))
+                .Map(cmd => new GameCommand(cmd.Id, cmd.Kind, cmd.Name, cmd.Description, cmd.Action))
                 .ToList();
 
-        return Task.FromResult((IReadOnlyList<GameCommandInfo>)commands);
+        return Task.FromResult((IReadOnlyList<GameCommand>)commands);
     }
 
     public Task<GameCommand> GetCommand(string commandId)
@@ -60,7 +64,11 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
         var commandInfo = State.PassageInfo!.Commands
             .Find(cmd => cmd.Id == commandId)
             .Single();
-        var command = new GameCommand(commandId, commandInfo.Kind, commandInfo.Action);
+
+        var command = new GameCommand(
+            commandId, commandInfo.Kind, commandInfo.Name,
+            commandInfo.Description, commandInfo.Action);
+
         return Task.FromResult(command);
     }
 
@@ -71,12 +79,14 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
         State.OccupantKeys.Add(amInPassageKey);
         await WriteStateAsync();
+        await _notify.NotifyPassageEnter(this.GetPrimaryKeyString(), amInPassageKey);
     }
 
-    public Task Exit(string amInPassageKey)
+    public async Task Exit(string amInPassageKey)
     {
         State.OccupantKeys.Remove(amInPassageKey);
-        return Task.CompletedTask;
+        await WriteStateAsync();
+        await _notify.NotifyPassageExit(this.GetPrimaryKeyString(), amInPassageKey);
     }
 
     public Task<IReadOnlyList<string>> Occupants()

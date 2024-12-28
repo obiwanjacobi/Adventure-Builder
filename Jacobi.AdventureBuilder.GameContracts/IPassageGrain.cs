@@ -8,8 +8,8 @@ public interface IPassageGrain : IGrainWithStringKey
     [Alias("Description")]
     Task<string> Description();
 
-    [Alias("CommandInfos")]
-    Task<IReadOnlyList<GameCommandInfo>> CommandInfos();
+    [Alias("Commands")]
+    Task<IReadOnlyList<GameCommand>> Commands();
     [Alias("GetCommand")]
     Task<GameCommand> GetCommand(string commandId);
 

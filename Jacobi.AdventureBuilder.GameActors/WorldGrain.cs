@@ -45,7 +45,7 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
                 var npcKey = new NonPlayerCharacterKey(worldKey, npc.Id);
                 var npcGrain = _factory.GetGrain<INonPlayerCharacterGrain>(npcKey);
 
-                await npcGrain.EnterPassage(passageGrain, Option<INotifyPassage>.None);
+                await npcGrain.EnterPassage(passageGrain);
             }
             foreach (var asset in world.Assets)
             {
@@ -56,7 +56,7 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
                 var assetKey = new AssetKey(worldKey, asset.Id);
                 var assetGrain = _factory.GetGrain<IAssetGrain>(assetKey);
 
-                await assetGrain.EnterPassage(passageGrain, Option<INotifyPassage>.None);
+                await assetGrain.EnterPassage(passageGrain);
             }
 
             await WriteStateAsync();
@@ -69,8 +69,11 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
 
     public async Task<IPassageGrain> Start(IPlayerGrain player)
     {
+        var log = await player.Log();
+        await log.Clear();
+
         var startPassage = await GetPassage(State.PassageIds[0]);
-        await player.EnterPassage(startPassage, Option<INotifyPassage>.None);
+        await player.EnterPassage(startPassage);
         return startPassage;
     }
 

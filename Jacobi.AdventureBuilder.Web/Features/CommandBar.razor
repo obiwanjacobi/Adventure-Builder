@@ -1,12 +1,14 @@
 ﻿<FluentOverflow>
-    @foreach (var cmd in CommandInfos)
+    @foreach (var cmd in Commands)
     {
         <FluentOverflowItem Fixed="OverflowItemFixed.Ellipsis">
             <FluentBadge>
-                <FluentButton OnClick="@(() => ExecuteCommandAsync(cmd.Id))">
-                    @cmd.Name
-                </FluentButton>
-                @cmd.Description
+                <FluentStack Orientation="Orientation.Vertical">
+                    <FluentButton OnClick="@(() => ExecuteCommandAsync(cmd.Id))">
+                        @cmd.Name
+                    </FluentButton>
+                    @cmd.Description
+                </FluentStack>
             </FluentBadge>
         </FluentOverflowItem>
     }

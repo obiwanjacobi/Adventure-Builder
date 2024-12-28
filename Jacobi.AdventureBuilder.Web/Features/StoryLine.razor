@@ -2,8 +2,21 @@
     <FluentAccordion>
         @foreach (var item in Items)
         {
-            <FluentAccordionItem Heading="@item.Name">
+            <FluentAccordionItem Heading="@item.Title" Expanded>
                 @item.Description
+
+                @if (item.SubLines is not null)
+                {
+                    @foreach (var subItem in item.SubLines)
+                    {
+                        <FluentDivider />
+                        <FluentStack Orientation="Orientation.Vertical">
+                            <div style="font-weight:bold">@subItem.Title</div>
+                            <div>@subItem.Description</div>
+                        </FluentStack>
+
+                    }
+                }
             </FluentAccordionItem>
         }
     </FluentAccordion>

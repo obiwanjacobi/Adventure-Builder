@@ -3,17 +3,9 @@ using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameContracts;
 
-public readonly record struct PassageKey
+public readonly record struct PassageKey(WorldKey WorldKey, long PassageId)
 {
-    public const string Tag = "psg";
-
-    public PassageKey(WorldKey worldKey, long passageId)
-    {
-        WorldKey = worldKey;
-        PassageId = passageId;
-    }
-    public WorldKey WorldKey { get; }
-    public long PassageId { get; }
+    public const string Tag = "ps";
 
     public static PassageKey Parse(string key)
     {

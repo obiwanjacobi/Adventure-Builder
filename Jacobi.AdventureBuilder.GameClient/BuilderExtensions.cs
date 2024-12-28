@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jacobi.AdventureBuilder.GameClient;
 
-public static class Extensions
+public static class BuilderExtensions
 {
     public static IHostApplicationBuilder AddGameClient(this IHostApplicationBuilder builder)
     {
