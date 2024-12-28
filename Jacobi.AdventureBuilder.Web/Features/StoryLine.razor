@@ -2,22 +2,41 @@
     <FluentAccordion>
         @foreach (var item in Items)
         {
-            <FluentAccordionItem Heading="@item.Title" Expanded>
-                @item.Description
+            @if (item.Kind == GameContracts.PlayerLogLineKind.Passage)
+            {
+                <FluentAccordionItem Heading="@item.Title" Expanded="@first">
+                    <FluentIcon Value="@GetIcon(item.Kind)" Color="@Color.Neutral" Slot="start" />
+                    @item.Description
 
-                @if (item.SubLines is not null)
-                {
-                    @foreach (var subItem in item.SubLines)
+                    @if (item.SubLines is not null)
                     {
-                        <FluentDivider />
-                        <FluentStack Orientation="Orientation.Vertical">
-                            <div style="font-weight:bold">@subItem.Title</div>
-                            <div>@subItem.Description</div>
-                        </FluentStack>
-
+                        @foreach (var subItem in item.SubLines)
+                        {
+                            <FluentDivider />
+                            <FluentStack Orientation="Orientation.Vertical" Style="margin-left:40">
+                                <div style="font-weight:bold">
+                                    <FluentIcon Value="@GetIcon(subItem.Kind)" Color="@Color.Neutral" />
+                                    @subItem.Title
+                                </div>
+                                <div>@subItem.Description</div>
+                            </FluentStack>
+                        }
                     }
-                }
-            </FluentAccordionItem>
+                </FluentAccordionItem>
+            }
+            else
+            {
+                <FluentAccordionItem Heading="@item.Title" Expanded="@first">
+                    <FluentIcon Value="@GetIcon(item.Kind)" Color="@Color.Neutral" Slot="start" />
+                    @item.Description
+                </FluentAccordionItem>
+            }
+
+            first = false;
         }
     </FluentAccordion>
 </FluentCard>
+
+@code {
+  private bool first = true;
+}
