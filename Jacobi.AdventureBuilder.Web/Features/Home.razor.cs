@@ -19,7 +19,7 @@ public partial class Home : ComponentBase
     private IPassageGrain? _passage;
     private string? _worldName;
     private string? _playerNickname;
-    private IReadOnlyList<PlayerLogLine> _storyItems = [];
+    private IReadOnlyList<PlayerLogLine> _logLines = [];
 
     public Home(AuthenticationStateProvider authenticationStateProvider, AdventureGameClient gameClient, NavigationManager navigationManager)
     {
@@ -82,7 +82,7 @@ public partial class Home : ComponentBase
         _name = await _passage.Name();
         _description = await _passage.Description();
         _commands = await _passage.Commands();
-        _storyItems = await log.Lines();
+        _logLines = await log.Lines();
     }
 }
 

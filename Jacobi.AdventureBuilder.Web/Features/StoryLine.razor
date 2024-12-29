@@ -4,18 +4,36 @@
         {
             @if (item.Kind == GameContracts.PlayerLogLineKind.Passage)
             {
-                <FluentAccordionItem Heading="@item.Title" Expanded="@first">
-                    <FluentIcon Value="@GetIcon(item.Kind)" Color="@Color.Neutral" Slot="start" />
+                <FluentAccordionItem Expanded="@item.Expanded">
+                    <span slot="heading">
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Stretch">
+                            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Left">
+                                <FluentIcon Value="@GetIcon(item.Kind)" />
+                                @item.Title
+                            </FluentStack>
+                            <FluentSpacer />
+                            @if (item.SubItems is not null)
+                            {
+                                <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Right">
+                                    @foreach (var subItem in item.SubItems)
+                                    {
+                                        <FluentIcon Value="@GetIcon(subItem.Kind)" />
+                                    }
+                                </FluentStack>
+                            }
+                        </FluentStack>
+                    </span>
+
                     @item.Description
 
-                    @if (item.SubLines is not null)
+                    @if (item.SubItems is not null)
                     {
-                        @foreach (var subItem in item.SubLines)
+                        @foreach (var subItem in item.SubItems)
                         {
                             <FluentDivider />
-                            <FluentStack Orientation="Orientation.Vertical" Style="margin-left:40">
+                            <FluentStack Orientation="Orientation.Vertical">
                                 <div style="font-weight:bold">
-                                    <FluentIcon Value="@GetIcon(subItem.Kind)" Color="@Color.Neutral" />
+                                    <FluentIcon Value="@GetIcon(subItem.Kind)" />
                                     @subItem.Title
                                 </div>
                                 <div>@subItem.Description</div>
@@ -26,17 +44,11 @@
             }
             else
             {
-                <FluentAccordionItem Heading="@item.Title" Expanded="@first">
-                    <FluentIcon Value="@GetIcon(item.Kind)" Color="@Color.Neutral" Slot="start" />
+                <FluentAccordionItem Heading="@item.Title" Expanded="@item.Expanded">
+                    <FluentIcon Value="@GetIcon(item.Kind)" Slot="start" />
                     @item.Description
                 </FluentAccordionItem>
             }
-
-            first = false;
         }
     </FluentAccordion>
 </FluentCard>
-
-@code {
-  private bool first = true;
-}
