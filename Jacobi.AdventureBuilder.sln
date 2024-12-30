@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jacobi.AdventureBuilder.Adv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jacobi.AdventureBuilder.Twine", "Jacobi.AdventureBuilder.Twine\Jacobi.AdventureBuilder.Twine.csproj", "{F90D749E-48EE-465C-B61D-371442C5D7AE}"
 EndProject
+Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "Jacobi.AdventureBuilder.DependencyValidation", "Jacobi.AdventureBuilder.DependencyValidation\Jacobi.AdventureBuilder.DependencyValidation.modelproj", "{DDBFC9BD-9F75-401B-BE37-762386181484}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{F90D749E-48EE-465C-B61D-371442C5D7AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F90D749E-48EE-465C-B61D-371442C5D7AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F90D749E-48EE-465C-B61D-371442C5D7AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDBFC9BD-9F75-401B-BE37-762386181484}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDBFC9BD-9F75-401B-BE37-762386181484}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDBFC9BD-9F75-401B-BE37-762386181484}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDBFC9BD-9F75-401B-BE37-762386181484}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

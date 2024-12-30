@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AdditionalFiles Include="..\Jacobi.AdventureBuilder.DependencyValidation\DependencyValidation.layerdiagram" Link="DependencyValidation.layerdiagram">
+      <Visible>False</Visible>
+    </AdditionalFiles>
+    <None Include="..\Jacobi.AdventureBuilder.DependencyValidation\DependencyValidation.layerdiagram.layout" Link="DependencyValidation.layerdiagram.layout" />
+    <None Include="..\Jacobi.AdventureBuilder.DependencyValidation\DependencyValidation.layerdiagram.suppressions" Link="DependencyValidation.layerdiagram.suppressions" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Aspire.Azure.Data.Tables" Version="9.0.0" />
     <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="9.0.0" />
     <PackageReference Include="LanguageExt.Core" Version="4.4.9" />

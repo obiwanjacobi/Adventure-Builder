@@ -45,6 +45,8 @@ public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrain
         await WriteStateAsync();
     }
 
+    // playerKey is used to filter out the current player as occupant
+    // this also prevents reentrant grain issues
     public async Task AddLine(IPassageGrain passage, string playerKey)
     {
         var subLines = new List<PlayerLogLine>();
@@ -61,6 +63,21 @@ public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrain
             passage.GetPrimaryKeyString(), subLines);
 
         State.LogLines.Insert(0, line);
+        await WriteStateAsync();
+    }
+
+    public async Task UpdateLine(IPassageGrain passage, string playerKey)
+    {
+        // passage must be top line
+        var topLine = State.LogLines[0];
+        if (topLine.Kind != PlayerLogLineKind.Passage ||
+            topLine.Title != await passage.Name())
+        {
+            return;
+        }
+
+        State.LogLines.RemoveAt(0);
+        await AddLine(passage, playerKey);
         await WriteStateAsync();
     }
 

@@ -48,15 +48,26 @@ public partial class Home : ComponentBase
         }
     }
 
-    private Task OnPassageExit(string characterId)
+    private async Task OnPassageExit(string characterId)
     {
-        return InvokeAsync(StateHasChanged);
+        if (_player is null || _passage is null) return;
+        var playerKey = _player.GetPrimaryKeyString();
+        if (playerKey == characterId) return;
+
+        var log = await _player.Log();
+        await log.UpdateLine(_passage, playerKey);
+        await InvokeAsync(StateHasChanged);
     }
 
-    private Task OnPassageEnter(string characterId)
+    private async Task OnPassageEnter(string characterId)
     {
-        _description += " - " + characterId;
-        return InvokeAsync(StateHasChanged);
+        if (_player is null || _passage is null) return;
+        var playerKey = _player.GetPrimaryKeyString();
+        if (playerKey == characterId) return;
+
+        var log = await _player.Log();
+        await log.UpdateLine(_passage, playerKey);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ExecuteCommand(string commandId)

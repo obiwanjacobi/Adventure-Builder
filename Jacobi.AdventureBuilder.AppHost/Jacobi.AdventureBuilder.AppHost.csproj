@@ -8,6 +8,13 @@
     <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>538328f8-0697-4939-bffa-1aad650ba079</UserSecretsId>
   </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\Jacobi.AdventureBuilder.DependencyValidation\DependencyValidation.layerdiagram" Link="DependencyValidation.layerdiagram">
+      <Visible>False</Visible>
+    </AdditionalFiles>
+    <None Include="..\Jacobi.AdventureBuilder.DependencyValidation\DependencyValidation.layerdiagram.layout" Link="DependencyValidation.layerdiagram.layout" />
+    <None Include="..\Jacobi.AdventureBuilder.DependencyValidation\DependencyValidation.layerdiagram.suppressions" Link="DependencyValidation.layerdiagram.suppressions" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Jacobi.AdventureBuilder.ApiService\Jacobi.AdventureBuilder.ApiService.csproj" />

@@ -17,6 +17,7 @@ public interface IPlayerLogGrain : IGrainWithStringKey
 
     Task AddLine(GameCommand command);
     Task AddLine(IPassageGrain passage, string playerKey);
+    Task UpdateLine(IPassageGrain passage, string playerKey);
 }
 
 [GenerateSerializer, Immutable]
