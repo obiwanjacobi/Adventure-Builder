@@ -11,8 +11,6 @@ public partial class Home : ComponentBase
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly AdventureGameClient _gameClient;
     private NotificationClient _notificationClient;
-    private string? _name;
-    private string? _description;
     private IReadOnlyList<GameCommand>? _commands;
     private IPlayerGrain? _player;
     private IWorldGrain? _world;
@@ -56,6 +54,7 @@ public partial class Home : ComponentBase
 
         var log = await _player.Log();
         await log.UpdateLine(_passage, playerKey);
+        _logLines = await log.Lines();
         await InvokeAsync(StateHasChanged);
     }
 
@@ -67,6 +66,7 @@ public partial class Home : ComponentBase
 
         var log = await _player.Log();
         await log.UpdateLine(_passage, playerKey);
+        _logLines = await log.Lines();
         await InvokeAsync(StateHasChanged);
     }
 
@@ -74,12 +74,7 @@ public partial class Home : ComponentBase
     {
         var command = await _passage!.GetCommand(commandId);
         var result = await _player!.Play(_world!, command);
-        if (result.Passage is null)
-        {
-            _name = "Error";
-            _description = "There is a configuration error. This navigation option does not result in a Passage.";
-            return;
-        }
+        if (result.Passage is null) return;
 
         await SetPassage(result.Passage);
         StateHasChanged();
@@ -90,10 +85,7 @@ public partial class Home : ComponentBase
         var log = await _player!.Log();
 
         _passage = passage;
-        _name = await _passage.Name();
-        _description = await _passage.Description();
         _commands = await _passage.Commands();
         _logLines = await log.Lines();
     }
 }
-
