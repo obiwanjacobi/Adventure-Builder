@@ -30,14 +30,16 @@
                     {
                         @foreach (var subItem in item.SubItems)
                         {
-                            <FluentDivider />
-                            <FluentStack Orientation="Orientation.Vertical">
-                                <div style="font-weight:bold">
-                                    <FluentIcon Value="@GetIcon(subItem.Kind)" />
-                                    @subItem.Title
-                                </div>
-                                <div>@subItem.Description</div>
-                            </FluentStack>
+                            <FluentDivider Style="margin:12px" />
+                            <div style="margin-left:24px">
+                                <FluentStack Orientation="Orientation.Vertical">
+                                    <div style="font-weight:bold">
+                                        <FluentIcon Value="@GetIcon(subItem.Kind)" />
+                                        @subItem.Title
+                                    </div>
+                                    <div>@subItem.Description</div>
+                                </FluentStack>
+                            </div>
                         }
                     }
                 </FluentAccordionItem>
