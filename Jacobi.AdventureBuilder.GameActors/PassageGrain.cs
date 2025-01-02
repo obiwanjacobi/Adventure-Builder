@@ -2,7 +2,6 @@
 using Jacobi.AdventureBuilder.AdventureModel;
 using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameContracts;
-using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -11,18 +10,22 @@ public sealed class PassageGrainState
     public bool IsLoaded { get; set; }
     public AdventurePassageInfo? PassageInfo { get; set; }
     public List<string> OccupantKeys { get; } = [];
-    public List<GameCommand> Commands { get; set; } = [];
 }
 
 public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 {
+    private readonly IGrainFactory _factory;
     private readonly IAdventureClient _client;
     private readonly INotifyPassage _notify;
+    private readonly GameCommandExecuter _executer;
 
-    public PassageGrain(IAdventureClient client, INotifyPassage notify)
+    public PassageGrain(IGrainFactory factory, IAdventureClient client, INotifyPassage notify,
+        GameCommandExecuter executer)
     {
+        _factory = factory;
         _client = client;
         _notify = notify;
+        _executer = executer;
     }
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
@@ -32,13 +35,7 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
             State.IsLoaded = true;
 
             var key = PassageKey.Parse(this.GetPrimaryKeyString());
-            State.PassageInfo = await _client.GetAdventurePassageAsync(key.WorldKey.WorldId, key.PassageId);
-
-            State.Commands = State.PassageInfo!.LinkedPassages
-                .Map(cmd => new GameCommand(cmd.PassageId.ToString(), GameCommands.NavigatePassage,
-                    cmd.Name, cmd.Description,
-                    new GameCommandAction(GameCommands.NavigatePassage, cmd.PassageId).ToString()))
-                .ToList();
+            State.PassageInfo = await _client.GetAdventurePassageAsync(key.WorldKey.WorldId, key.PassageId, cancellationToken);
 
             await WriteStateAsync();
         }
@@ -57,17 +54,18 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
     public Task<string> Description()
         => Task.FromResult(State.PassageInfo!.Description);
 
-    public Task<IReadOnlyList<GameCommand>> Commands()
+    public async Task<IReadOnlyList<GameCommand>> Commands()
     {
-        return Task.FromResult((IReadOnlyList<GameCommand>)State.Commands);
+        var key = PassageKey.Parse(this.GetPrimaryKeyString());
+        var world = _factory.GetGrain<IWorldGrain>(key.WorldKey);
+        var commands = await _executer.ProviderCommands(world, this);
+        return commands;
     }
 
-    public Task<GameCommand> GetCommand(string commandId)
+    public Task<IReadOnlyList<PassageLinkInfo>> Links()
     {
-        var command = State.Commands.Find(cmd => cmd.Id == commandId)
-            ?? throw new ArgumentException($"This passage '{this.GetPrimaryKeyString()}' does not have a command '{commandId}'.", nameof(commandId));
-
-        return Task.FromResult(command);
+        return Task.FromResult((IReadOnlyList<PassageLinkInfo>)State.PassageInfo!.LinkedPassages
+            .Map(lnk => new PassageLinkInfo(lnk.PassageId, lnk.Name, lnk.Description)).ToList());
     }
 
     public async Task Enter(string amInPassageKey)

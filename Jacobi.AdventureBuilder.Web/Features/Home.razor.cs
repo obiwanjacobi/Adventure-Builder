@@ -72,12 +72,17 @@ public partial class Home : ComponentBase
 
     private async Task ExecuteCommand(string commandId)
     {
-        var command = await _passage!.GetCommand(commandId);
-        var result = await _player!.Play(_world!, _passage, command);
-        if (result.Passage is null) return;
+        var commands = await _passage!.Commands();
+        // command may have disappeared
+        var command = commands.SingleOrDefault(cmd => cmd.Id == commandId);
+        if (command is not null)
+        {
+            var result = await _player!.Play(_world!, _passage, command);
+            if (result.Passage is null) return;
 
-        await SetPassage(result.Passage);
-        StateHasChanged();
+            await SetPassage(result.Passage);
+            StateHasChanged();
+        }
     }
 
     private async Task SetPassage(IPassageGrain passage)

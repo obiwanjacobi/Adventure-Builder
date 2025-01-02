@@ -4,17 +4,16 @@ namespace Jacobi.AdventureBuilder.GameActors;
 
 public interface IGameCommandHandler
 {
+    // handler
     bool CanHandleCommand(GameCommand command);
     Task<GameCommandResult> HandleCommand(GameCommandContext context, GameCommand command);
-}
 
-public interface IGameCommandProvider
-{
-    Task<IReadOnlyList<GameCommandResult>> ProvideCommands();
+    // provder
+    Task<IReadOnlyList<GameCommand>> ProvideCommands(GameCommandContext context);
 }
 
 public sealed record class GameCommandContext(
-    IAmInPassage Issuer, IPassageGrain Passage, IWorldGrain World);
+    IWorldGrain World, IPassageGrain Passage, IAmInPassage? Issuer = null);
 
 public sealed class GameCommandExecuter
 {
@@ -27,7 +26,7 @@ public sealed class GameCommandExecuter
 
     public Task<GameCommandResult> ExecuteAsync(IWorldGrain world, IAmInPassage issuer, IPassageGrain passage, GameCommand command)
     {
-        var context = new GameCommandContext(issuer, passage, world);
+        var context = new GameCommandContext(world, passage, issuer);
         foreach (var handler in _handlers)
         {
             if (handler.CanHandleCommand(command))
@@ -36,11 +35,18 @@ public sealed class GameCommandExecuter
 
         return Task.FromResult(new GameCommandResult());
     }
-}
 
-public static class GameCommands
-{
-    public const string NavigatePassage = "nav-passage";
+    public async Task<IReadOnlyList<GameCommand>> ProviderCommands(IWorldGrain world, IPassageGrain passage)
+    {
+        var commands = new List<GameCommand>();
+        var context = new GameCommandContext(world, passage);
+        foreach (var handler in _handlers)
+        {
+            commands.AddRange(await handler.ProvideCommands(context));
+        }
+
+        return commands;
+    }
 }
 
 public readonly record struct GameCommandAction
