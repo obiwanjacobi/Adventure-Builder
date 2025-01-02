@@ -4,7 +4,7 @@
         <FluentOverflowItem Fixed="OverflowItemFixed.Ellipsis">
             <FluentBadge Style="height:100%">
                 <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" Style="max-width:180px;height:100%">
-                    <FluentButton OnClick="@(() => ExecuteCommandAsync(cmd.Id))" IconStart="@(new Icons.Regular.Size20.ArrowCurveUpRight())">
+                    <FluentButton OnClick="@(() => ExecuteCommandAsync(cmd.Action))" IconStart="@(new Icons.Regular.Size20.ArrowCurveUpRight())">
                         @cmd.Name
                     </FluentButton>
                     <span style="width: 100%;white-space:normal;word-wrap:break-word">@cmd.Description</span>

@@ -70,11 +70,11 @@ public partial class Home : ComponentBase
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task ExecuteCommand(string commandId)
+    private async Task ExecuteCommand(string commandAction)
     {
         var commands = await _passage!.Commands();
         // command may have disappeared
-        var command = commands.SingleOrDefault(cmd => cmd.Id == commandId);
+        var command = commands.SingleOrDefault(cmd => cmd.Action == commandAction);
         if (command is not null)
         {
             var result = await _player!.Play(_world!, _passage, command);

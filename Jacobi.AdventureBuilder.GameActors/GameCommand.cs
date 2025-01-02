@@ -12,8 +12,39 @@ public interface IGameCommandHandler
     Task<IReadOnlyList<GameCommand>> ProvideCommands(GameCommandContext context);
 }
 
-public sealed record class GameCommandContext(
-    IWorldGrain World, IPassageGrain Passage, IAmInPassage? Issuer = null);
+public sealed record class GameCommandContext
+{
+    public GameCommandContext(IWorldGrain world, IPassageGrain passage)
+    {
+        World = world;
+        Passage = passage;
+    }
+
+    public GameCommandContext(IWorldGrain world, IPassageGrain passage, IPlayerGrain player)
+        : this(world, passage)
+    {
+        Player = player;
+        Issuer = player;
+        IssuerKey = player.GetPrimaryKeyString();
+    }
+
+    public GameCommandContext(IWorldGrain world, IPassageGrain passage, INonPlayerCharacterGrain npc)
+        : this(world, passage)
+    {
+        Npc = npc;
+        Issuer = npc;
+        IssuerKey = npc.GetPrimaryKeyString();
+    }
+
+    public IWorldGrain World { get; }
+    public IPassageGrain Passage { get; }
+
+    public IPlayerGrain? Player { get; }
+    public INonPlayerCharacterGrain? Npc { get; }
+
+    public IAmInPassage? Issuer { get; }
+    public string? IssuerKey { get; }
+}
 
 public sealed class GameCommandExecuter
 {
@@ -24,9 +55,20 @@ public sealed class GameCommandExecuter
         _handlers = handlers.ToList();
     }
 
-    public Task<GameCommandResult> ExecuteAsync(IWorldGrain world, IAmInPassage issuer, IPassageGrain passage, GameCommand command)
+    public Task<GameCommandResult> ExecuteAsync(IWorldGrain world, IPlayerGrain issuer, IPassageGrain passage, GameCommand command)
     {
         var context = new GameCommandContext(world, passage, issuer);
+        return ExecuteAsync(context, command);
+    }
+
+    public Task<GameCommandResult> ExecuteAsync(IWorldGrain world, INonPlayerCharacterGrain issuer, IPassageGrain passage, GameCommand command)
+    {
+        var context = new GameCommandContext(world, passage, issuer);
+        return ExecuteAsync(context, command);
+    }
+
+    private Task<GameCommandResult> ExecuteAsync(GameCommandContext context, GameCommand command)
+    {
         foreach (var handler in _handlers)
         {
             if (handler.CanHandleCommand(command))
@@ -54,30 +96,20 @@ public readonly record struct GameCommandAction
     public static GameCommandAction Parse(string actionMoniker)
     {
         var parts = actionMoniker.Split(':');
-        return new GameCommandAction(ToKind(parts[0]), Int64.Parse(parts[^1]));
+        return new GameCommandAction(parts[0], Int64.Parse(parts[^1]));
     }
 
-    public GameCommandAction(string kind, long passageId)
+    public GameCommandAction(string kind, long id)
     {
         Kind = kind;
-        PassageId = passageId;
+        Id = id;
     }
 
     public string Kind { get; }
-    public long PassageId { get; }
+    public long Id { get; }
 
     public override string ToString()
     {
-        return $"{FromKind(Kind)}:{PassageId}";
-    }
-
-    private static string FromKind(string commandKind)
-    {
-        return commandKind;
-    }
-
-    private static string ToKind(string actionTag)
-    {
-        return actionTag;
+        return $"{Kind}:{Id}";
     }
 }

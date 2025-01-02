@@ -8,6 +8,7 @@ public static class Extensions
     {
         // command handlers
         services.AddScoped<IGameCommandHandler, NavigationCommandHandler>();
+        services.AddScoped<IGameCommandHandler, InventoryCommandHandler>();
         // depends on command handlers
         services.AddScoped<GameCommandExecuter>();
 

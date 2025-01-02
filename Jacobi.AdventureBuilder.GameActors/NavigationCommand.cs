@@ -18,7 +18,7 @@ internal sealed class NavigationCommandHandler : IGameCommandHandler
             $"The '{command.Action}' command requires the '{nameof(GameCommandContext.Issuer)}'.");
 
         var cmdAction = GameCommandAction.Parse(command.Action);
-        var passageGrain = await context.World.GetPassage(cmdAction.PassageId);
+        var passageGrain = await context.World.GetPassage(cmdAction.Id);
         await context.Issuer.EnterPassage(passageGrain);
         return new GameCommandResult(passageGrain);
     }
@@ -29,7 +29,6 @@ internal sealed class NavigationCommandHandler : IGameCommandHandler
 
         var commands = links.Map(lnk =>
             new GameCommand(
-                lnk.PassageId.ToString(),
                 NavigatePassage,
                 lnk.Name, lnk.Description,
                 new GameCommandAction(NavigatePassage, lnk.PassageId).ToString()
