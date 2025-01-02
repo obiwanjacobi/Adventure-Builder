@@ -14,34 +14,9 @@ public static class WithExtensions
         };
     }
 
-    public static AdventurePassageInfo Add(this AdventurePassageInfo passage, IEnumerable<AdventureExtraInfo> extra)
-        => new()
+    public static IReadOnlyList<AdventureLinkInfo> Add(this IReadOnlyList<AdventureLinkInfo> links, AdventureLinkInfo link)
+        => new List<AdventureLinkInfo>(links)
         {
-            Id = passage.Id,
-            Name = passage.Name,
-            Description = passage.Description,
-            Commands = passage.Commands,
-            Extras = [.. passage.Extras, .. extra]
-        };
-
-    public static AdventurePassageInfo Remove(this AdventurePassageInfo passage, AdventureExtraInfo extraInfo)
-    {
-        var extras = passage.Extras.ToList();
-        extras.Remove(extraInfo);
-
-        return new()
-        {
-            Id = passage.Id,
-            Name = passage.Name,
-            Description = passage.Description,
-            Commands = passage.Commands,
-            Extras = extras
-        };
-    }
-
-    public static IReadOnlyList<AdventureCommandInfo> Add(this IReadOnlyList<AdventureCommandInfo> commands, AdventureCommandInfo command)
-        => new List<AdventureCommandInfo>(commands)
-        {
-            command
+            link
         };
 }

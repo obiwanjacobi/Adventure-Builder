@@ -5,7 +5,7 @@
   "creatorVersion": "2.9.2",
   "schemaName": "Harlowe 3 to JSON",
   "schemaVersion": "0.0.6",
-  "createdAtMs": 1733572938439,
+  "createdAtMs": 1735812136414,
   "passages": [
     {
       "name": "Let's Start",
@@ -70,7 +70,7 @@
       "name": "ASSET: Bottle",
       "tags": "",
       "id": "5",
-      "text": "This bottle looks like an ordanairy wine bottle. It has a cap but appears to be empy.\n[[Option 2]]",
+      "text": "This bottle looks like an ordinary wine bottle. It has a cap but appears to be empty.\n[[Option 2]]",
       "links": [
         {
           "linkText": "Option 2",
@@ -79,7 +79,7 @@
         }
       ],
       "hooks": [],
-      "cleanText": "This bottle looks like an ordanairy wine bottle. It has a cap but appears to be empy."
+      "cleanText": "This bottle looks like an ordinary wine bottle. It has a cap but appears to be empty."
     }
   ]
 }

@@ -35,4 +35,6 @@ public readonly record struct PlayerKey(Guid AccountId, string Nickname)
 
     public PlayerLogKey ToPlayerLogKey()
         => new(AccountId, Nickname);
+    public PlayerInventoryKey ToPlayerInventoryKey()
+        => new(AccountId, Nickname);
 }

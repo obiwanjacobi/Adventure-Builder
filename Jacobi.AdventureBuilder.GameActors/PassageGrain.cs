@@ -11,6 +11,7 @@ public sealed class PassageGrainState
     public bool IsLoaded { get; set; }
     public AdventurePassageInfo? PassageInfo { get; set; }
     public List<string> OccupantKeys { get; } = [];
+    public List<GameCommand> Commands { get; set; } = [];
 }
 
 public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
@@ -33,6 +34,12 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
             var key = PassageKey.Parse(this.GetPrimaryKeyString());
             State.PassageInfo = await _client.GetAdventurePassageAsync(key.WorldKey.WorldId, key.PassageId);
 
+            State.Commands = State.PassageInfo!.LinkedPassages
+                .Map(cmd => new GameCommand(cmd.PassageId.ToString(), GameCommands.NavigatePassage,
+                    cmd.Name, cmd.Description,
+                    new GameCommandAction(GameCommands.NavigatePassage, cmd.PassageId).ToString()))
+                .ToList();
+
             await WriteStateAsync();
         }
         await base.OnActivateAsync(cancellationToken);
@@ -52,22 +59,13 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
     public Task<IReadOnlyList<GameCommand>> Commands()
     {
-        var commands = State.PassageInfo!.Commands
-                .Map(cmd => new GameCommand(cmd.Id, cmd.Kind, cmd.Name, cmd.Description, cmd.Action))
-                .ToList();
-
-        return Task.FromResult((IReadOnlyList<GameCommand>)commands);
+        return Task.FromResult((IReadOnlyList<GameCommand>)State.Commands);
     }
 
     public Task<GameCommand> GetCommand(string commandId)
     {
-        var commandInfo = State.PassageInfo!.Commands
-            .Find(cmd => cmd.Id == commandId)
-            .Single();
-
-        var command = new GameCommand(
-            commandId, commandInfo.Kind, commandInfo.Name,
-            commandInfo.Description, commandInfo.Action);
+        var command = State.Commands.Find(cmd => cmd.Id == commandId)
+            ?? throw new ArgumentException($"This passage '{this.GetPrimaryKeyString()}' does not have a command '{commandId}'.", nameof(commandId));
 
         return Task.FromResult(command);
     }

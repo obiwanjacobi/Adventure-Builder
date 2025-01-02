@@ -15,8 +15,7 @@ internal static class AdventureMapper
                 Id = passageData.Id,
                 Name = passageData.Name,
                 Description = String.Empty,
-                Commands = [],
-                Extras = []
+                LinkedPassages = [],
             }).ToList(),
             NonPlayerCharacters = worldData.NonPlayerCharacters
                 .Select(ToNonPlayerCharacterInfo)
@@ -70,15 +69,12 @@ internal static class AdventureMapper
             Id = passageData.Id,
             Name = passageData.Name,
             Description = passageData.Description ?? String.Empty,
-            Commands = passageData.Commands.Select(commandData => new AdventureCommandInfo
+            LinkedPassages = passageData.LinkedPassages.Select(linkData => new AdventureLinkInfo
             {
-                Id = $"nav-{commandData.Name}",
-                Name = commandData.Name,
-                Description = commandData.Description ?? String.Empty,
-                Action = commandData.Action,
-                Kind = "nav-passage"
+                PassageId = linkData.PassageId,
+                Name = linkData.Name,
+                Description = linkData.Description ?? String.Empty,
             }).ToList(),
-            Extras = []
         };
     }
 
@@ -128,11 +124,11 @@ internal static class AdventureMapper
                 Id = passageInfo.Id,
                 Name = passageInfo.Name,
                 Description = passageInfo.Description,
-                Commands = passageInfo.Commands.Select(commandInfo => new AdventureWorldData.AdventureCommandData
+                LinkedPassages = passageInfo.LinkedPassages.Select(linkInfo => new AdventureWorldData.AdventureLinkData
                 {
-                    Name = commandInfo.Name,
-                    Description = commandInfo.Description,
-                    Action = commandInfo.Action,
+                    PassageId = linkInfo.PassageId,
+                    Name = linkInfo.Name,
+                    Description = linkInfo.Description,
                 }).ToList(),
             }).ToList(),
             NonPlayerCharacters = worldInfo.NonPlayerCharacters.Select(npc => new AdventureWorldData.AdventureNonPlayerCharacterData

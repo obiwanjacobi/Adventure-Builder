@@ -9,7 +9,5 @@ public sealed class AdventurePassageInfo
     public required string Name { get; init; }
     public required string Description { get; init; }
 
-    public required IReadOnlyList<AdventureCommandInfo> Commands { get; init; }
-
-    public required IReadOnlyList<AdventureExtraInfo> Extras { get; init; }
+    public required IReadOnlyList<AdventureLinkInfo> LinkedPassages { get; init; }
 }

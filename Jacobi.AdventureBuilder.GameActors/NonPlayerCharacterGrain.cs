@@ -16,11 +16,13 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
     private IDisposable? _navigationTimer;
     private readonly IGrainFactory _factory;
     private readonly IAdventureClient _client;
+    private readonly GameCommandExecuter _commandExecuter;
 
-    public NonPlayerCharacterGrain(IGrainFactory factory, IAdventureClient client)
+    public NonPlayerCharacterGrain(IGrainFactory factory, IAdventureClient client, GameCommandExecuter commandExecuter)
     {
         _factory = factory;
         _client = client;
+        _commandExecuter = commandExecuter;
     }
 
     public override Task<string> Name()
@@ -71,11 +73,10 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
         if (navCommands.Length == 0) return;
 
         var index = Random.Shared.Next(navCommands.Length);
-        var cmd = await State.Passage.GetCommand(navCommands[index].Id);
+        var cmd = navCommands[index];
 
         var key = NonPlayerCharacterKey.Parse(this.GetPrimaryKeyString());
         var world = _factory.GetGrain<IWorldGrain>(key.WorldKey);
-        var cmdHandler = new GameCommandHandler(world, this);
-        var result = await cmdHandler.ExecuteAsync(cmd);
+        var result = await _commandExecuter.ExecuteAsync(world, this, State.Passage!, cmd);
     }
 }

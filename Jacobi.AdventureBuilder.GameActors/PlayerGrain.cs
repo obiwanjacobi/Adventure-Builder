@@ -7,10 +7,11 @@ public sealed class PlayerGrainState : AmInPassageGrainState
     public bool IsLoaded { get; set; }
 }
 
-public sealed class PlayerGrain(IGrainFactory factory)
+public sealed class PlayerGrain(IGrainFactory factory, GameCommandExecuter commandExecutor)
     : AmInPassageGrain<PlayerGrainState>, IPlayerGrain
 {
     private readonly IGrainFactory _factory = factory;
+    private readonly GameCommandExecuter _commandExecutor = commandExecutor;
 
     public override Task<string> Name()
         => Task.FromResult(PlayerKey.Parse(this.GetPrimaryKeyString()).Nickname);
@@ -26,19 +27,24 @@ public sealed class PlayerGrain(IGrainFactory factory)
         return base.OnActivateAsync(cancellationToken);
     }
 
-    public async Task<GameCommandResult> Play(IWorldGrain world, GameCommand command)
+    public async Task<GameCommandResult> Play(IWorldGrain world, IPassageGrain passage, GameCommand command)
     {
         var log = await Log();
         await log.AddLine(command);
 
-        var commandHandler = new GameCommandHandler(world, this);
-        return await commandHandler.ExecuteAsync(command);
+        return await _commandExecutor.ExecuteAsync(world, this, passage, command);
     }
 
     public Task<IPlayerLogGrain> Log()
     {
         var playerLogKey = GetKey().ToPlayerLogKey();
         return Task.FromResult(_factory.GetGrain<IPlayerLogGrain>(playerLogKey));
+    }
+
+    public Task<IPlayerInventoryGrain> Inventory()
+    {
+        var playerInventoryKey = GetKey().ToPlayerInventoryKey();
+        return Task.FromResult(_factory.GetGrain<IPlayerInventoryGrain>(playerInventoryKey));
     }
 
     protected override async Task OnPassageEnter(IPassageGrain passage)

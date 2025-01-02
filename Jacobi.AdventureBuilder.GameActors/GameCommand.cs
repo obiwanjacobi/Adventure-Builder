@@ -2,32 +2,39 @@
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
-public sealed class GameCommandHandler
+public interface IGameCommandHandler
 {
-    private readonly IWorldGrain _world;
-    private readonly IAmInPassage _issuer;
+    bool CanHandleCommand(GameCommand command);
+    Task<GameCommandResult> HandleCommand(GameCommandContext context, GameCommand command);
+}
 
-    public GameCommandHandler(IWorldGrain world, IAmInPassage issuer)
+public interface IGameCommandProvider
+{
+    Task<IReadOnlyList<GameCommandResult>> ProvideCommands();
+}
+
+public sealed record class GameCommandContext(
+    IAmInPassage Issuer, IPassageGrain Passage, IWorldGrain World);
+
+public sealed class GameCommandExecuter
+{
+    private readonly List<IGameCommandHandler> _handlers;
+
+    public GameCommandExecuter(IEnumerable<IGameCommandHandler> handlers)
     {
-        _world = world;
-        _issuer = issuer;
+        _handlers = handlers.ToList();
     }
 
-    public Task<GameCommandResult> ExecuteAsync(GameCommand command)
+    public Task<GameCommandResult> ExecuteAsync(IWorldGrain world, IAmInPassage issuer, IPassageGrain passage, GameCommand command)
     {
-        return command.Kind switch
+        var context = new GameCommandContext(issuer, passage, world);
+        foreach (var handler in _handlers)
         {
-            GameCommands.NavigatePassage => ExecuteNavigatePassage(command),
-            _ => Task.FromResult(new GameCommandResult()),
-        };
-    }
+            if (handler.CanHandleCommand(command))
+                return handler.HandleCommand(context, command);
+        }
 
-    private async Task<GameCommandResult> ExecuteNavigatePassage(GameCommand command)
-    {
-        var cmdAction = new CommandAction(command.Action);
-        var passageGrain = await _world.GetPassage(cmdAction.PassageId);
-        await _issuer.EnterPassage(passageGrain);
-        return new GameCommandResult(passageGrain);
+        return Task.FromResult(new GameCommandResult());
     }
 }
 
@@ -36,13 +43,35 @@ public static class GameCommands
     public const string NavigatePassage = "nav-passage";
 }
 
-public readonly record struct CommandAction
+public readonly record struct GameCommandAction
 {
-    public CommandAction(string actionMoniker)
+    public static GameCommandAction Parse(string actionMoniker)
     {
         var parts = actionMoniker.Split(':');
-        PassageId = Int64.Parse(parts[^1]);
+        return new GameCommandAction(ToKind(parts[0]), Int64.Parse(parts[^1]));
     }
 
+    public GameCommandAction(string kind, long passageId)
+    {
+        Kind = kind;
+        PassageId = passageId;
+    }
+
+    public string Kind { get; }
     public long PassageId { get; }
+
+    public override string ToString()
+    {
+        return $"{FromKind(Kind)}:{PassageId}";
+    }
+
+    private static string FromKind(string commandKind)
+    {
+        return commandKind;
+    }
+
+    private static string ToKind(string actionTag)
+    {
+        return actionTag;
+    }
 }

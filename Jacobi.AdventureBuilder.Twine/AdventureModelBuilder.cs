@@ -8,30 +8,27 @@ internal sealed class AdventureModelBuilder
     private readonly List<AdventureNonPlayerCharacterInfo> _npcs = [];
     private readonly List<AdventureAssetInfo> _assets = [];
 
-    public AdventurePassageInfo AddPassage(long id, string name, string description, IReadOnlyList<AdventureCommandInfo> commands)
+    public AdventurePassageInfo AddPassage(long id, string name, string description, IReadOnlyList<AdventureLinkInfo> commands)
     {
         var passage = new AdventurePassageInfo()
         {
             Id = id,
             Name = name,
             Description = description,
-            Commands = commands,
-            Extras = []
+            LinkedPassages = commands,
         };
 
         _passages.Add(passage);
         return passage;
     }
 
-    public static AdventureCommandInfo CreateNavigateCommand(string id, string name, string description)
+    public static AdventureLinkInfo CreateNavigateLink(string passageId, string name, string description)
     {
-        return new AdventureCommandInfo
+        return new AdventureLinkInfo
         {
-            Id = id,
+            PassageId = Int64.Parse(passageId),
             Name = name,
             Description = description,
-            Kind = "nav-passage",
-            Action = $"nav:passage:{id}",
         };
     }
 
@@ -41,6 +38,7 @@ internal sealed class AdventureModelBuilder
         {
             Id = id,
             Name = name,
+            // make copies of the lists!
             Passages = _passages.ToList(),
             NonPlayerCharacters = _npcs.ToList(),
             Assets = _assets.ToList(),

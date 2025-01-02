@@ -73,7 +73,7 @@ public partial class Home : ComponentBase
     private async Task ExecuteCommand(string commandId)
     {
         var command = await _passage!.GetCommand(commandId);
-        var result = await _player!.Play(_world!, command);
+        var result = await _player!.Play(_world!, _passage, command);
         if (result.Passage is null) return;
 
         await SetPassage(result.Passage);

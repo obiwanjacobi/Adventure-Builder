@@ -79,18 +79,18 @@ internal class TwineModelTransform
         }).ToList();
     }
 
-    private List<AdventureCommandInfo> CreateCommands(Passage passage)
+    private List<AdventureLinkInfo> CreateCommands(Passage passage)
     {
         if (passage.Links is null) return [];
         var links = passage.Links;
-        var commands = new List<AdventureCommandInfo>(links.Count);
+        var commands = new List<AdventureLinkInfo>(links.Count);
 
         foreach (var link in links)
         {
             var passageId = LookupPassageId(link.PassageName);
             var description = LookupLinkDescription(passage.Hooks, link.PassageName)
                 ?? $"{link.LinkText} ({link.PassageName})";
-            var command = AdventureModelBuilder.CreateNavigateCommand(passageId, link.LinkText, description);
+            var command = AdventureModelBuilder.CreateNavigateLink(passageId, link.LinkText, description);
             commands.Add(command);
         }
 
