@@ -54,11 +54,11 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
     public Task<string> Description()
         => Task.FromResult(State.PassageInfo!.Description);
 
-    public async Task<IReadOnlyList<GameCommand>> Commands()
+    public async Task<IReadOnlyList<GameCommand>> Commands(IPlayerGrain? player)
     {
         var key = PassageKey.Parse(this.GetPrimaryKeyString());
         var world = _factory.GetGrain<IWorldGrain>(key.WorldKey);
-        var commands = await _executer.ProviderCommands(world, this);
+        var commands = await _executer.ProviderCommands(world, this, player);
         return commands;
     }
 

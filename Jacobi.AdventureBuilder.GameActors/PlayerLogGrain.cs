@@ -37,9 +37,9 @@ public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrain
     public async Task AddLine(GameCommand command)
     {
         var id = State.LogLines.Count;
-        var title = $"Navigate to {command.Name}";
+        var title = command.DisplayName;
         var description = command.Description;
-        var line = new PlayerLogLine(id, PlayerLogLineKind.Command, title, description);
+        var line = new PlayerLogLine(id, PlayerLogLineKind.Command, title, description, command.Kind);
 
         State.LogLines.Insert(0, line);
         await WriteStateAsync();
@@ -60,7 +60,7 @@ public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrain
         var title = await passage.Name();
         var description = await passage.Description();
         var line = new PlayerLogLine(id, PlayerLogLineKind.Passage, title, description,
-            passage.GetPrimaryKeyString(), subLines);
+            null, subLines);
 
         State.LogLines.Insert(0, line);
         await WriteStateAsync();
@@ -101,18 +101,18 @@ public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrain
         if (kind != PlayerLogLineKind.None &&
             amInPassage.TryGetValue(out var amInPassageGrain))
         {
-            return await NewLine(amInPassageGrain, kind, grainKey);
+            return await NewLine(amInPassageGrain, kind);
         }
 
         throw new NotSupportedException($"No {nameof(PlayerLogLine)} could be created for '{grainKey}'.");
     }
 
-    private async Task<PlayerLogLine> NewLine(IAmInPassage amInPassage, PlayerLogLineKind kind, string grainKey)
+    private async Task<PlayerLogLine> NewLine(IAmInPassage amInPassage, PlayerLogLineKind kind)
     {
         var id = State.LogLines.Count;
         var title = await amInPassage.Name();
         var description = await amInPassage.Description();
-        var line = new PlayerLogLine(id, kind, title, description, grainKey);
+        var line = new PlayerLogLine(id, kind, title, description);
         return line;
     }
 }

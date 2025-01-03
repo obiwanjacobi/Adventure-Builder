@@ -71,6 +71,8 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
     {
         var log = await player.Log();
         await log.Clear();
+        var inventory = await player.Inventory();
+        await inventory.Clear();
 
         var startPassage = await GetPassage(State.PassageIds[0]);
         await player.EnterPassage(startPassage);

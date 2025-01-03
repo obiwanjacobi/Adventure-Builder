@@ -31,7 +31,8 @@ internal sealed class NavigationCommandHandler : IGameCommandHandler
             new GameCommand(
                 NavigatePassage,
                 lnk.Name, lnk.Description,
-                new GameCommandAction(NavigatePassage, lnk.PassageId).ToString()
+                new GameCommandAction(NavigatePassage, lnk.PassageId).ToString(),
+                $"Navigate to {lnk.Name}"
             )
         ).ToList();
 

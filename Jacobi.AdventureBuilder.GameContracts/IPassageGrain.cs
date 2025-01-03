@@ -9,7 +9,7 @@ public interface IPassageGrain : IGrainWithStringKey
     Task<string> Description();
 
     [Alias("Commands")]
-    Task<IReadOnlyList<GameCommand>> Commands();
+    Task<IReadOnlyList<GameCommand>> Commands(IPlayerGrain? player);
 
     [Alias("LinkedPassageIds")]
     Task<IReadOnlyList<PassageLinkInfo>> Links();

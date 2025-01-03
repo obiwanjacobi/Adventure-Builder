@@ -68,7 +68,7 @@ public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacte
     {
         if (State.Passage is null) return;
 
-        var commands = await State.Passage.Commands();
+        var commands = await State.Passage.Commands(null);
         var navCommands = commands.Where(cmd => NavigationCommandHandler.IsNavigationCommand(cmd)).ToArray();
         if (navCommands.Length == 0) return;
 

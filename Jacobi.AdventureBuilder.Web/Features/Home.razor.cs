@@ -18,6 +18,7 @@ public partial class Home : ComponentBase
     private string? _worldName;
     private string? _playerNickname;
     private IReadOnlyList<PlayerLogLine> _logLines = [];
+    private IReadOnlyList<InventoryItem> _inventoryItems = [];
 
     public Home(AuthenticationStateProvider authenticationStateProvider, AdventureGameClient gameClient, NavigationManager navigationManager)
     {
@@ -54,7 +55,7 @@ public partial class Home : ComponentBase
 
         var log = await _player.Log();
         await log.UpdateLine(_passage, playerKey);
-        _logLines = await log.Lines();
+        await SetPassage(_passage);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -66,13 +67,13 @@ public partial class Home : ComponentBase
 
         var log = await _player.Log();
         await log.UpdateLine(_passage, playerKey);
-        _logLines = await log.Lines();
+        await SetPassage(_passage);
         await InvokeAsync(StateHasChanged);
     }
 
     private async Task ExecuteCommand(string commandAction)
     {
-        var commands = await _passage!.Commands();
+        var commands = await _passage!.Commands(_player!);
         // command may have disappeared
         var command = commands.SingleOrDefault(cmd => cmd.Action == commandAction);
         if (command is not null)
@@ -88,9 +89,19 @@ public partial class Home : ComponentBase
     private async Task SetPassage(IPassageGrain passage)
     {
         var log = await _player!.Log();
-
+        var inventory = await _player!.Inventory();
+        var assets = await inventory.Assets();
         _passage = passage;
-        _commands = await _passage.Commands();
+        _commands = await _passage.Commands(_player);
         _logLines = await log.Lines();
+
+        var inventoryItems = new List<InventoryItem>();
+        foreach (var asset in assets)
+        {
+            inventoryItems.Add(new InventoryItem(
+                asset.GetPrimaryKeyString(), await asset.Name(), await asset.Description()
+            ));
+        }
+        _inventoryItems = inventoryItems;
     }
 }

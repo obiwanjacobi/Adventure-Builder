@@ -27,10 +27,18 @@ public class InventoryCommandHandler : IGameCommandHandler
         var worldKey = WorldKey.Parse(context.World.GetPrimaryKeyString());
         var assetKey = new AssetKey(worldKey, cmdAction.Id);
         var asset = _factory.GetGrain<IAssetGrain>(assetKey);
-
         var inventory = await context.Player.Inventory();
-        await inventory.Add(asset);
-        await context.Passage.Exit(assetKey);
+
+        if (command.Kind == PutInventory)
+        {
+            await inventory.Add(asset);
+            await context.Passage.Exit(assetKey);
+        }
+        if (command.Kind == TakeInventory)
+        {
+            await inventory.Remove(asset);
+            await context.Passage.Enter(assetKey);
+        }
 
         // TODO
         return new GameCommandResult(context.Passage);
@@ -50,7 +58,8 @@ public class InventoryCommandHandler : IGameCommandHandler
                 PutInventory,
                 $"Take {assetName}",
                 $"Add {assetName} to your Inventory.",
-                new GameCommandAction(PutInventory, AssetKey.Parse(asset.GetPrimaryKeyString()).AssetId).ToString()
+                new GameCommandAction(PutInventory, AssetKey.Parse(asset.GetPrimaryKeyString()).AssetId).ToString(),
+                $"Added {assetName} to your inventory."
             );
             commands.Add(cmd);
         }
@@ -67,7 +76,8 @@ public class InventoryCommandHandler : IGameCommandHandler
                     TakeInventory,
                     $"Drop {assetName}",
                     $"Remove {assetName} from your Inventory (leave it here).",
-                    new GameCommandAction(TakeInventory, AssetKey.Parse(item.GetPrimaryKeyString()).AssetId).ToString()
+                    new GameCommandAction(TakeInventory, AssetKey.Parse(item.GetPrimaryKeyString()).AssetId).ToString(),
+                    $"Dropped {assetName} here."
                 );
                 commands.Add(cmd);
             }

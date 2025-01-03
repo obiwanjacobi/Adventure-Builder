@@ -78,10 +78,13 @@ public sealed class GameCommandExecuter
         return Task.FromResult(new GameCommandResult());
     }
 
-    public async Task<IReadOnlyList<GameCommand>> ProviderCommands(IWorldGrain world, IPassageGrain passage)
+    public async Task<IReadOnlyList<GameCommand>> ProviderCommands(IWorldGrain world, IPassageGrain passage, IPlayerGrain? player = null)
     {
         var commands = new List<GameCommand>();
-        var context = new GameCommandContext(world, passage);
+        var context = player is null
+            ? new GameCommandContext(world, passage)
+            : new GameCommandContext(world, passage, player);
+
         foreach (var handler in _handlers)
         {
             commands.AddRange(await handler.ProvideCommands(context));

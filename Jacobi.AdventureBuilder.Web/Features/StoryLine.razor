@@ -8,7 +8,7 @@
                     <span slot="heading">
                         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Stretch">
                             <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Left">
-                                <FluentIcon Value="@GetIcon(item.Kind)" />
+                                <FluentIcon Value="@GetIcon(item)" />
                                 @item.Title
                             </FluentStack>
                             <FluentSpacer />
@@ -17,7 +17,7 @@
                                 <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Right">
                                     @foreach (var subItem in item.SubItems)
                                     {
-                                        <FluentIcon Value="@GetIcon(subItem.Kind)" />
+                                        <FluentIcon Value="@GetIcon(subItem)" />
                                     }
                                 </FluentStack>
                             }
@@ -34,7 +34,7 @@
                             <div style="margin-left:24px">
                                 <FluentStack Orientation="Orientation.Vertical">
                                     <div style="font-weight:bold">
-                                        <FluentIcon Value="@GetIcon(subItem.Kind)" />
+                                        <FluentIcon Value="@GetIcon(subItem)" />
                                         @subItem.Title
                                     </div>
                                     <div>@subItem.Description</div>
@@ -47,7 +47,7 @@
             else
             {
                 <FluentAccordionItem Heading="@item.Title" Expanded="@item.Expanded">
-                    <FluentIcon Value="@GetIcon(item.Kind)" Slot="start" />
+                    <FluentIcon Value="@GetIcon(item)" Slot="start" />
                     @item.Description
                 </FluentAccordionItem>
             }

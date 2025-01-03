@@ -16,9 +16,10 @@
             <CommandBar Commands="@_commands" ExecuteCommandAsync="@ExecuteCommand" />
         }
 
-        <StoryLine LogLines="_logLines"></StoryLine>
-        <FluentDivider />
-
+        <FluentStack Orientation="Orientation.Horizontal">
+            <StoryLine LogLines="_logLines"></StoryLine>
+            <Inventory Items="_inventoryItems"></Inventory>
+        </FluentStack>
     </Authorized>
     <NotAuthorized>
         <p><strong>Please <a href="authentication/login">log in</a>.</strong></p>

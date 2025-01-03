@@ -29,4 +29,7 @@ public sealed class AdventureGameClient //: IGame
         var key = new PlayerKey(Guid.Empty, playerId);
         return _factory.GetGrain<IPlayerGrain>(key);
     }
+
+    public T GetGrain<T>(string key) where T : IGrainWithStringKey
+        => _factory.GetGrain<T>(key);
 }

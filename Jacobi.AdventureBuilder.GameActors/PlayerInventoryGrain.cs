@@ -30,4 +30,16 @@ internal sealed class PlayerInventoryGrain : Grain<PlayerInventoryGrainState>, I
         State.Assets.Add(asset);
         return WriteStateAsync();
     }
+
+    public Task Remove(IAssetGrain asset)
+    {
+        State.Assets.Remove(asset);
+        return WriteStateAsync();
+    }
+
+    public Task Clear()
+    {
+        State.Assets.Clear();
+        return Task.CompletedTask;
+    }
 }

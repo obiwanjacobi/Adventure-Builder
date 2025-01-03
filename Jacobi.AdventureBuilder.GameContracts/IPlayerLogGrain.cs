@@ -15,13 +15,13 @@ public interface IPlayerLogGrain : IGrainWithStringKey
 public sealed class PlayerLogLine
 {
     public PlayerLogLine(long id, PlayerLogLineKind kind, string title, string description,
-        string? grainKey = null, IReadOnlyList<PlayerLogLine>? subLines = null)
+        string? commandKind = null, IReadOnlyList<PlayerLogLine>? subLines = null)
     {
         Id = id;
         Kind = kind;
         Title = title;
         Description = description;
-        GrainKey = grainKey;
+        CommandKind = commandKind;
         SubLines = subLines;
     }
 
@@ -34,7 +34,7 @@ public sealed class PlayerLogLine
     [Id(3)]
     public string Description { get; }
     [Id(4)]
-    public string? GrainKey { get; }
+    public string? CommandKind { get; }
     [Id(5)]
     public IReadOnlyList<PlayerLogLine>? SubLines { get; }
 }

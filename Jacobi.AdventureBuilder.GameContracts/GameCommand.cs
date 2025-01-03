@@ -3,12 +3,13 @@
 [GenerateSerializer, Immutable]
 public sealed class GameCommand
 {
-    public GameCommand(string kind, string name, string description, string action)
+    public GameCommand(string kind, string name, string description, string action, string displayName)
     {
         Kind = kind;
         Name = name;
         Description = description;
         Action = action;
+        DisplayName = displayName;
     }
 
     [Id(0)]
@@ -19,6 +20,8 @@ public sealed class GameCommand
     public string Description { get; }
     [Id(3)]
     public string Action { get; }
+    [Id(4)]
+    public string DisplayName { get; }
 }
 
 [GenerateSerializer, Immutable]
