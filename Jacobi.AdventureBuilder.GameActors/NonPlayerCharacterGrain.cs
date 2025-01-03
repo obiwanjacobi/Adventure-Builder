@@ -5,13 +5,13 @@ using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
-public class NonPlayerCharacterGrainState : AmInPassageGrainState
+public class NonPlayerCharacterGrainState : PassageOccupantGrainState
 {
     public bool IsLoaded { get; set; }
     public AdventureNonPlayerCharacterInfo? NpcInfo { get; set; }
 }
 
-public sealed class NonPlayerCharacterGrain : AmInPassageGrain<NonPlayerCharacterGrainState>, INonPlayerCharacterGrain
+public sealed class NonPlayerCharacterGrain : PassageOccupantGrain<NonPlayerCharacterGrainState>, INonPlayerCharacterGrain
 {
     private IDisposable? _navigationTimer;
     private readonly IGrainFactory _factory;

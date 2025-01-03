@@ -1,6 +1,6 @@
 ﻿namespace Jacobi.AdventureBuilder.GameContracts;
 
-public interface IAmInPassage
+public interface IPassageOccupant
 {
     [Alias("Name")]
     Task<string> Name();

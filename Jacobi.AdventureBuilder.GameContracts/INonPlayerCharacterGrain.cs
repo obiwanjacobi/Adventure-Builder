@@ -1,7 +1,7 @@
 ﻿namespace Jacobi.AdventureBuilder.GameContracts;
 
 [Alias("AdventureBuilder.INonPlayerCharacterGrain")]
-public interface INonPlayerCharacterGrain : IAmInPassage, IGrainWithStringKey
+public interface INonPlayerCharacterGrain : IPassageOccupant, IGrainWithStringKey
 {
 
 }

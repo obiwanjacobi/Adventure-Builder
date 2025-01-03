@@ -2,13 +2,13 @@
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
-public abstract class AmInPassageGrainState
+public abstract class PassageOccupantGrainState
 {
     public IPassageGrain? Passage { get; set; }
 }
 
-public abstract class AmInPassageGrain<T> : Grain<T>, IAmInPassage
-    where T : AmInPassageGrainState
+public abstract class PassageOccupantGrain<T> : Grain<T>, IPassageOccupant
+    where T : PassageOccupantGrainState
 {
     public abstract Task<string> Name();
     public abstract Task<string> Description();

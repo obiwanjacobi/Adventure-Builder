@@ -5,13 +5,13 @@
   "creatorVersion": "2.9.2",
   "schemaName": "Harlowe 3 to JSON",
   "schemaVersion": "0.0.6",
-  "createdAtMs": 1735812136414,
+  "createdAtMs": 1735912495179,
   "passages": [
     {
       "name": "Let's Start",
-      "tags": "tag1 tag2",
+      "tags": "",
       "id": "1",
-      "text": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n[[Goto Option1->Option 1]] \n$memory[[Option 2]] \n|Option 1>[This could be a description of Option 1]",
+      "text": "Hello, welcome. Let's start this.\n\nYou have 2 options\n[[Goto Option1->Option 1]] \n[[Option 2]] \n|Option 1>[This could be a description of Option 1]",
       "links": [
         {
           "linkText": "Goto Option1",
@@ -31,7 +31,7 @@
           "original": "|Option 1>[This could be a description of Option 1]"
         }
       ],
-      "cleanText": "Hello, welcome. Let's start this.\n\nYou  have 2 options\n \n$memory"
+      "cleanText": "Hello, welcome. Let's start this.\n\nYou have 2 options"
     },
     {
       "name": "Option 1",
@@ -52,14 +52,20 @@
       "name": "Option 2",
       "tags": "",
       "id": "3",
-      "text": "Your second option is to...",
-      "links": [],
+      "text": "Your second option is to...\n\n[[Let's Start]]",
+      "links": [
+        {
+          "linkText": "Let's Start",
+          "passageName": "Let's Start",
+          "original": "[[Let's Start]]"
+        }
+      ],
       "hooks": [],
       "cleanText": "Your second option is to..."
     },
     {
-      "name": "NPC: Wicked Witch of the West",
-      "tags": "NavEvery:45",
+      "name": "Wicked Witch of the West",
+      "tags": "NavEvery:45 type:npc",
       "id": "4",
       "text": "The Wicked Witch of the West is a nasty piece of work. She'll appear out of nowhere and it will cost you if you do something wrong. The problem is, nobody has been able to find out what that is exactly. Better to avoid her and go somewhere else if she turns up. Or perhaps you're lucky and find out what the one thing is that will kill her. Perhaps not...",
       "links": [],
@@ -67,17 +73,11 @@
       "cleanText": "The Wicked Witch of the West is a nasty piece of work. She'll appear out of nowhere and it will cost you if you do something wrong. The problem is, nobody has been able to find out what that is exactly. Better to avoid her and go somewhere else if she turns up. Or perhaps you're lucky and find out what the one thing is that will kill her. Perhaps not..."
     },
     {
-      "name": "ASSET: Bottle",
-      "tags": "",
+      "name": "Bottle",
+      "tags": "cmd:inv-put cmd:inv-take type:asset",
       "id": "5",
-      "text": "This bottle looks like an ordinary wine bottle. It has a cap but appears to be empty.\n[[Option 2]]",
-      "links": [
-        {
-          "linkText": "Option 2",
-          "passageName": "Option 2",
-          "original": "[[Option 2]]"
-        }
-      ],
+      "text": "This bottle looks like an ordinary wine bottle. It has a cap but appears to be empty.",
+      "links": [],
       "hooks": [],
       "cleanText": "This bottle looks like an ordinary wine bottle. It has a cap but appears to be empty."
     }

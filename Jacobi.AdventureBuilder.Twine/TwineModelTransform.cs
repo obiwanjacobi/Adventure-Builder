@@ -25,18 +25,21 @@ internal class TwineModelTransform
 
         foreach (var passage in passages)
         {
-            if (IsNPC(passage))
+            var properties = CreateProperties(passage.Tags);
+
+            if (IsNPC(properties))
             {
                 npcs.Add(passage);
             }
-            else if (IsAsset(passage))
+            else if (IsAsset(properties))
             {
                 assets.Add(passage);
             }
             else
             {
-                var commands = CreateCommands(passage);
-                var passageInfo = _builder.AddPassage(Int64.Parse(passage.Id), passage.Name, passage.CleanText, commands);
+                var links = CreateLinks(passage);
+                var passageInfo = _builder.AddPassage(
+                    Int64.Parse(passage.Id), passage.Name, passage.CleanText, links);
                 passageInfos.Add(passageInfo);
             }
         }
@@ -46,26 +49,26 @@ internal class TwineModelTransform
         {
             var properties = CreateProperties(npc.Tags);
             var linkedPassageIds = npc.Links.Select(l => passageInfos.First(p => p.Name == l.PassageName).Id);
-            _builder.AddNonPlayerCharacter(Int64.Parse(npc.Id), GetNpcName(npc.Name), npc.CleanText, linkedPassageIds.ToList(), properties);
+            _builder.AddNonPlayerCharacter(
+                Int64.Parse(npc.Id), npc.Name, npc.CleanText, linkedPassageIds.ToList(), properties);
         }
         foreach (var asset in assets)
         {
             var properties = CreateProperties(asset.Tags);
             var linkedPassageIds = asset.Links.Select(l => passageInfos.First(p => p.Name == l.PassageName).Id);
-            _builder.AddAsset(Int64.Parse(asset.Id), GetAssetName(asset.Name), asset.CleanText, linkedPassageIds.ToList(), properties);
+            _builder.AddAsset(
+                Int64.Parse(asset.Id), asset.Name, asset.CleanText, linkedPassageIds.ToList(), properties);
         }
 
-        static bool IsNPC(Passage passage)
-            => passage.Name.StartsWith("NPC:");
-        static string GetNpcName(string npcName)
-            => npcName[4..].Trim();
-        static bool IsAsset(Passage passage)
-            => passage.Name.StartsWith("ASSET:");
-        static string GetAssetName(string npcName)
-            => npcName[6..].Trim();
+        static bool IsNPC(List<AdventurePropertyInfo> properties)
+            => IsOfType(properties, "npc");
+        static bool IsAsset(List<AdventurePropertyInfo> properties)
+            => IsOfType(properties, "asset");
+        static bool IsOfType(List<AdventurePropertyInfo> properties, string type)
+            => properties.Find(prop => prop.Name == "type" && prop.Value == type) is not null;
     }
 
-    private List<AdventurePropertyInfo> CreateProperties(string tagString)
+    private static List<AdventurePropertyInfo> CreateProperties(string tagString)
     {
         var tags = tagString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         return tags.Select(tag =>
@@ -79,7 +82,7 @@ internal class TwineModelTransform
         }).ToList();
     }
 
-    private List<AdventureLinkInfo> CreateCommands(Passage passage)
+    private List<AdventureLinkInfo> CreateLinks(Passage passage)
     {
         if (passage.Links is null) return [];
         var links = passage.Links;
@@ -89,7 +92,7 @@ internal class TwineModelTransform
         {
             var passageId = LookupPassageId(link.PassageName);
             var description = LookupLinkDescription(passage.Hooks, link.PassageName)
-                ?? $"{link.LinkText} ({link.PassageName})";
+                ?? link.LinkText;
             var command = AdventureModelBuilder.CreateNavigateLink(passageId, link.LinkText, description);
             commands.Add(command);
         }

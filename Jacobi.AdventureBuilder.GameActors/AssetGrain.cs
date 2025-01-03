@@ -4,13 +4,13 @@ using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
-public class AssetGrainState : AmInPassageGrainState
+public class AssetGrainState : PassageOccupantGrainState
 {
     public bool IsLoaded { get; set; }
     public AdventureAssetInfo? AssetInfo { get; set; }
 }
 
-public sealed class AssetGrain : AmInPassageGrain<AssetGrainState>, IAssetGrain
+public sealed class AssetGrain : PassageOccupantGrain<AssetGrainState>, IAssetGrain
 {
     private readonly IAdventureClient _client;
 
@@ -35,5 +35,14 @@ public sealed class AssetGrain : AmInPassageGrain<AssetGrainState>, IAssetGrain
         }
 
         await base.OnActivateAsync(cancellationToken);
+    }
+
+    public Task<IReadOnlyList<string>> CommandIds()
+    {
+        return Task.FromResult((IReadOnlyList<string>)State.AssetInfo!.Properties
+            .Where(prop => prop.Name == "cmd")
+            .Select(prop => prop.Value)
+            .ToList()
+        );
     }
 }

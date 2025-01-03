@@ -11,12 +11,12 @@ public interface IPassageGrain : IGrainWithStringKey
     [Alias("Commands")]
     Task<IReadOnlyList<GameCommand>> Commands(IPlayerGrain? player);
 
-    [Alias("LinkedPassageIds")]
+    [Alias("Links")]
     Task<IReadOnlyList<PassageLinkInfo>> Links();
     [Alias("Enter")]
-    Task Enter(string amInPassageKey);
+    Task Enter(string occupantKey);
     [Alias("Exit")]
-    Task Exit(string amInPassageKey);
+    Task Exit(string occupantKey);
     [Alias("Occupants")]
     Task<IReadOnlyList<string>> Occupants();
 }

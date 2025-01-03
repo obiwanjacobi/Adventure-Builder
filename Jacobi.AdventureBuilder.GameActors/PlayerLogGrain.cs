@@ -83,10 +83,10 @@ public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrain
 
     private async Task<PlayerLogLine> NewLine(string grainKey)
     {
-        var amInPassage = _factory.GetAmInPassage(grainKey, out var tag);
+        var passageOccupant = _factory.GetPassageOccupant(grainKey, out var tag);
         PlayerLogLineKind kind = PlayerLogLineKind.None;
 
-        amInPassage.IfSome(amInPassage =>
+        passageOccupant.IfSome(passageOccupant =>
         {
             kind = tag switch
             {
@@ -94,24 +94,24 @@ public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrain
                 NonPlayerCharacterKey.Tag => PlayerLogLineKind.NonPlayerCharacter,
                 AssetKey.Tag => PlayerLogLineKind.Asset,
                 _ => throw new NotImplementedException(
-                    $"No implementation for '{tag}' type of IAmInPassage object.")
+                    $"No implementation for '{tag}' type of IPassageOccupant object.")
             };
         });
 
         if (kind != PlayerLogLineKind.None &&
-            amInPassage.TryGetValue(out var amInPassageGrain))
+            passageOccupant.TryGetValue(out var occupant))
         {
-            return await NewLine(amInPassageGrain, kind);
+            return await NewLine(occupant, kind);
         }
 
         throw new NotSupportedException($"No {nameof(PlayerLogLine)} could be created for '{grainKey}'.");
     }
 
-    private async Task<PlayerLogLine> NewLine(IAmInPassage amInPassage, PlayerLogLineKind kind)
+    private async Task<PlayerLogLine> NewLine(IPassageOccupant passageOccupant, PlayerLogLineKind kind)
     {
         var id = State.LogLines.Count;
-        var title = await amInPassage.Name();
-        var description = await amInPassage.Description();
+        var title = await passageOccupant.Name();
+        var description = await passageOccupant.Description();
         var line = new PlayerLogLine(id, kind, title, description);
         return line;
     }

@@ -68,21 +68,21 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
             .Map(lnk => new PassageLinkInfo(lnk.PassageId, lnk.Name, lnk.Description)).ToList());
     }
 
-    public async Task Enter(string amInPassageKey)
+    public async Task Enter(string occupantKey)
     {
-        if (State.OccupantKeys.Contains(amInPassageKey))
-            throw new InvalidOperationException($"There is already a '{amInPassageKey}' in this passage.");
+        if (State.OccupantKeys.Contains(occupantKey))
+            throw new InvalidOperationException($"There is already a '{occupantKey}' in this passage.");
 
-        State.OccupantKeys.Add(amInPassageKey);
+        State.OccupantKeys.Add(occupantKey);
         await WriteStateAsync();
-        await _notify.NotifyPassageEnter(this.GetPrimaryKeyString(), amInPassageKey);
+        await _notify.NotifyPassageEnter(this.GetPrimaryKeyString(), occupantKey);
     }
 
-    public async Task Exit(string amInPassageKey)
+    public async Task Exit(string occupantKey)
     {
-        State.OccupantKeys.Remove(amInPassageKey);
+        State.OccupantKeys.Remove(occupantKey);
         await WriteStateAsync();
-        await _notify.NotifyPassageExit(this.GetPrimaryKeyString(), amInPassageKey);
+        await _notify.NotifyPassageExit(this.GetPrimaryKeyString(), occupantKey);
     }
 
     public Task<IReadOnlyList<string>> Occupants()

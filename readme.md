@@ -4,11 +4,27 @@
 
 ## TODO
 
-- [ ] Setup SignalR to notify the web site when new characters enter a passage.
-  https://learn.microsoft.com/en-us/dotnet/aspire/real-time/azure-signalr-scenario
 - [ ] Setup authentication on Orleans similar to how the api-service works.
-- [ ] Activity Log. Lets the player review all the moves that he/she played and events that occured.
-- [ ] 
+- [ ] Asset and NPC commands provided by grain itself?
+  Tags that identify what common commands can be used on the asset/npc?
+- [ ] Display asset and npc commands inside passage log line for the given asset/npc (not in commandbar)
+- [ ] Taking and dropping assets repeately does not generate new (sub)log lines.
+  Also not for the other players that are notified of the take/drop.
+- [ ] Notify other players when an asset is taken (player x took the 'asset')
+- [ ] Add inter-player chat.
+- [ ] Communicate with npc's.
+- [ ] Certain assets introduce new commands (to be done with the asset)
+  Bottle->drink(if-open),break,close,open, Knife->cut,stab,slice, 
+  How to manage the dependency between asset defined in twine and the code for its commands?
+  How to manage the state an asset can be in (bottle: open,closed,empty,notempty,broken)
+
+## Done
+
+- [x] Setup SignalR to notify the web site when new characters enter a passage.
+  https://learn.microsoft.com/en-us/dotnet/aspire/real-time/azure-signalr-scenario
+- [x] Activity Log. Lets the player review all the moves that he/she played and events that occured.
+- [x] Command handlers / providers
+- [x] Player inventory.
 
 ---
 

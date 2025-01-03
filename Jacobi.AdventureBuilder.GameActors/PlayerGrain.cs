@@ -2,13 +2,13 @@
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
-public sealed class PlayerGrainState : AmInPassageGrainState
+public sealed class PlayerGrainState : PassageOccupantGrainState
 {
     public bool IsLoaded { get; set; }
 }
 
 public sealed class PlayerGrain(IGrainFactory factory, GameCommandExecuter commandExecutor)
-    : AmInPassageGrain<PlayerGrainState>, IPlayerGrain
+    : PassageOccupantGrain<PlayerGrainState>, IPlayerGrain
 {
     private readonly IGrainFactory _factory = factory;
     private readonly GameCommandExecuter _commandExecutor = commandExecutor;

@@ -4,8 +4,8 @@ namespace Jacobi.AdventureBuilder.GameActors;
 
 public class InventoryCommandHandler : IGameCommandHandler
 {
-    public const string PutInventory = "inv-put";
-    public const string TakeInventory = "inv-take";
+    public const string InventoryPut = "inv-put";
+    public const string InventoryTake = "inv-take";
 
     private readonly IGrainFactory _factory;
 
@@ -16,7 +16,7 @@ public class InventoryCommandHandler : IGameCommandHandler
 
     public bool CanHandleCommand(GameCommand command)
     {
-        return command.Kind == PutInventory || command.Kind == TakeInventory;
+        return command.Kind == InventoryPut || command.Kind == InventoryTake;
     }
 
     public async Task<GameCommandResult> HandleCommand(GameCommandContext context, GameCommand command)
@@ -29,12 +29,12 @@ public class InventoryCommandHandler : IGameCommandHandler
         var asset = _factory.GetGrain<IAssetGrain>(assetKey);
         var inventory = await context.Player.Inventory();
 
-        if (command.Kind == PutInventory)
+        if (command.Kind == InventoryPut)
         {
             await inventory.Add(asset);
             await context.Passage.Exit(assetKey);
         }
-        if (command.Kind == TakeInventory)
+        if (command.Kind == InventoryTake)
         {
             await inventory.Remove(asset);
             await context.Passage.Enter(assetKey);
@@ -53,12 +53,16 @@ public class InventoryCommandHandler : IGameCommandHandler
         var commands = new List<GameCommand>();
         foreach (var asset in assets)
         {
+            // does asset support inventory-put command?
+            var commandIds = await asset.CommandIds();
+            if (!commandIds.Exists(cmdId => cmdId == InventoryPut)) continue;
+
             var assetName = await asset.Name();
             var cmd = new GameCommand(
-                PutInventory,
+                InventoryPut,
                 $"Take {assetName}",
                 $"Add {assetName} to your Inventory.",
-                new GameCommandAction(PutInventory, AssetKey.Parse(asset.GetPrimaryKeyString()).AssetId).ToString(),
+                new GameCommandAction(InventoryPut, AssetKey.Parse(asset.GetPrimaryKeyString()).AssetId).ToString(),
                 $"Added {assetName} to your inventory."
             );
             commands.Add(cmd);
@@ -73,10 +77,10 @@ public class InventoryCommandHandler : IGameCommandHandler
             {
                 var assetName = await item.Name();
                 var cmd = new GameCommand(
-                    TakeInventory,
+                    InventoryTake,
                     $"Drop {assetName}",
                     $"Remove {assetName} from your Inventory (leave it here).",
-                    new GameCommandAction(TakeInventory, AssetKey.Parse(item.GetPrimaryKeyString()).AssetId).ToString(),
+                    new GameCommandAction(InventoryTake, AssetKey.Parse(item.GetPrimaryKeyString()).AssetId).ToString(),
                     $"Dropped {assetName} here."
                 );
                 commands.Add(cmd);

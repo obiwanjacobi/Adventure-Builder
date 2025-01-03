@@ -42,7 +42,7 @@ public sealed record class GameCommandContext
     public IPlayerGrain? Player { get; }
     public INonPlayerCharacterGrain? Npc { get; }
 
-    public IAmInPassage? Issuer { get; }
+    public IPassageOccupant? Issuer { get; }
     public string? IssuerKey { get; }
 }
 
