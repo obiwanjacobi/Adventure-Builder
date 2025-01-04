@@ -16,15 +16,13 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 {
     private readonly IGrainFactory _factory;
     private readonly IAdventureClient _client;
-    private readonly INotifyPassage _notify;
     private readonly GameCommandExecuter _executer;
 
-    public PassageGrain(IGrainFactory factory, IAdventureClient client, INotifyPassage notify,
+    public PassageGrain(IGrainFactory factory, IAdventureClient client,
         GameCommandExecuter executer)
     {
         _factory = factory;
         _client = client;
-        _notify = notify;
         _executer = executer;
     }
 
@@ -75,14 +73,18 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
         State.OccupantKeys.Add(occupantKey);
         await WriteStateAsync();
-        await _notify.NotifyPassageEnter(this.GetPrimaryKeyString(), occupantKey);
+
+        var notify = _factory.GetNotifyPassage();
+        await notify.NotifyPassageEnter(this.GetPrimaryKeyString(), occupantKey);
     }
 
     public async Task Exit(string occupantKey)
     {
         State.OccupantKeys.Remove(occupantKey);
         await WriteStateAsync();
-        await _notify.NotifyPassageExit(this.GetPrimaryKeyString(), occupantKey);
+
+        var notify = _factory.GetNotifyPassage();
+        await notify.NotifyPassageExit(this.GetPrimaryKeyString(), occupantKey);
     }
 
     public Task<IReadOnlyList<string>> Occupants()

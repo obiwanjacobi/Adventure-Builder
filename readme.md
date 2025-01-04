@@ -16,7 +16,8 @@
 - [ ] Certain assets introduce new commands (to be done with the asset)
   Bottle->drink(if-open),break,close,open, Knife->cut,stab,slice, 
   How to manage the dependency between asset defined in twine and the code for its commands?
-  How to manage the state an asset can be in (bottle: open,closed,empty,notempty,broken)
+  How to manage the state an asset can be in (bottle: open,closed,empty,notempty,broken)/StateTable.
+- [ ] Refactor GrainState to use injected state https://learn.microsoft.com/en-us/dotnet/orleans/grains/grain-persistence/?pivots=orleans-7-0
 
 ## Done
 

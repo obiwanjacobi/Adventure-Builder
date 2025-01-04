@@ -2,18 +2,25 @@
 
 namespace Jacobi.AdventureBuilder.GameServer;
 
-internal sealed class NotifyPassageClient(HttpClient httpClient) : INotifyPassage
+public sealed class NotifyPassageClient : INotifyPassage
 {
+    private readonly HttpClient _httpClient;
+
+    public NotifyPassageClient(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+
     public Task NotifyPassageEnter(string passageKey, string characterKey)
     {
         var request = new { passageKey, characterKey };
-        return httpClient.PostAsJsonAsync("/notify/passage/enter", request);
+        return _httpClient.PostAsJsonAsync("/notify/passage/enter", request);
     }
 
     public Task NotifyPassageExit(string passageKey, string characterKey)
     {
         var request = new { passageKey, characterKey };
-        return httpClient.PostAsJsonAsync("/notify/passage/exit", request);
+        return _httpClient.PostAsJsonAsync("/notify/passage/exit", request);
     }
 }
 

@@ -5,6 +5,9 @@ namespace Jacobi.AdventureBuilder.GameClient;
 
 public static class GrainExtensions
 {
+    public static T GetSingleton<T>(this IGrainFactory factory) where T : IGrainWithGuidKey
+        => factory.GetGrain<T>(Guid.Empty);
+
     public static IWorldGrain GetWorld(this IGrainFactory factory, WorldKey key)
         => factory.GetGrain<IWorldGrain>(key);
 

@@ -44,7 +44,7 @@ There are a couple of ways you can define a link from the current Passage to ano
 
 ### Non-Player Characters (NPC)
 
-- [ ] Linked Commands. The commands (being in) the precense of the NPC adds to the palette.
+- [ ] Action Commands. The commands (being in) the precense of the NPC adds to the palette.
 - [ ] Health. The strength of the NPC. Healty / wounded / dying / dead.
 - [ ] Navigations/movement. Some NPCs walk around quite a bit. Others are stationary.
 
@@ -68,7 +68,8 @@ So just a simple `[[Passage]]` will do.
 
 ### Assets
 
-- [ ] Linked Commands. The commands (being in) the precense of the Asset adds to the palette.
+- [ ] Action Commands. The commands of the Asset (when in inventory) adds to the palette.
+- [x] Linked Commands. The commands that can be applied to the Asset.
 
 A thing that is in a Passage. Some things can be picked up and carried (inventory), some things are stationary / fixed.
 
@@ -87,6 +88,11 @@ So just a simple `[[Passage]]` will do.
 | -- | -- |
 | `type:asset` | This marks the Twine passage as an Asset. |
 | `cmd:<commandId>` | Allows the `commandId` to be applied to this Asset. |
+
+Examples of `commandIds` are:
+- `inv-put`: Allow the Asset to be picked up by a player and put in it's inventory.
+  Consequently the Asset can be dropped from the player's inventory at another location.
+  If this command is not added, the Asset is fixed in place and cannot move.
 
 ### Generating JSON
 

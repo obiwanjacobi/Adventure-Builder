@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Jacobi.AdventureBuilder.GameContracts;
+﻿using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameClient;
 
@@ -12,15 +11,7 @@ public sealed class AdventureGameClient //: IGame
 
     public IWorldManagerGrain WorldManager
     {
-        get
-        {
-            var guidAttr = typeof(IWorldManagerGrain)
-                .GetCustomAttributes(false)
-                .OfType<GuidAttribute>()
-                .Single();
-
-            return _factory.GetGrain<IWorldManagerGrain>(Guid.Parse(guidAttr.Value.AsSpan()));
-        }
+        get { return _factory.GetSingleton<IWorldManagerGrain>(); }
     }
 
     public IPlayerGrain GetPlayer(string playerId)

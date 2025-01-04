@@ -35,6 +35,7 @@ if (builder.Environment.IsDevelopment())
         .WithImage("cosmosdb/linux/azure-cosmos-emulator")
         .WithImageTag("vnext-preview")
         .WithArgs("--protocol", "https")
+        .WithArgs("--explorer-protocol", "http")
         .WithLifetime(ContainerLifetime.Persistent)
     );
 
