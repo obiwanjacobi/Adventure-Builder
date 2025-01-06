@@ -124,7 +124,7 @@ public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrain
         return line;
     }
 
-    private async Task<PlayerLogLine> CreateLine(IPassageOccupant passageOccupant, string occupantKey, PlayerLogLineKind kind)
+    private async Task<PlayerLogLine> CreateLine(IPassageOccupantGrain passageOccupant, string occupantKey, PlayerLogLineKind kind)
     {
         var id = State.LogLines.Count;
         var title = await passageOccupant.Name();

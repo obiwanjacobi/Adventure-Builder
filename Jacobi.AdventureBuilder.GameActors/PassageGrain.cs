@@ -66,7 +66,7 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
             .Map(lnk => new PassageLinkInfo(lnk.PassageId, lnk.Name, lnk.Description)).ToList());
     }
 
-    public async Task Enter(string occupantKey)
+    public async Task Enter(GameContext context, string occupantKey)
     {
         if (State.OccupantKeys.Contains(occupantKey))
             throw new InvalidOperationException($"There is already a '{occupantKey}' in this passage.");
@@ -78,7 +78,7 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
         await notify.NotifyPassageEnter(this.GetPrimaryKeyString(), occupantKey);
     }
 
-    public async Task Exit(string occupantKey)
+    public async Task Exit(GameContext context, string occupantKey)
     {
         State.OccupantKeys.Remove(occupantKey);
         await WriteStateAsync();

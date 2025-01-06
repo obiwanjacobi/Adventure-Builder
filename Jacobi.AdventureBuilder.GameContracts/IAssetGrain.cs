@@ -1,7 +1,7 @@
 ﻿namespace Jacobi.AdventureBuilder.GameContracts;
 
 [Alias("AdventureBuilder.IAssetGrain")]
-public interface IAssetGrain : IPassageOccupant, IGrainWithStringKey
+public interface IAssetGrain : IPassageOccupantGrain, IGrainWithStringKey
 {
     Task<IReadOnlyList<string>> CommandIds();
 }

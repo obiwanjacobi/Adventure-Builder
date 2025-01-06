@@ -7,34 +7,34 @@ public abstract class PassageOccupantGrainState
     public IPassageGrain? Passage { get; set; }
 }
 
-public abstract class PassageOccupantGrain<T> : Grain<T>, IPassageOccupant
+public abstract class PassageOccupantGrain<T> : Grain<T>, IPassageOccupantGrain
     where T : PassageOccupantGrainState
 {
     public abstract Task<string> Name();
     public abstract Task<string> Description();
 
-    public async Task EnterPassage(IPassageGrain passage)
+    public async Task EnterPassage(GameContext context, IPassageGrain passage)
     {
         var key = this.GetPrimaryKeyString();
         if (State.Passage is not null)
         {
-            await State.Passage.Exit(key);
-            await OnPassageExit(State.Passage);
+            await State.Passage.Exit(context, key);
+            await OnPassageExit(context, State.Passage);
         }
 
         State.Passage = passage;
-        await passage.Enter(key);
-        await OnPassageEnter(passage);
+        await passage.Enter(context, key);
+        await OnPassageEnter(context, passage);
 
         await WriteStateAsync();
     }
 
-    protected virtual Task OnPassageEnter(IPassageGrain passage)
+    protected virtual Task OnPassageEnter(GameContext context, IPassageGrain passage)
     {
         return Task.CompletedTask;
     }
 
-    protected virtual Task OnPassageExit(IPassageGrain passage)
+    protected virtual Task OnPassageExit(GameContext context, IPassageGrain passage)
     {
         return Task.CompletedTask;
     }

@@ -32,12 +32,12 @@ public class InventoryCommandHandler : IGameCommandHandler
         if (command.Kind == InventoryPut)
         {
             await inventory.Add(asset);
-            await context.Passage.Exit(assetKey);
+            await context.Passage.Exit(context, assetKey);
         }
         if (command.Kind == InventoryTake)
         {
             await inventory.Remove(asset);
-            await context.Passage.Enter(assetKey);
+            await context.Passage.Enter(context, assetKey);
         }
 
         // TODO

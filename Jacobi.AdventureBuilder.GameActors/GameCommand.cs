@@ -12,18 +12,16 @@ public interface IGameCommandHandler
     Task<IReadOnlyList<GameCommand>> ProvideCommands(GameCommandContext context);
 }
 
-public sealed record class GameCommandContext
+[GenerateSerializer, Immutable]
+public sealed record class GameCommandContext : GameContext
 {
     public GameCommandContext(IWorldGrain world, IPassageGrain passage)
-    {
-        World = world;
-        Passage = passage;
-    }
+        : base(world, passage)
+    { }
 
     public GameCommandContext(IWorldGrain world, IPassageGrain passage, IPlayerGrain player)
-        : this(world, passage)
+        : base(world, player, passage)
     {
-        Player = player;
         Issuer = player;
         IssuerKey = player.GetPrimaryKeyString();
     }
@@ -36,13 +34,12 @@ public sealed record class GameCommandContext
         IssuerKey = npc.GetPrimaryKeyString();
     }
 
-    public IWorldGrain World { get; }
-    public IPassageGrain Passage { get; }
-
-    public IPlayerGrain? Player { get; }
+    [Id(10)]
     public INonPlayerCharacterGrain? Npc { get; }
 
-    public IPassageOccupant? Issuer { get; }
+    [Id(11)]
+    public IPassageOccupantGrain? Issuer { get; }
+    [Id(12)]
     public string? IssuerKey { get; }
 }
 

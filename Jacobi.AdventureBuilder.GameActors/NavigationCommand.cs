@@ -19,7 +19,7 @@ internal sealed class NavigationCommandHandler : IGameCommandHandler
 
         var cmdAction = GameCommandAction.Parse(command.Action);
         var passageGrain = await context.World.GetPassage(cmdAction.Id);
-        await context.Issuer.EnterPassage(passageGrain);
+        await context.Issuer.EnterPassage(context, passageGrain);
         return new GameCommandResult(passageGrain);
     }
 

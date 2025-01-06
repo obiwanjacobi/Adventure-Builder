@@ -14,9 +14,9 @@ public interface IPassageGrain : IGrainWithStringKey
     [Alias("Links")]
     Task<IReadOnlyList<PassageLinkInfo>> Links();
     [Alias("Enter")]
-    Task Enter(string occupantKey);
+    Task Enter(GameContext context, string occupantKey);
     [Alias("Exit")]
-    Task Exit(string occupantKey);
+    Task Exit(GameContext context, string occupantKey);
     [Alias("Occupants")]
     Task<IReadOnlyList<string>> Occupants();
 }

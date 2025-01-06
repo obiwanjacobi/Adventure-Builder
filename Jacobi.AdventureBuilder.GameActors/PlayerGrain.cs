@@ -55,11 +55,11 @@ public sealed class PlayerGrain(IGrainFactory factory, GameCommandExecuter comma
         return Task.FromResult(_factory.GetGrain<IPlayerInventoryGrain>(playerInventoryKey));
     }
 
-    protected override async Task OnPassageEnter(IPassageGrain passage)
+    protected override async Task OnPassageEnter(GameContext context, IPassageGrain passage)
     {
         var log = await Log();
         await log.AddLine(passage, this.GetPrimaryKeyString());
-        await base.OnPassageEnter(passage);
+        await base.OnPassageEnter(context, passage);
     }
 
     private PlayerKey GetKey()

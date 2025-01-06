@@ -35,6 +35,8 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
             State.PassageIds = world.Passages.Select(p => p.Id).ToList();
             State.NonPlayerCharacterIds = world.NonPlayerCharacters.Select(npc => npc.Id).ToList();
 
+            var context = new GameContext(this);
+
             // - place npcs and assets in passages
             foreach (var npc in world.NonPlayerCharacters)
             {
@@ -45,7 +47,7 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
                 var npcKey = new NonPlayerCharacterKey(worldKey, npc.Id);
                 var npcGrain = _factory.GetGrain<INonPlayerCharacterGrain>(npcKey);
 
-                await npcGrain.EnterPassage(passageGrain);
+                await npcGrain.EnterPassage(context, passageGrain);
             }
             foreach (var asset in world.Assets)
             {
@@ -56,7 +58,7 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
                 var assetKey = new AssetKey(worldKey, asset.Id);
                 var assetGrain = _factory.GetGrain<IAssetGrain>(assetKey);
 
-                await assetGrain.EnterPassage(passageGrain);
+                await assetGrain.EnterPassage(context, passageGrain);
             }
 
             await WriteStateAsync();
@@ -75,7 +77,8 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
         await inventory.Clear();
 
         var startPassage = await GetPassage(State.PassageIds[0]);
-        await player.EnterPassage(startPassage);
+        var context = new GameContext(this, player);
+        await player.EnterPassage(context, startPassage);
         return startPassage;
     }
 

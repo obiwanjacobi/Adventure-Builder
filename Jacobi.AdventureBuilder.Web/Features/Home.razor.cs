@@ -29,6 +29,14 @@ public partial class Home : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        // pre-render and render will call this twice
+        if (!RendererInfo.IsInteractive)
+        {
+            _notificationClient.OnPassageEnter = OnPassageEnter;
+            _notificationClient.OnPassageExit = OnPassageExit;
+            return;
+        }
+
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
@@ -40,9 +48,6 @@ public partial class Home : ComponentBase
             _playerNickname = PlayerKey.Parse(_player.GetPrimaryKeyString()).Nickname;
             var passage = await _world.Start(_player);
             await SetPassage(passage);
-
-            _notificationClient.OnPassageEnter = OnPassageEnter;
-            _notificationClient.OnPassageExit = OnPassageExit;
             await _notificationClient.StartAsync(_player.GetPrimaryKeyString(), passage.GetPrimaryKeyString());
         }
     }
