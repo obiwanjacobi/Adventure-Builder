@@ -26,13 +26,15 @@ internal sealed class NavigationCommandHandler : IGameCommandHandler
     public async Task<IReadOnlyList<GameCommand>> ProvideCommands(GameCommandContext context)
     {
         var links = await context.Passage.Links();
+        var worldKey = WorldKey.Parse(context.World.GetPrimaryKeyString());
 
         var commands = links.Map(lnk =>
             new GameCommand(
                 NavigatePassage,
                 lnk.Name, lnk.Description,
                 new GameCommandAction(NavigatePassage, lnk.PassageId).ToString(),
-                $"Navigate to {lnk.Name}"
+                $"Navigate to {lnk.Name}",
+                new PassageKey(worldKey, lnk.PassageId)
             )
         ).ToList();
 

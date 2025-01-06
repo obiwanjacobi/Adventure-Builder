@@ -26,7 +26,7 @@ public partial class StoryLine : ComponentBase
         Items = logLines.Select(line =>
             new StoryLineItem(line.Kind, line.Title, line.Description, line.CommandKind, cnt++ == 0,
                 line.SubLines?.Select(subLine =>
-                    new StoryLineItem(subLine.Kind, subLine.Title, subLine.Description, null, cnt++ == 0, [])
+                    new StoryLineItem(subLine.Kind, subLine.Title, subLine.Description, subLine.CommandKind, cnt++ == 0, [])
                 ).ToList() ?? [])
         )
         .ToList();

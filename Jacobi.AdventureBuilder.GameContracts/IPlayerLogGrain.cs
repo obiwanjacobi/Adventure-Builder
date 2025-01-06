@@ -7,21 +7,22 @@ public interface IPlayerLogGrain : IGrainWithStringKey
     Task<IReadOnlyList<PlayerLogLine>> Lines();
 
     Task AddLine(GameCommand command);
-    Task AddLine(IPassageGrain passage, string playerKey);
-    Task UpdateLine(IPassageGrain passage, string playerKey);
+    Task AddLine(IPassageGrain passage, string playerKey, GameCommand? command = null);
+    Task UpdateLine(IPassageGrain passage, string playerKey, GameCommand? command = null);
 }
 
 [GenerateSerializer, Immutable]
 public sealed class PlayerLogLine
 {
     public PlayerLogLine(long id, PlayerLogLineKind kind, string title, string description,
-        string? commandKind = null, IReadOnlyList<PlayerLogLine>? subLines = null)
+        string? commandKind = null, string? subject = null, IReadOnlyList<PlayerLogLine>? subLines = null)
     {
         Id = id;
         Kind = kind;
         Title = title;
         Description = description;
         CommandKind = commandKind;
+        Subject = subject;
         SubLines = subLines;
     }
 
@@ -36,6 +37,8 @@ public sealed class PlayerLogLine
     [Id(4)]
     public string? CommandKind { get; }
     [Id(5)]
+    public string? Subject { get; }
+    [Id(6)]
     public IReadOnlyList<PlayerLogLine>? SubLines { get; }
 }
 

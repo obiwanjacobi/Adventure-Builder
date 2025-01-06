@@ -8,8 +8,8 @@
 - [ ] Asset and NPC commands provided by grain itself?
   Tags that identify what common commands can be used on the asset/npc?
 - [ ] Display asset and npc commands inside passage log line for the given asset/npc (not in commandbar)
-- [ ] Taking and dropping assets repeately does not generate new (sub)log lines.
-  Also not for the other players that are notified of the take/drop.
+- [x] Taking and dropping assets repeately does not generate new (sub)log lines.
+- [ ] => Also not for the other players that are notified of the take/drop.
 - [ ] Notify other players when an asset is taken (player x took the 'asset')
 - [ ] Add inter-player chat.
 - [ ] Communicate with npc's.

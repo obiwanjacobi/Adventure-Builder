@@ -32,13 +32,25 @@
                         {
                             <FluentDivider Style="margin:12px" />
                             <div style="margin-left:24px">
-                                <FluentStack Orientation="Orientation.Vertical">
-                                    <div style="font-weight:bold">
-                                        <FluentIcon Value="@GetIcon(subItem)" />
-                                        @subItem.Title
-                                    </div>
-                                    <div>@subItem.Description</div>
-                                </FluentStack>
+                                @if (String.IsNullOrEmpty(subItem.CommandKind))
+                                {
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        <div style="font-weight:bold">
+                                            <FluentIcon Value="@GetIcon(subItem)" />
+                                            @subItem.Title
+                                        </div>
+                                        <div>@subItem.Description</div>
+                                    </FluentStack>
+                                }
+                                else
+                                {
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        <div>
+                                            <FluentIcon Value="@GetIcon(subItem)" />
+                                            @subItem.Title
+                                        </div>
+                                    </FluentStack>
+                                }
                             </div>
                         }
                     }

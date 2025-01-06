@@ -30,9 +30,17 @@ public sealed class PlayerGrain(IGrainFactory factory, GameCommandExecuter comma
     public async Task<GameCommandResult> Play(IWorldGrain world, IPassageGrain passage, GameCommand command)
     {
         var log = await Log();
-        await log.AddLine(command);
+        var isNavigationCmd = NavigationCommandHandler.IsNavigationCommand(command);
 
-        return await _commandExecutor.ExecuteAsync(world, this, passage, command);
+        if (isNavigationCmd)
+            await log.AddLine(command);
+
+        var result = await _commandExecutor.ExecuteAsync(world, this, passage, command);
+
+        if (result.Success && !isNavigationCmd)
+            await log.UpdateLine(passage, this.GetPrimaryKeyString(), command);
+
+        return result;
     }
 
     public Task<IPlayerLogGrain> Log()

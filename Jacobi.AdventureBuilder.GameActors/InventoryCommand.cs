@@ -63,7 +63,8 @@ public class InventoryCommandHandler : IGameCommandHandler
                 $"Take {assetName}",
                 $"Add {assetName} to your Inventory.",
                 new GameCommandAction(InventoryPut, AssetKey.Parse(asset.GetPrimaryKeyString()).AssetId).ToString(),
-                $"Added {assetName} to your inventory."
+                $"Added {assetName} to your inventory.",
+                asset.GetPrimaryKeyString()
             );
             commands.Add(cmd);
         }
@@ -75,13 +76,15 @@ public class InventoryCommandHandler : IGameCommandHandler
 
             foreach (var item in items)
             {
+                var itemKey = item.GetPrimaryKeyString();
                 var assetName = await item.Name();
                 var cmd = new GameCommand(
                     InventoryTake,
                     $"Drop {assetName}",
                     $"Remove {assetName} from your Inventory (leave it here).",
-                    new GameCommandAction(InventoryTake, AssetKey.Parse(item.GetPrimaryKeyString()).AssetId).ToString(),
-                    $"Dropped {assetName} here."
+                    new GameCommandAction(InventoryTake, AssetKey.Parse(itemKey).AssetId).ToString(),
+                    $"Dropped {assetName} here.",
+                    itemKey
                 );
                 commands.Add(cmd);
             }
