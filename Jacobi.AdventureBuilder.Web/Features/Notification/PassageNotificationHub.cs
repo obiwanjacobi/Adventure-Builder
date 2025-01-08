@@ -5,9 +5,8 @@ namespace Jacobi.AdventureBuilder.Web.Features.Notification;
 
 public interface IPassageNotifications
 {
-    // characterKey is a Player or a NPC key.
-    Task OnPassageExit(string characterKey);
-    Task OnPassageEnter(string characterKey);
+    Task OnPassageExit(string occupantKey);
+    Task OnPassageEnter(string occupantKey);
 }
 
 public sealed class PassageNotificationHub : Hub<IPassageNotifications>

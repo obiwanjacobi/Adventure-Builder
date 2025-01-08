@@ -1,4 +1,5 @@
-﻿using Jacobi.AdventureBuilder.GameContracts;
+﻿using System.Diagnostics;
+using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -8,7 +9,7 @@ public sealed class PlayerGrainState : PassageOccupantGrainState
 }
 
 public sealed class PlayerGrain(IGrainFactory factory, GameCommandExecuter commandExecutor)
-    : PassageOccupantGrain<PlayerGrainState>, IPlayerGrain
+    : PassageOccupantGrain<PlayerGrainState>, IPlayerGrain, IPassageEvents
 {
     private readonly IGrainFactory _factory = factory;
     private readonly GameCommandExecuter _commandExecutor = commandExecutor;
@@ -24,6 +25,10 @@ public sealed class PlayerGrain(IGrainFactory factory, GameCommandExecuter comma
         {
             State.IsLoaded = true;
         }
+
+        var pubSub = _factory.GetPassagePubSub();
+        pubSub.Subscribe(this);
+
         return base.OnActivateAsync(cancellationToken);
     }
 
@@ -60,6 +65,26 @@ public sealed class PlayerGrain(IGrainFactory factory, GameCommandExecuter comma
         var log = await Log();
         await log.AddLine(passage, this.GetPrimaryKeyString());
         await base.OnPassageEnter(context, passage);
+    }
+
+    public async Task OnPassageEnter(GameContext context, string passageKey, string occupantKey)
+    {
+        var thisPlayerKey = this.GetPrimaryKeyString();
+        Debug.Assert(thisPlayerKey != occupantKey);
+
+        var log = await Log();
+        var passage = _factory.GetGrain<IPassageGrain>(passageKey);
+        await log.UpdateLine(passage, thisPlayerKey);
+    }
+
+    public async Task OnPassageExit(GameContext context, string passageKey, string occupantKey)
+    {
+        var thisPlayerKey = this.GetPrimaryKeyString();
+        Debug.Assert(thisPlayerKey != occupantKey);
+
+        var log = await Log();
+        var passage = _factory.GetGrain<IPassageGrain>(passageKey);
+        await log.UpdateLine(passage, thisPlayerKey);
     }
 
     private PlayerKey GetKey()

@@ -4,8 +4,8 @@ namespace Jacobi.AdventureBuilder.Web.Features.Notification;
 
 public interface INotificationService
 {
-    Task NotifyPassageEnterAsync(string passageKey, string characterKey);
-    Task NotifyPassageExitAsync(string passageKey, string characterKey);
+    Task NotifyPassageEnterAsync(string passageKey, string occupantKey);
+    Task NotifyPassageExitAsync(string passageKey, string occupantKey);
 }
 
 public interface INotificationUsers
@@ -21,16 +21,16 @@ internal sealed class NotificationService(IHubContext<PassageNotificationHub, IP
     private readonly Dictionary<string, UserNotificationInfo> _userMap = new();
     private readonly Dictionary<string, List<UserNotificationInfo>> _passageMap = new();
 
-    public async Task NotifyPassageEnterAsync(string passageKey, string characterKey)
+    public async Task NotifyPassageEnterAsync(string passageKey, string occupantKey)
     {
-        await Enter(passageKey, characterKey);
-        await _hubContext.Clients.Group(passageKey).OnPassageEnter(characterKey);
+        await Enter(passageKey, occupantKey);
+        await _hubContext.Clients.Group(passageKey).OnPassageEnter(occupantKey);
     }
 
-    public async Task NotifyPassageExitAsync(string passageKey, string characterKey)
+    public async Task NotifyPassageExitAsync(string passageKey, string occupantKey)
     {
-        await Exit(passageKey, characterKey);
-        await _hubContext.Clients.Group(passageKey).OnPassageExit(characterKey);
+        await Exit(passageKey, occupantKey);
+        await _hubContext.Clients.Group(passageKey).OnPassageExit(occupantKey);
     }
 
     public async Task Subscribe(string connectionId, string playerKey, string? passageKey)
@@ -47,13 +47,13 @@ internal sealed class NotificationService(IHubContext<PassageNotificationHub, IP
             await Enter(passageKey, playerKey);
     }
 
-    private async Task Enter(string passageKey, string characterKey)
+    private async Task Enter(string passageKey, string occupantKey)
     {
         UserNotificationInfo? userInfo;
 
         lock (_lock)
         {
-            if (_userMap.TryGetValue(characterKey, out userInfo))
+            if (_userMap.TryGetValue(occupantKey, out userInfo))
             {
                 if (!_passageMap.TryGetValue(passageKey, out _))
                     _passageMap[passageKey] = [];
@@ -67,13 +67,13 @@ internal sealed class NotificationService(IHubContext<PassageNotificationHub, IP
             await _hubContext.Groups.AddToGroupAsync(userInfo.ConnectionId, passageKey);
     }
 
-    private async Task Exit(string passageKey, string characterKey)
+    private async Task Exit(string passageKey, string occupantKey)
     {
         UserNotificationInfo? userInfo;
 
         lock (_lock)
         {
-            if (_userMap.TryGetValue(characterKey, out userInfo) &&
+            if (_userMap.TryGetValue(occupantKey, out userInfo) &&
                 _passageMap.TryGetValue(passageKey, out var users))
             {
                 users.Remove(userInfo);

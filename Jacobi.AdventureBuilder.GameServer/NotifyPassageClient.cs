@@ -11,15 +11,15 @@ public sealed class NotifyPassageClient : INotifyPassage
         _httpClient = httpClient;
     }
 
-    public Task NotifyPassageEnter(string passageKey, string characterKey)
+    public Task NotifyPassageEnter(GameContext context, string passageKey, string occupantKey)
     {
-        var request = new { passageKey, characterKey };
+        var request = new { passageKey, occupantKey };
         return _httpClient.PostAsJsonAsync("/notify/passage/enter", request);
     }
 
-    public Task NotifyPassageExit(string passageKey, string characterKey)
+    public Task NotifyPassageExit(GameContext context, string passageKey, string occupantKey)
     {
-        var request = new { passageKey, characterKey };
+        var request = new { passageKey, occupantKey };
         return _httpClient.PostAsJsonAsync("/notify/passage/exit", request);
     }
 }

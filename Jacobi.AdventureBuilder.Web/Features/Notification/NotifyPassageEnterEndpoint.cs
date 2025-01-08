@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Jacobi.AdventureBuilder.Web.Features.Notification;
 
-internal sealed record class NotifyPassageEnterRequest(string PassageKey, string CharacterKey);
+internal sealed record class NotifyPassageEnterRequest(string PassageKey, string OccupantKey);
 
 internal sealed class NotifyPassageEnterValidator : Validator<NotifyPassageEnterRequest>
 {
@@ -11,7 +11,7 @@ internal sealed class NotifyPassageEnterValidator : Validator<NotifyPassageEnter
     {
         RuleFor(r => r.PassageKey)
             .NotEmpty();
-        RuleFor(r => r.CharacterKey)
+        RuleFor(r => r.OccupantKey)
             .NotEmpty();
     }
 }
@@ -30,7 +30,7 @@ internal sealed class NotifyPassageEnterEndpoint(INotificationService notificati
 
     public override async Task HandleAsync(NotifyPassageEnterRequest req, CancellationToken ct)
     {
-        await _notificationService.NotifyPassageEnterAsync(req.PassageKey, req.CharacterKey);
+        await _notificationService.NotifyPassageEnterAsync(req.PassageKey, req.OccupantKey);
     }
 }
 

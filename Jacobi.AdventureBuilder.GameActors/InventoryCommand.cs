@@ -1,4 +1,5 @@
-﻿using Jacobi.AdventureBuilder.GameContracts;
+﻿using System.Diagnostics;
+using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -21,7 +22,7 @@ public class InventoryCommandHandler : IGameCommandHandler
 
     public async Task<GameCommandResult> HandleCommand(GameCommandContext context, GameCommand command)
     {
-        if (context.Player is null) return new GameCommandResult();
+        if (context.Passage is null || context.Player is null) return new GameCommandResult();
 
         var cmdAction = GameCommandAction.Parse(command.Action);
         var worldKey = WorldKey.Parse(context.World.GetPrimaryKeyString());
@@ -46,6 +47,8 @@ public class InventoryCommandHandler : IGameCommandHandler
 
     public async Task<IReadOnlyList<GameCommand>> ProvideCommands(GameCommandContext context)
     {
+        Debug.Assert(context.Passage is not null);
+
         var occupants = await context.Passage.Occupants();
         var assetKeys = occupants.Where(occupant => AssetKey.IsValidKey(occupant));
         var assets = assetKeys.Map(assetKey => _factory.GetGrain<IAssetGrain>(assetKey));

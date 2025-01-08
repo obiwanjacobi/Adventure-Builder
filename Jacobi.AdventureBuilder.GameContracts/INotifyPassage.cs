@@ -2,18 +2,18 @@
 
 public interface INotifyPassage
 {
-    Task NotifyPassageEnter(string passageKey, string characterKey);
-    Task NotifyPassageExit(string passageKey, string characterKey);
+    Task NotifyPassageEnter(GameContext context, string passageKey, string occupantKey);
+    Task NotifyPassageExit(GameContext context, string passageKey, string occupantKey);
 }
 
 public interface IPassageObserverProviderGrain : INotifyPassage, IGrainWithGuidKey
 {
-    Task Subscribe(IPassageObserver subscriber);
-    Task Unsubscribe(IPassageObserver subscriber);
+    Task Subscribe(IPassageEvents subscriber);
+    //Task Unsubscribe(IPassageEvents subscriber);
 }
 
-public interface IPassageObserver : IGrainObserver
+public interface IPassageEvents : IGrainWithStringKey
 {
-    Task OnPassageEnter(string passageKey, string characterKey);
-    Task OnPassageExit(string passageKey, string characterKey);
+    Task OnPassageEnter(GameContext context, string passageKey, string occupantKey);
+    Task OnPassageExit(GameContext context, string passageKey, string occupantKey);
 }

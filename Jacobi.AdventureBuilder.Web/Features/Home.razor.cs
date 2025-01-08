@@ -29,13 +29,8 @@ public partial class Home : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        // pre-render and render will call this twice
-        if (!RendererInfo.IsInteractive)
-        {
-            _notificationClient.OnPassageEnter = OnPassageEnter;
-            _notificationClient.OnPassageExit = OnPassageExit;
-            return;
-        }
+        // pre-render and render will each call this
+        if (!RendererInfo.IsInteractive) return;
 
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -48,30 +43,29 @@ public partial class Home : ComponentBase
             _playerNickname = PlayerKey.Parse(_player.GetPrimaryKeyString()).Nickname;
             var passage = await _world.Start(_player);
             await SetPassage(passage);
+
+            _notificationClient.OnPassageEnter = OnPassageEnter;
+            _notificationClient.OnPassageExit = OnPassageExit;
             await _notificationClient.StartAsync(_player.GetPrimaryKeyString(), passage.GetPrimaryKeyString());
         }
     }
 
-    private async Task OnPassageExit(string characterId)
+    private async Task OnPassageExit(string occupantKey)
     {
         if (_player is null || _passage is null) return;
         var playerKey = _player.GetPrimaryKeyString();
-        if (playerKey == characterId) return;
+        if (playerKey == occupantKey) return;
 
-        var log = await _player.Log();
-        await log.UpdateLine(_passage, playerKey);
         await SetPassage(_passage);
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task OnPassageEnter(string characterId)
+    private async Task OnPassageEnter(string occupantKey)
     {
         if (_player is null || _passage is null) return;
         var playerKey = _player.GetPrimaryKeyString();
-        if (playerKey == characterId) return;
+        if (playerKey == occupantKey) return;
 
-        var log = await _player.Log();
-        await log.UpdateLine(_passage, playerKey);
         await SetPassage(_passage);
         await InvokeAsync(StateHasChanged);
     }

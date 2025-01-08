@@ -1,4 +1,5 @@
-﻿using Jacobi.AdventureBuilder.GameContracts;
+﻿using System.Diagnostics;
+using Jacobi.AdventureBuilder.GameContracts;
 using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
@@ -25,6 +26,8 @@ internal sealed class NavigationCommandHandler : IGameCommandHandler
 
     public async Task<IReadOnlyList<GameCommand>> ProvideCommands(GameCommandContext context)
     {
+        Debug.Assert(context.Passage is not null);
+
         var links = await context.Passage.Links();
         var worldKey = WorldKey.Parse(context.World.GetPrimaryKeyString());
 
