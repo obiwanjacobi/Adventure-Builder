@@ -14,29 +14,31 @@ DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+var services = builder.Services;
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
 builder.AddIdentityAuthentication(
     configuration.GetRequiredValue<string>("WebClientId"),
     configuration.GetRequiredValue<string>("WebClientSecret"));
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddHttpContextAccessor()
-    .AddTransient<BearerAuthorizationHandler>();
+services.AddCascadingAuthenticationState();
+services.AddHttpContextAccessor();
+services.AddTransient<BearerAuthorizationHandler>();
+
 builder.AddGameClient();
 builder.AddApiClient()
     .AddHttpMessageHandler<BearerAuthorizationHandler>();
 // Add services to the container.
-builder.Services.AddServerSideBlazor();
-builder.Services.AddRazorComponents()
+services.AddServerSideBlazor();
+services.AddRazorComponents()
     .AddInteractiveServerComponents();
-builder.Services.AddFluentUIComponents();
+services.AddFluentUIComponents();
 
-builder.Services.AddFastEndpoints();
-builder.Services.AddNotifications();
+services.AddFastEndpoints();
+services.AddNotifications();
 
-//builder.Services.AddOutputCache();
-//builder.Services.AddHttpClient<WeatherApiClient>(client =>
+//services.AddOutputCache();
+//services.AddHttpClient<WeatherApiClient>(client =>
 //    {
 //        // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
 //        // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.

@@ -33,4 +33,6 @@ public record class GameContext
     public IPlayerGrain? Player { get; }
     [Id(2)]
     public IPassageGrain? Passage { get; }
+
+    // max id < 10
 }

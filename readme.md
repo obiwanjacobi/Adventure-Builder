@@ -12,7 +12,7 @@
 - [ ] => Also not for the other players that are notified of the take/drop.
 - [ ] Notify other players when an asset is taken (player x took the 'asset')
 - [ ] Add inter-player chat.
-- [ ] Communicate with npc's.
+- [ ] Talk to npc's.
 - [ ] Certain assets introduce new commands (to be done with the asset)
   Bottle->drink(if-open),break,close,open, Knife->cut,stab,slice, 
   How to manage the dependency between asset defined in twine and the code for its commands?

@@ -57,8 +57,8 @@ public class InventoryCommandHandler : IGameCommandHandler
         foreach (var asset in assets)
         {
             // does asset support inventory-put command?
-            var commandIds = await asset.CommandIds();
-            if (!commandIds.Exists(cmdId => cmdId == InventoryPut)) continue;
+            var commandKinds = await asset.CommandKinds();
+            if (!commandKinds.Exists(cmdKind => cmdKind == InventoryPut)) continue;
 
             var assetName = await asset.Name();
             var cmd = new GameCommand(

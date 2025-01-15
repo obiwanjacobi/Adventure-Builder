@@ -37,7 +37,7 @@ public sealed class AssetGrain : PassageOccupantGrain<AssetGrainState>, IAssetGr
         await base.OnActivateAsync(cancellationToken);
     }
 
-    public Task<IReadOnlyList<string>> CommandIds()
+    public Task<IReadOnlyList<string>> CommandKinds()
     {
         return Task.FromResult((IReadOnlyList<string>)State.AssetInfo!.Properties
             .Where(prop => prop.Name == "cmd")

@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddAzureCosmosClient("cmos-adventurebuilder");
 
-builder.AddJwtAuthentication("api-service");
+builder.AddJwtAuthentication("apiservice");
 
 // Add services to the container.
 builder.Services
