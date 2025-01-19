@@ -13,7 +13,7 @@ public abstract class PassageOccupantGrain<T> : Grain<T>, IPassageOccupantGrain
     public abstract Task<string> Name();
     public abstract Task<string> Description();
 
-    public async Task EnterPassage(GameContext context, IPassageGrain passage)
+    public async Task GotoPassage(GameContext context, IPassageGrain passage)
     {
         var key = this.GetPrimaryKeyString();
         if (State.Passage is not null)

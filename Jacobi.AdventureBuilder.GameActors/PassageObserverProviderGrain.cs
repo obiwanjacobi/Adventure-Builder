@@ -1,25 +1,28 @@
-﻿using Jacobi.AdventureBuilder.GameClient;
-using Jacobi.AdventureBuilder.GameContracts;
+﻿using Jacobi.AdventureBuilder.GameContracts;
 using Microsoft.Extensions.Logging;
+using Orleans.Concurrency;
 using Orleans.Utilities;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
+// NOTE: The passageKey passed in the NotifyPassageEnter/Exit calls is (typically?)
+//  the same the grain's primary key. For now we leave it.
+
 public sealed class PassageObserverProviderGrain : Grain, IPassageObserverProviderGrain
 {
-    private readonly IGrainFactory _factory;
+    // TODO: move to grain state?
     private readonly INotifyPassage _notifyPassage;
     private readonly ObserverManager<PassageObserver> _subManager;
-    private readonly List<IPassageEvents> _subscribers = [];
+    private readonly List<PassageObserver> _subscribers = [];
+    private readonly Queue<PassageEvent> _events = new();
     private readonly IGrainTimer _timer;
-    private static readonly TimeSpan _timeout = TimeSpan.FromMinutes(1);
+    private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(60);
 
-    public PassageObserverProviderGrain(IGrainFactory factory, INotifyPassage notifyPassage, ILogger<PassageObserverProviderGrain> logger)
+    public PassageObserverProviderGrain(INotifyPassage notifyPassage, ILogger<PassageObserverProviderGrain> logger)
     {
-        _factory = factory;
         _notifyPassage = notifyPassage;
         _subManager = new ObserverManager<PassageObserver>(_timeout, logger);
-        _timer = this.RegisterGrainTimer(RefreshSubscriptions, _timeout, _timeout);
+        _timer = this.RegisterGrainTimer(OnTimer, _timeout, _timeout);
     }
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
@@ -30,17 +33,51 @@ public sealed class PassageObserverProviderGrain : Grain, IPassageObserverProvid
 
     public Task Subscribe(IPassageEvents subscriber)
     {
-        var stub = new PassageObserver(subscriber);
-        _subscribers.Add(subscriber);
-        _subManager.Subscribe(stub, stub);
+        if (FindObserver(subscriber.GetPrimaryKeyString()) is null)
+        {
+            var stub = new PassageObserver(subscriber);
+            _subscribers.Add(stub);
+            _subManager.Subscribe(stub, stub);
+        }
         return Task.CompletedTask;
+    }
+
+    public Task Unsubscribe(IPassageEvents subscriber)
+    {
+        var stub = FindObserver(subscriber.GetPrimaryKeyString());
+        if (stub is not null)
+            _subManager.Unsubscribe(stub);
+        return Task.CompletedTask;
+    }
+
+    private PassageObserver? FindObserver(string primaryKey)
+    {
+        var stub = _subscribers.SingleOrDefault(sub => sub.PrimaryKey == primaryKey);
+        return stub;
+    }
+
+    private async Task OnTimer(CancellationToken ct)
+    {
+        while (_events.Count > 0)
+        {
+            var evnt = _events.Dequeue();
+            switch (evnt.Kind)
+            {
+                case PassageEventKind.PassageEnter:
+                    await OnNotifyPassageEnter(evnt.Context, evnt.PassageKey, evnt.OccupantKey);
+                    break;
+                case PassageEventKind.PassageExit:
+                    await OnNotifyPassageExit(evnt.Context, evnt.PassageKey, evnt.OccupantKey);
+                    break;
+            }
+        }
+        await RefreshSubscriptions(ct);
     }
 
     private Task RefreshSubscriptions(CancellationToken ct)
     {
-        foreach (var sub in _subscribers)
+        foreach (var stub in _subscribers)
         {
-            var stub = new PassageObserver(sub);
             _subManager.Subscribe(stub, stub);
         }
 
@@ -48,6 +85,20 @@ public sealed class PassageObserverProviderGrain : Grain, IPassageObserverProvid
     }
 
     public Task NotifyPassageEnter(GameContext context, string passageKey, string occupantKey)
+    {
+        //_events.Enqueue(new(PassageEventKind.PassageEnter, context, passageKey, occupantKey));
+        //return Task.CompletedTask;
+        return OnNotifyPassageEnter(context, passageKey, occupantKey);
+    }
+
+    public Task NotifyPassageExit(GameContext context, string passageKey, string occupantKey)
+    {
+        //_events.Enqueue(new(PassageEventKind.PassageExit, context, passageKey, occupantKey));
+        //return Task.CompletedTask;
+        return OnNotifyPassageExit(context, passageKey, occupantKey);
+    }
+
+    private Task OnNotifyPassageEnter(GameContext context, string passageKey, string occupantKey)
     {
         _subManager.Notify(sub =>
         {
@@ -57,7 +108,7 @@ public sealed class PassageObserverProviderGrain : Grain, IPassageObserverProvid
         return _notifyPassage.NotifyPassageEnter(context, passageKey, occupantKey);
     }
 
-    public Task NotifyPassageExit(GameContext context, string passageKey, string occupantKey)
+    private Task OnNotifyPassageExit(GameContext context, string passageKey, string occupantKey)
     {
         _subManager.Notify(sub =>
         {
@@ -91,14 +142,25 @@ public sealed class PassageObserverProviderGrain : Grain, IPassageObserverProvid
             return _target.OnPassageExit(context, passageKey, occupantKey);
         }
     }
+
+    //-------------------------------------------------------------------------
+
+    private enum PassageEventKind { None, PassageEnter, PassageExit }
+    private sealed record class PassageEvent(PassageEventKind Kind, GameContext Context, string PassageKey, string OccupantKey);
 }
 
 public static class PassageObserverExtensions
 {
-    public static IPassageObserverProviderGrain GetPassagePubSub(this IGrainFactory factory)
-        => factory.GetSingleton<IPassageObserverProviderGrain>();
-    public static INotifyPassage GetNotifyPassage(this IGrainFactory factory)
-        => factory.GetSingleton<IPassageObserverProviderGrain>();
+    public static IPassageObserverProviderGrain GetPassagePubSub(this IGrainFactory factory, string passageKey)
+        => factory.GetGrain<IPassageObserverProviderGrain>(passageKey);
+    public static INotifyPassage GetNotifyPassage(this IGrainFactory factory, string passageKey)
+        => factory.GetGrain<IPassageObserverProviderGrain>(passageKey);
 }
 
-public interface IPassageObserver : IPassageEvents, IGrainObserver;
+public interface IPassageObserver : IGrainObserver
+{
+    [OneWay]
+    Task OnPassageEnter(GameContext context, string passageKey, string occupantKey);
+    [OneWay]
+    Task OnPassageExit(GameContext context, string passageKey, string occupantKey);
+}

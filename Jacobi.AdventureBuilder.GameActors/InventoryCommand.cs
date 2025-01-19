@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Jacobi.AdventureBuilder.GameClient;
 using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
@@ -28,7 +29,7 @@ public class InventoryCommandHandler : IGameCommandHandler
         var worldKey = WorldKey.Parse(context.World.GetPrimaryKeyString());
         var assetKey = new AssetKey(worldKey, cmdAction.Id);
         var asset = _factory.GetGrain<IAssetGrain>(assetKey);
-        var inventory = await context.Player.Inventory();
+        var inventory = _factory.GetPlayerInventory(context.Player);
 
         if (command.Kind == InventoryPut)
         {
@@ -74,7 +75,7 @@ public class InventoryCommandHandler : IGameCommandHandler
 
         if (context.Player is not null)
         {
-            var inventory = await context.Player.Inventory();
+            var inventory = _factory.GetPlayerInventory(context.Player);
             var items = await inventory.Assets();
 
             foreach (var item in items)

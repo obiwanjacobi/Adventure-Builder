@@ -9,10 +9,8 @@ public sealed class PlayerLogGrainState
     public List<PlayerLogLine> LogLines { get; set; } = [];
 }
 
-public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrainState>, IPlayerLogGrain
+public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
 {
-    private readonly IGrainFactory _factory = factory;
-
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
         if (!State.IsLoaded)
@@ -89,7 +87,7 @@ public sealed class PlayerLogGrain(IGrainFactory factory) : Grain<PlayerLogGrain
 
     private async Task<PlayerLogLine> CreateLine(string grainKey)
     {
-        var passageOccupant = _factory.GetPassageOccupant(grainKey, out var tag);
+        var passageOccupant = GrainFactory.GetPassageOccupant(grainKey, out var tag);
         PlayerLogLineKind kind = PlayerLogLineKind.None;
 
         passageOccupant.IfSome(passageOccupant =>

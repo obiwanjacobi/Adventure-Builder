@@ -2,6 +2,7 @@
 using Jacobi.AdventureBuilder.AdventureModel;
 using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameContracts;
+using Orleans.Concurrency;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -12,16 +13,15 @@ public sealed class PassageGrainState
     public List<string> OccupantKeys { get; } = [];
 }
 
+[Reentrant]
 public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 {
-    private readonly IGrainFactory _factory;
+    private readonly Lock _lock = new();
     private readonly IAdventureClient _client;
     private readonly GameCommandExecuter _executer;
 
-    public PassageGrain(IGrainFactory factory, IAdventureClient client,
-        GameCommandExecuter executer)
+    public PassageGrain(IAdventureClient client, GameCommandExecuter executer)
     {
-        _factory = factory;
         _client = client;
         _executer = executer;
     }
@@ -55,8 +55,8 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
     public async Task<IReadOnlyList<GameCommand>> Commands(IPlayerGrain? player)
     {
         var key = PassageKey.Parse(this.GetPrimaryKeyString());
-        var world = _factory.GetGrain<IWorldGrain>(key.WorldKey);
-        var commands = await _executer.ProviderCommands(world, this, player);
+        var world = GrainFactory.GetGrain<IWorldGrain>(key.WorldKey);
+        var commands = await _executer.ProvideCommands(world, this, player);
         return commands;
     }
 
@@ -68,23 +68,31 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
     public async Task Enter(GameContext context, string occupantKey)
     {
-        if (State.OccupantKeys.Contains(occupantKey))
-            throw new InvalidOperationException($"There is already a '{occupantKey}' in this passage.");
+        lock (_lock)
+        {
+            if (State.OccupantKeys.Contains(occupantKey))
+                throw new InvalidOperationException($"There is already a '{occupantKey}' in this passage.");
 
-        State.OccupantKeys.Add(occupantKey);
+            State.OccupantKeys.Add(occupantKey);
+        }
         await WriteStateAsync();
 
-        var notify = _factory.GetNotifyPassage();
-        await notify.NotifyPassageEnter(context, this.GetPrimaryKeyString(), occupantKey);
+        var key = this.GetPrimaryKeyString();
+        var notify = GrainFactory.GetNotifyPassage(key);
+        await notify.NotifyPassageEnter(context, key, occupantKey);
     }
 
     public async Task Exit(GameContext context, string occupantKey)
     {
-        State.OccupantKeys.Remove(occupantKey);
+        lock (_lock)
+        {
+            State.OccupantKeys.Remove(occupantKey);
+        }
         await WriteStateAsync();
 
-        var notify = _factory.GetNotifyPassage();
-        await notify.NotifyPassageExit(context, this.GetPrimaryKeyString(), occupantKey);
+        var key = this.GetPrimaryKeyString();
+        var notify = GrainFactory.GetNotifyPassage(key);
+        await notify.NotifyPassageExit(context, key, occupantKey);
     }
 
     public Task<IReadOnlyList<string>> Occupants()

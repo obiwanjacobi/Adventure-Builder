@@ -87,13 +87,14 @@ public partial class Home : ComponentBase
 
     private async Task SetPassage(IPassageGrain passage)
     {
-        var log = await _player!.Log();
-        var inventory = await _player!.Inventory();
-        var assets = await inventory.Assets();
         _passage = passage;
         _commands = await _passage.Commands(_player);
+
+        var log = _gameClient.GrainFactory.GetPlayerLog(_player!);
         _logLines = await log.Lines();
 
+        var inventory = _gameClient.GrainFactory.GetPlayerInventory(_player!);
+        var assets = await inventory.Assets();
         var inventoryItems = new List<InventoryItem>();
         foreach (var asset in assets)
         {

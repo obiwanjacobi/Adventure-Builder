@@ -6,10 +6,10 @@ public interface INotifyPassage
     Task NotifyPassageExit(GameContext context, string passageKey, string occupantKey);
 }
 
-public interface IPassageObserverProviderGrain : INotifyPassage, IGrainWithGuidKey
+public interface IPassageObserverProviderGrain : INotifyPassage, IGrainWithStringKey
 {
     Task Subscribe(IPassageEvents subscriber);
-    //Task Unsubscribe(IPassageEvents subscriber);
+    Task Unsubscribe(IPassageEvents subscriber);
 }
 
 public interface IPassageEvents : IGrainWithStringKey

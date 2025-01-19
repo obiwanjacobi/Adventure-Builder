@@ -1,4 +1,5 @@
 ﻿using Jacobi.AdventureBuilder.ApiClient;
+using Jacobi.AdventureBuilder.GameClient;
 using Jacobi.AdventureBuilder.GameContracts;
 using LanguageExt;
 
@@ -15,12 +16,10 @@ public sealed class WorldGrainState
 //[StorageProvider(ProviderName = "GameWorld")]
 public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
 {
-    private readonly IGrainFactory _factory;
     private readonly IAdventureClient _client;
 
-    public WorldGrain(IGrainFactory factory, IAdventureClient client)
+    public WorldGrain(IAdventureClient client)
     {
-        _factory = factory;
         _client = client;
     }
 
@@ -42,23 +41,23 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
             {
                 var passage = Placement.PlaceInPassage(world, npc.LinkedPassageIds);
                 var passageKey = new PassageKey(worldKey, passage.Id);
-                var passageGrain = _factory.GetGrain<IPassageGrain>(passageKey);
+                var passageGrain = GrainFactory.GetGrain<IPassageGrain>(passageKey);
 
                 var npcKey = new NonPlayerCharacterKey(worldKey, npc.Id);
-                var npcGrain = _factory.GetGrain<INonPlayerCharacterGrain>(npcKey);
+                var npcGrain = GrainFactory.GetGrain<INonPlayerCharacterGrain>(npcKey);
 
-                await npcGrain.EnterPassage(context, passageGrain);
+                await npcGrain.GotoPassage(context, passageGrain);
             }
             foreach (var asset in world.Assets)
             {
                 var passage = Placement.PlaceInPassage(world, asset.LinkedPassageIds);
                 var passageKey = new PassageKey(worldKey, passage.Id);
-                var passageGrain = _factory.GetGrain<IPassageGrain>(passageKey);
+                var passageGrain = GrainFactory.GetGrain<IPassageGrain>(passageKey);
 
                 var assetKey = new AssetKey(worldKey, asset.Id);
-                var assetGrain = _factory.GetGrain<IAssetGrain>(assetKey);
+                var assetGrain = GrainFactory.GetGrain<IAssetGrain>(assetKey);
 
-                await assetGrain.EnterPassage(context, passageGrain);
+                await assetGrain.GotoPassage(context, passageGrain);
             }
 
             await WriteStateAsync();
@@ -71,14 +70,14 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
 
     public async Task<IPassageGrain> Start(IPlayerGrain player)
     {
-        var log = await player.Log();
+        var log = GrainFactory.GetPlayerLog(player);
         await log.Clear();
-        var inventory = await player.Inventory();
+        var inventory = GrainFactory.GetPlayerInventory(player);
         await inventory.Clear();
 
         var startPassage = await GetPassage(State.PassageIds[0]);
         var context = new GameContext(this, player);
-        await player.EnterPassage(context, startPassage);
+        await player.GotoPassage(context, startPassage);
         return startPassage;
     }
 
@@ -89,7 +88,7 @@ public sealed class WorldGrain : Grain<WorldGrainState>, IWorldGrain
 
         var worldKey = WorldKey.Parse(this.GetPrimaryKeyString());
         var key = new PassageKey(worldKey, passageId);
-        var passage = _factory.GetGrain<IPassageGrain>(key);
+        var passage = GrainFactory.GetGrain<IPassageGrain>(key);
         return Task.FromResult(passage);
     }
 }

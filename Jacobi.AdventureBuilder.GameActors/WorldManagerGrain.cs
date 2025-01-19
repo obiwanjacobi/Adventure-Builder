@@ -11,13 +11,6 @@ public sealed class WorldManagerState
 
 public sealed class WorldManagerGrain : Grain<WorldManagerState>, IWorldManagerGrain
 {
-    private readonly IGrainFactory _factory;
-
-    public WorldManagerGrain(IGrainFactory factory)
-    {
-        _factory = factory;
-    }
-
     public Task<IWorldGrain> CreateNewWorld(string worldId, string name)
     {
         // for now
@@ -28,7 +21,7 @@ public sealed class WorldManagerGrain : Grain<WorldManagerState>, IWorldManagerG
         }
 
         var key = new WorldKey(worldId, name);
-        world = _factory.GetGrain<IWorldGrain>(key);
+        world = GrainFactory.GetGrain<IWorldGrain>(key);
 
         State.WorldsById.Add(worldId, world);
         return Task.FromResult(world);

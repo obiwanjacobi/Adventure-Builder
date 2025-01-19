@@ -14,13 +14,11 @@ public class NonPlayerCharacterGrainState : PassageOccupantGrainState
 public sealed class NonPlayerCharacterGrain : PassageOccupantGrain<NonPlayerCharacterGrainState>, INonPlayerCharacterGrain
 {
     private IDisposable? _navigationTimer;
-    private readonly IGrainFactory _factory;
     private readonly IAdventureClient _client;
     private readonly GameCommandExecuter _commandExecuter;
 
-    public NonPlayerCharacterGrain(IGrainFactory factory, IAdventureClient client, GameCommandExecuter commandExecuter)
+    public NonPlayerCharacterGrain(IAdventureClient client, GameCommandExecuter commandExecuter)
     {
-        _factory = factory;
         _client = client;
         _commandExecuter = commandExecuter;
     }
@@ -76,7 +74,7 @@ public sealed class NonPlayerCharacterGrain : PassageOccupantGrain<NonPlayerChar
         var cmd = navCommands[index];
 
         var key = NonPlayerCharacterKey.Parse(this.GetPrimaryKeyString());
-        var world = _factory.GetGrain<IWorldGrain>(key.WorldKey);
-        var result = await _commandExecuter.ExecuteAsync(world, this, State.Passage!, cmd);
+        var world = GrainFactory.GetGrain<IWorldGrain>(key.WorldKey);
+        var result = await _commandExecuter.ExecuteCommand(world, this, State.Passage!, cmd);
     }
 }

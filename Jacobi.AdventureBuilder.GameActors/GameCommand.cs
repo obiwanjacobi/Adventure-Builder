@@ -52,19 +52,19 @@ public sealed class GameCommandExecuter
         _handlers = handlers.ToList();
     }
 
-    public Task<GameCommandResult> ExecuteAsync(IWorldGrain world, IPlayerGrain issuer, IPassageGrain passage, GameCommand command)
+    public Task<GameCommandResult> ExecuteCommand(IWorldGrain world, IPlayerGrain issuer, IPassageGrain passage, GameCommand command)
     {
         var context = new GameCommandContext(world, passage, issuer);
-        return ExecuteAsync(context, command);
+        return ExecuteCommand(context, command);
     }
 
-    public Task<GameCommandResult> ExecuteAsync(IWorldGrain world, INonPlayerCharacterGrain issuer, IPassageGrain passage, GameCommand command)
+    public Task<GameCommandResult> ExecuteCommand(IWorldGrain world, INonPlayerCharacterGrain issuer, IPassageGrain passage, GameCommand command)
     {
         var context = new GameCommandContext(world, passage, issuer);
-        return ExecuteAsync(context, command);
+        return ExecuteCommand(context, command);
     }
 
-    private Task<GameCommandResult> ExecuteAsync(GameCommandContext context, GameCommand command)
+    private Task<GameCommandResult> ExecuteCommand(GameCommandContext context, GameCommand command)
     {
         foreach (var handler in _handlers)
         {
@@ -75,18 +75,22 @@ public sealed class GameCommandExecuter
         return Task.FromResult(new GameCommandResult());
     }
 
-    public async Task<IReadOnlyList<GameCommand>> ProviderCommands(IWorldGrain world, IPassageGrain passage, IPlayerGrain? player = null)
+    public Task<IReadOnlyList<GameCommand>> ProvideCommands(IWorldGrain world, IPassageGrain passage, IPlayerGrain? player = null)
     {
-        var commands = new List<GameCommand>();
         var context = player is null
             ? new GameCommandContext(world, passage)
             : new GameCommandContext(world, passage, player);
 
+        return ProvideCommands(context);
+    }
+
+    private async Task<IReadOnlyList<GameCommand>> ProvideCommands(GameCommandContext context)
+    {
+        var commands = new List<GameCommand>();
         foreach (var handler in _handlers)
         {
             commands.AddRange(await handler.ProvideCommands(context));
         }
-
         return commands;
     }
 }
