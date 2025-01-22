@@ -18,7 +18,7 @@ public readonly record struct AssetKey(WorldKey WorldKey, long AssetId)
     public static implicit operator string(AssetKey key)
         => key.ToString();
     public override string ToString()
-        => Key.Join<WorldKey>(WorldKey, Tag, AssetId);
+        => Key.Join(WorldKey, Tag, AssetId);
 
     public static bool IsValidKey(string key)
         => Key.HasTag(key, Tag);

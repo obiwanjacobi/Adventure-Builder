@@ -1,3 +1,4 @@
+using Azure.Storage.Queues;
 using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameActors;
 using Jacobi.AdventureBuilder.GameServer;
@@ -11,9 +12,31 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddKeyedAzureTableClient("game-clusters");
 builder.AddKeyedAzureBlobClient("game-grains");
+builder.AddKeyedAzureTableClient("game-pubsub");
+builder.AddKeyedAzureQueueClient("game-events");
 builder.AddApiClient();
 builder.AddNotifyPassage();
-builder.UseOrleans();
+builder.UseOrleans(siloBuilder =>
+{
+    siloBuilder.AddAzureQueueStreams("AzureQueueProvider", configurator =>
+    {
+        configurator.ConfigureAzureQueue(options =>
+        {
+            options.Configure<IServiceProvider>((queueOptions, sp) =>
+            {
+                queueOptions.QueueServiceClient = sp.GetKeyedService<QueueServiceClient>("game-events");
+            });
+        });
+    });
+
+    siloBuilder.ConfigureLogging(logging =>
+    {
+        logging.AddConsole();
+#if DEBUG
+        logging.AddDebug();
+#endif
+    });
+});
 
 builder.Services.AddGrainServices();
 

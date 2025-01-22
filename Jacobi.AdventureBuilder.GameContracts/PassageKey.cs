@@ -18,7 +18,7 @@ public readonly record struct PassageKey(WorldKey WorldKey, long PassageId)
     public static implicit operator string(PassageKey key)
         => key.ToString();
     public override string ToString()
-        => Key.Join<WorldKey>(WorldKey, Tag, PassageId);
+        => Key.Join(WorldKey, Tag, PassageId);
 
     public static bool IsValidKey(string key)
         => Key.HasTag(key, Tag);

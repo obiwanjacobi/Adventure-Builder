@@ -6,7 +6,7 @@ public interface INotifyPassage
     Task NotifyPassageExit(GameContext context, string passageKey, string occupantKey);
 }
 
-public interface IPassageObserverProviderGrain : INotifyPassage, IGrainWithStringKey
+public interface IPassageEventsProviderGrain : INotifyPassage, IGrainWithStringKey
 {
     Task Subscribe(IPassageEvents subscriber);
     Task Unsubscribe(IPassageEvents subscriber);

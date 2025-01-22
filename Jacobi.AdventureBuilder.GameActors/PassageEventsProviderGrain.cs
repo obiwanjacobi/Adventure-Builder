@@ -1,6 +1,7 @@
 ﻿using Jacobi.AdventureBuilder.GameContracts;
 using Microsoft.Extensions.Logging;
 using Orleans.Concurrency;
+using Orleans.Streams;
 using Orleans.Utilities;
 
 namespace Jacobi.AdventureBuilder.GameActors;
@@ -8,7 +9,7 @@ namespace Jacobi.AdventureBuilder.GameActors;
 // NOTE: The passageKey passed in the NotifyPassageEnter/Exit calls is (typically?)
 //  the same the grain's primary key. For now we leave it.
 
-public sealed class PassageObserverProviderGrain : Grain, IPassageObserverProviderGrain
+public sealed class PassageEventsProviderGrain : Grain, IPassageEventsProviderGrain
 {
     // TODO: move to grain state?
     private readonly INotifyPassage _notifyPassage;
@@ -16,13 +17,15 @@ public sealed class PassageObserverProviderGrain : Grain, IPassageObserverProvid
     private readonly List<PassageObserver> _subscribers = [];
     private readonly Queue<PassageEvent> _events = new();
     private readonly IGrainTimer _timer;
+    private readonly IStreamProvider _streamProvider;
     private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(60);
 
-    public PassageObserverProviderGrain(INotifyPassage notifyPassage, ILogger<PassageObserverProviderGrain> logger)
+    public PassageEventsProviderGrain(INotifyPassage notifyPassage, ILogger<PassageEventsProviderGrain> logger)
     {
         _notifyPassage = notifyPassage;
         _subManager = new ObserverManager<PassageObserver>(_timeout, logger);
         _timer = this.RegisterGrainTimer(OnTimer, _timeout, _timeout);
+        _streamProvider = this.GetStreamProvider("AzureQueueProvider");
     }
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
@@ -149,12 +152,12 @@ public sealed class PassageObserverProviderGrain : Grain, IPassageObserverProvid
     private sealed record class PassageEvent(PassageEventKind Kind, GameContext Context, string PassageKey, string OccupantKey);
 }
 
-public static class PassageObserverExtensions
+public static class PassageEventsExtensions
 {
-    public static IPassageObserverProviderGrain GetPassagePubSub(this IGrainFactory factory, string passageKey)
-        => factory.GetGrain<IPassageObserverProviderGrain>(passageKey);
+    public static IPassageEventsProviderGrain GetPassagePubSub(this IGrainFactory factory, string passageKey)
+        => factory.GetGrain<IPassageEventsProviderGrain>(passageKey);
     public static INotifyPassage GetNotifyPassage(this IGrainFactory factory, string passageKey)
-        => factory.GetGrain<IPassageObserverProviderGrain>(passageKey);
+        => factory.GetGrain<IPassageEventsProviderGrain>(passageKey);
 }
 
 public interface IPassageObserver : IGrainObserver

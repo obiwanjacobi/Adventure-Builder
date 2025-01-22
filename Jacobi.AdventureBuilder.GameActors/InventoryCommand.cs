@@ -4,7 +4,7 @@ using Jacobi.AdventureBuilder.GameContracts;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
-public class InventoryCommandHandler : IGameCommandHandler
+internal sealed class InventoryCommandHandler : IGameCommandHandler
 {
     public const string InventoryPut = "inv-put";
     public const string InventoryTake = "inv-take";

@@ -30,6 +30,14 @@
 
 ---
 
+## Docker Desktop
+
+For development Docker Desktop is required.
+It runs the Azure CosmosDB emulator and the Azure Storage emulator (Azurite).
+It also runs a container for Keycloak (identity).
+
+---
+
 ## Azure Storage Explorer
 
 To connect Azure Storage Explorer (Desktop App) to the Storage Account running in the container do the following:
@@ -44,3 +52,30 @@ In Azure Storage Explorer:
 - Select the 'Local storage emulator' option at the bottom
 - Replace the default port values with the 'target port' values from the Aspire dashboard
 - Create the connection.
+
+--
+
+## Orleans SDK and Storage-related Packages verion
+
+> Keep the Orleans SDK and the Orleans Azure Storage related packages on version `8.2.0`!
+
+The Azurite Azure Storage Emulator will generate an error when you upgrade.
+
+```txt
+Azure.RequestFailedException
+  HResult=0x80131500
+  Message=The API version 2025-01-05 is not supported by Azurite. Please upgrade Azurite to latest version and retry. If you are using Azurite in Visual Studio, please check you have installed latest Visual Studio patch. Azurite command line parameter "--skipApiVersionCheck" or Visual Studio Code configuration "Skip Api Version Check" can skip this error. 
+RequestId:3048fea1-58e7-4110-b79d-316befcaf36b
+Time:2025-01-22T13:16:47.602Z
+Status: 400 (The API version 2025-01-05 is not supported by Azurite. Please upgrade Azurite to latest version and retry. If you are using Azurite in Visual Studio, please check you have installed latest Visual Studio patch. Azurite command line parameter "--skipApiVersionCheck" or Visual Studio Code configuration "Skip Api Version Check" can skip this error. )
+ErrorCode: InvalidHeaderValue
+
+Content:
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Error>
+  <Code>InvalidHeaderValue</Code>
+  <Message>The API version 2025-01-05 is not supported by Azurite. Please upgrade Azurite to latest version and retry. If you are using Azurite in Visual Studio, please check you have installed latest Visual Studio patch. Azurite command line parameter "--skipApiVersionCheck" or Visual Studio Code configuration "Skip Api Version Check" can skip this error. 
+RequestId:3048fea1-58e7-4110-b79d-316befcaf36b
+Time:2025-01-22T13:16:47.602Z</Message>
+</Error>
+```

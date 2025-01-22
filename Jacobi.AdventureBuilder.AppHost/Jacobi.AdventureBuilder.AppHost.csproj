@@ -32,6 +32,8 @@
     <PackageReference Include="Aspire.Hosting.Orleans" Version="9.0.0" />
     <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="8.2.0" />
     <PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="8.2.0" />
+    <PackageReference Include="Microsoft.Orleans.Streaming" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Orleans.Streaming.AzureStorage" Version="8.2.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 

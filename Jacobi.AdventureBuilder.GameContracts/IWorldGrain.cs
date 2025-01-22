@@ -1,8 +1,11 @@
-﻿namespace Jacobi.AdventureBuilder.GameContracts;
+﻿using Orleans.Concurrency;
+
+namespace Jacobi.AdventureBuilder.GameContracts;
 
 [Alias("AdventureBuilder.IWorldGrain")]
 public interface IWorldGrain : IGrainWithStringKey
 {
+    [ReadOnly]
     [Alias("Name")]
     Task<string> Name();
 

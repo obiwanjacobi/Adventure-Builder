@@ -18,7 +18,7 @@ public readonly record struct NonPlayerCharacterKey(WorldKey WorldKey, long NpcI
     public static implicit operator string(NonPlayerCharacterKey key)
         => key.ToString();
     public override string ToString()
-        => Key.Join<WorldKey>(WorldKey, Tag, NpcId);
+        => Key.Join(WorldKey, Tag, NpcId);
 
     public static bool IsValidKey(string key)
         => Key.HasTag(key, Tag);

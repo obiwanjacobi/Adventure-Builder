@@ -1,22 +1,30 @@
-﻿namespace Jacobi.AdventureBuilder.GameContracts;
+﻿using Orleans.Concurrency;
+
+namespace Jacobi.AdventureBuilder.GameContracts;
 
 [Alias("AdventureBuilder.IPassageGrain")]
 public interface IPassageGrain : IGrainWithStringKey
 {
+    [ReadOnly]
     [Alias("Name")]
     Task<string> Name();
+    [ReadOnly]
     [Alias("Description")]
     Task<string> Description();
 
     [Alias("Commands")]
     Task<IReadOnlyList<GameCommand>> Commands(IPlayerGrain? player);
 
+    [ReadOnly]
     [Alias("Links")]
     Task<IReadOnlyList<PassageLinkInfo>> Links();
+
     [Alias("Enter")]
     Task Enter(GameContext context, string occupantKey);
     [Alias("Exit")]
     Task Exit(GameContext context, string occupantKey);
+
+    [ReadOnly]
     [Alias("Occupants")]
     Task<IReadOnlyList<string>> Occupants();
 }

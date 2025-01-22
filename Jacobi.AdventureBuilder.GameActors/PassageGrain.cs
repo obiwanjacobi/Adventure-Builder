@@ -16,7 +16,6 @@ public sealed class PassageGrainState
 [Reentrant]
 public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 {
-    private readonly Lock _lock = new();
     private readonly IAdventureClient _client;
     private readonly GameCommandExecuter _executer;
 
@@ -62,19 +61,19 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
     public Task<IReadOnlyList<PassageLinkInfo>> Links()
     {
-        return Task.FromResult((IReadOnlyList<PassageLinkInfo>)State.PassageInfo!.LinkedPassages
-            .Map(lnk => new PassageLinkInfo(lnk.PassageId, lnk.Name, lnk.Description)).ToList());
+        return Task.FromResult(
+            (IReadOnlyList<PassageLinkInfo>)State.PassageInfo!.LinkedPassages
+                .Map(lnk => new PassageLinkInfo(lnk.PassageId, lnk.Name, lnk.Description))
+                .ToList()
+        );
     }
 
     public async Task Enter(GameContext context, string occupantKey)
     {
-        lock (_lock)
-        {
-            if (State.OccupantKeys.Contains(occupantKey))
-                throw new InvalidOperationException($"There is already a '{occupantKey}' in this passage.");
+        if (State.OccupantKeys.Contains(occupantKey))
+            throw new InvalidOperationException($"There is already a '{occupantKey}' in this passage.");
 
-            State.OccupantKeys.Add(occupantKey);
-        }
+        State.OccupantKeys.Add(occupantKey);
         await WriteStateAsync();
 
         var key = this.GetPrimaryKeyString();
@@ -84,10 +83,7 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
     public async Task Exit(GameContext context, string occupantKey)
     {
-        lock (_lock)
-        {
-            State.OccupantKeys.Remove(occupantKey);
-        }
+        State.OccupantKeys.Remove(occupantKey);
         await WriteStateAsync();
 
         var key = this.GetPrimaryKeyString();

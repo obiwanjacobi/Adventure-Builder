@@ -1,9 +1,12 @@
-﻿namespace Jacobi.AdventureBuilder.GameContracts;
+﻿using Orleans.Concurrency;
+
+namespace Jacobi.AdventureBuilder.GameContracts;
 
 [Alias("AdventureBuilder.IPlayerLogGrain")]
 public interface IPlayerLogGrain : IGrainWithStringKey
 {
     Task Clear();
+    [ReadOnly]
     Task<IReadOnlyList<PlayerLogLine>> Lines();
 
     Task AddLine(GameCommand command);

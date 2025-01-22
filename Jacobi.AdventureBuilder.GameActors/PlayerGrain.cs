@@ -84,6 +84,6 @@ public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
         await log.UpdateLine(passage, playerKey);
     }
 
-    private IPassageObserverProviderGrain GetPassagePubSub()
+    private IPassageEventsProviderGrain GetPassagePubSub()
         => GrainFactory.GetPassagePubSub(State.Passage.GetPrimaryKeyString());
 }
