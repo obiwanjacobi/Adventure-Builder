@@ -18,11 +18,13 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 {
     private readonly IAdventureClient _client;
     private readonly GameCommandExecuter _executer;
+    private readonly INotifyPassage _notifyClient;
 
-    public PassageGrain(IAdventureClient client, GameCommandExecuter executer)
+    public PassageGrain(IAdventureClient client, GameCommandExecuter executer, INotifyPassage notifyClient)
     {
         _client = client;
         _executer = executer;
+        _notifyClient = notifyClient;
     }
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
@@ -77,8 +79,9 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
         await WriteStateAsync();
 
         var key = this.GetPrimaryKeyString();
-        var notify = GrainFactory.GetNotifyPassage(key);
-        await notify.NotifyPassageEnter(context, key, occupantKey);
+        await NotifyPassageEnter(context, key, occupantKey);
+        //var notify = GrainFactory.GetNotifyPassage(key);
+        //await notify.NotifyPassageEnter(context, key, occupantKey);
     }
 
     public async Task Exit(GameContext context, string occupantKey)
@@ -87,12 +90,43 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
         await WriteStateAsync();
 
         var key = this.GetPrimaryKeyString();
-        var notify = GrainFactory.GetNotifyPassage(key);
-        await notify.NotifyPassageExit(context, key, occupantKey);
+        await NotifyPassageExit(context, key, occupantKey);
+        //var notify = GrainFactory.GetNotifyPassage(key);
+        //await notify.NotifyPassageExit(context, key, occupantKey);
     }
 
     public Task<IReadOnlyList<string>> Occupants()
     {
         return Task.FromResult((IReadOnlyList<string>)State.OccupantKeys);
+    }
+
+    private readonly Dictionary<string, IPassageEvents> _subscribers = [];
+    public Task Subscribe(IPassageEvents subscriber, string subscriberKey)
+    {
+        _subscribers[subscriberKey] = subscriber;
+        return Task.CompletedTask;
+    }
+    public Task Unsubscribe(string subscriberKey)
+    {
+        _subscribers.Remove(subscriberKey);
+        return Task.CompletedTask;
+    }
+    private Task NotifyPassageEnter(GameContext context, string passageKey, string occupantKey)
+    {
+        foreach (var subscriber in _subscribers)
+        {
+            subscriber.Value.OnPassageEnter(context, passageKey, occupantKey);
+        }
+
+        return _notifyClient.NotifyPassageEnter(context, passageKey, occupantKey);
+    }
+    private Task NotifyPassageExit(GameContext context, string passageKey, string occupantKey)
+    {
+        foreach (var subscriber in _subscribers)
+        {
+            subscriber.Value.OnPassageExit(context, passageKey, occupantKey);
+        }
+
+        return _notifyClient.NotifyPassageExit(context, passageKey, occupantKey);
     }
 }

@@ -1,8 +1,7 @@
-﻿using Jacobi.AdventureBuilder.GameContracts;
+﻿using System.Diagnostics;
+using Jacobi.AdventureBuilder.GameContracts;
 using Microsoft.Extensions.Logging;
-using Orleans.Concurrency;
 using Orleans.Streams;
-using Orleans.Utilities;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -11,21 +10,17 @@ namespace Jacobi.AdventureBuilder.GameActors;
 
 public sealed class PassageEventsProviderGrain : Grain, IPassageEventsProviderGrain
 {
+    private const string PassageEvents = "PassageEvents";
+
     // TODO: move to grain state?
     private readonly INotifyPassage _notifyPassage;
-    private readonly ObserverManager<PassageObserver> _subManager;
-    private readonly List<PassageObserver> _subscribers = [];
-    private readonly Queue<PassageEvent> _events = new();
-    private readonly IGrainTimer _timer;
-    private readonly IStreamProvider _streamProvider;
-    private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(60);
+    private readonly Dictionary<string, StreamSubscriptionHandle<PassageEvent>> _subscribers = [];
+    //private readonly IStreamProvider _streamProvider;
 
     public PassageEventsProviderGrain(INotifyPassage notifyPassage, ILogger<PassageEventsProviderGrain> logger)
     {
         _notifyPassage = notifyPassage;
-        _subManager = new ObserverManager<PassageObserver>(_timeout, logger);
-        _timer = this.RegisterGrainTimer(OnTimer, _timeout, _timeout);
-        _streamProvider = this.GetStreamProvider("AzureQueueProvider");
+        //_streamProvider = this.GetStreamProvider("AzureQueueProvider");
     }
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
@@ -34,122 +29,47 @@ public sealed class PassageEventsProviderGrain : Grain, IPassageEventsProviderGr
         return base.OnActivateAsync(cancellationToken);
     }
 
-    public Task Subscribe(IPassageEvents subscriber)
+    public async Task Subscribe(IAsyncObserver<PassageEvent> subscriber, string subscriberKey)
     {
-        if (FindObserver(subscriber.GetPrimaryKeyString()) is null)
+        //var stream = GetEventStream();
+        //var subHandle = await stream.SubscribeAsync(subscriber);
+
+        //_subscribers.Add(subscriberKey, subHandle);
+    }
+
+    public Task Unsubscribe(string subscriberKey)
+    {
+        if (_subscribers.TryGetValue(subscriberKey, out var subHandle))
         {
-            var stub = new PassageObserver(subscriber);
-            _subscribers.Add(stub);
-            _subManager.Subscribe(stub, stub);
-        }
-        return Task.CompletedTask;
-    }
-
-    public Task Unsubscribe(IPassageEvents subscriber)
-    {
-        var stub = FindObserver(subscriber.GetPrimaryKeyString());
-        if (stub is not null)
-            _subManager.Unsubscribe(stub);
-        return Task.CompletedTask;
-    }
-
-    private PassageObserver? FindObserver(string primaryKey)
-    {
-        var stub = _subscribers.SingleOrDefault(sub => sub.PrimaryKey == primaryKey);
-        return stub;
-    }
-
-    private async Task OnTimer(CancellationToken ct)
-    {
-        while (_events.Count > 0)
-        {
-            var evnt = _events.Dequeue();
-            switch (evnt.Kind)
-            {
-                case PassageEventKind.PassageEnter:
-                    await OnNotifyPassageEnter(evnt.Context, evnt.PassageKey, evnt.OccupantKey);
-                    break;
-                case PassageEventKind.PassageExit:
-                    await OnNotifyPassageExit(evnt.Context, evnt.PassageKey, evnt.OccupantKey);
-                    break;
-            }
-        }
-        await RefreshSubscriptions(ct);
-    }
-
-    private Task RefreshSubscriptions(CancellationToken ct)
-    {
-        foreach (var stub in _subscribers)
-        {
-            _subManager.Subscribe(stub, stub);
+            _subscribers.Remove(subscriberKey);
+            return subHandle.UnsubscribeAsync();
         }
 
         return Task.CompletedTask;
     }
 
-    public Task NotifyPassageEnter(GameContext context, string passageKey, string occupantKey)
+    public async Task NotifyPassageEnter(GameContext context, string passageKey, string occupantKey)
     {
-        //_events.Enqueue(new(PassageEventKind.PassageEnter, context, passageKey, occupantKey));
-        //return Task.CompletedTask;
-        return OnNotifyPassageEnter(context, passageKey, occupantKey);
+        var key = this.GetPrimaryKeyString();
+        Debug.Assert(key == passageKey);
+
+        //var stream = GetEventStream();
+        //await stream.OnNextAsync(new PassageEvent(PassageAction.Enter, context, key, occupantKey));
+        await _notifyPassage.NotifyPassageEnter(context, passageKey, occupantKey);
     }
 
-    public Task NotifyPassageExit(GameContext context, string passageKey, string occupantKey)
+    public async Task NotifyPassageExit(GameContext context, string passageKey, string occupantKey)
     {
-        //_events.Enqueue(new(PassageEventKind.PassageExit, context, passageKey, occupantKey));
-        //return Task.CompletedTask;
-        return OnNotifyPassageExit(context, passageKey, occupantKey);
+        var key = this.GetPrimaryKeyString();
+        Debug.Assert(key == passageKey);
+
+        //var stream = GetEventStream();
+        //await stream.OnNextAsync(new PassageEvent(PassageAction.Exit, context, key, occupantKey));
+        await _notifyPassage.NotifyPassageExit(context, passageKey, occupantKey);
     }
 
-    private Task OnNotifyPassageEnter(GameContext context, string passageKey, string occupantKey)
-    {
-        _subManager.Notify(sub =>
-        {
-            if (sub.PrimaryKey != occupantKey)
-                sub.OnPassageEnter(context, passageKey, occupantKey);
-        });
-        return _notifyPassage.NotifyPassageEnter(context, passageKey, occupantKey);
-    }
-
-    private Task OnNotifyPassageExit(GameContext context, string passageKey, string occupantKey)
-    {
-        _subManager.Notify(sub =>
-        {
-            if (sub.PrimaryKey != occupantKey)
-                sub.OnPassageExit(context, passageKey, occupantKey);
-        });
-        return _notifyPassage.NotifyPassageExit(context, passageKey, occupantKey);
-    }
-
-    //-------------------------------------------------------------------------
-
-    private sealed class PassageObserver : IPassageObserver
-    {
-        private readonly IPassageEvents _target;
-
-        public PassageObserver(IPassageEvents target)
-        {
-            _target = target;
-        }
-
-        public string PrimaryKey
-            => _target.GetPrimaryKeyString();
-
-        public Task OnPassageEnter(GameContext context, string passageKey, string occupantKey)
-        {
-            return _target.OnPassageEnter(context, passageKey, occupantKey);
-        }
-
-        public Task OnPassageExit(GameContext context, string passageKey, string occupantKey)
-        {
-            return _target.OnPassageExit(context, passageKey, occupantKey);
-        }
-    }
-
-    //-------------------------------------------------------------------------
-
-    private enum PassageEventKind { None, PassageEnter, PassageExit }
-    private sealed record class PassageEvent(PassageEventKind Kind, GameContext Context, string PassageKey, string OccupantKey);
+    //private IAsyncStream<PassageEvent> GetEventStream()
+    //    => _streamProvider.GetStream<PassageEvent>(PassageEvents, this.GetPrimaryKeyString());
 }
 
 public static class PassageEventsExtensions
@@ -158,12 +78,12 @@ public static class PassageEventsExtensions
         => factory.GetGrain<IPassageEventsProviderGrain>(passageKey);
     public static INotifyPassage GetNotifyPassage(this IGrainFactory factory, string passageKey)
         => factory.GetGrain<IPassageEventsProviderGrain>(passageKey);
-}
 
-public interface IPassageObserver : IGrainObserver
-{
-    [OneWay]
-    Task OnPassageEnter(GameContext context, string passageKey, string occupantKey);
-    [OneWay]
-    Task OnPassageExit(GameContext context, string passageKey, string occupantKey);
+    public static async Task<StreamSubscriptionHandle<PassageEvent>> Subscribe(this Grain grain, IAsyncObserver<PassageEvent> subscriber, string passageKey)
+    {
+        var provider = grain.GetStreamProvider("AzureQueueProvider");
+        var stream = provider.GetStream<PassageEvent>("PassageEvents", passageKey);
+        var subHandle = await stream.SubscribeAsync(subscriber);
+        return subHandle;
+    }
 }

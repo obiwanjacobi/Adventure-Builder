@@ -1,4 +1,3 @@
-using Azure.Storage.Queues;
 using Jacobi.AdventureBuilder.ApiClient;
 using Jacobi.AdventureBuilder.GameActors;
 using Jacobi.AdventureBuilder.GameServer;
@@ -18,16 +17,16 @@ builder.AddApiClient();
 builder.AddNotifyPassage();
 builder.UseOrleans(siloBuilder =>
 {
-    siloBuilder.AddAzureQueueStreams("AzureQueueProvider", configurator =>
-    {
-        configurator.ConfigureAzureQueue(options =>
-        {
-            options.Configure<IServiceProvider>((queueOptions, sp) =>
-            {
-                queueOptions.QueueServiceClient = sp.GetKeyedService<QueueServiceClient>("game-events");
-            });
-        });
-    });
+    //siloBuilder.AddAzureQueueStreams("AzureQueueProvider", configurator =>
+    //{
+    //    configurator.ConfigureAzureQueue(options =>
+    //    {
+    //        options.Configure<IServiceProvider>((queueOptions, sp) =>
+    //        {
+    //            queueOptions.QueueServiceClient = sp.GetKeyedService<QueueServiceClient>("game-events");
+    //        });
+    //    });
+    //});
 
     siloBuilder.ConfigureLogging(logging =>
     {
