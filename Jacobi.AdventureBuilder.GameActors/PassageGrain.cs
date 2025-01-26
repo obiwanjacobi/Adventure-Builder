@@ -80,8 +80,6 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
         var key = this.GetPrimaryKeyString();
         await NotifyPassageEnter(context, key, occupantKey);
-        //var notify = GrainFactory.GetNotifyPassage(key);
-        //await notify.NotifyPassageEnter(context, key, occupantKey);
     }
 
     public async Task Exit(GameContext context, string occupantKey)
@@ -91,8 +89,6 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
 
         var key = this.GetPrimaryKeyString();
         await NotifyPassageExit(context, key, occupantKey);
-        //var notify = GrainFactory.GetNotifyPassage(key);
-        //await notify.NotifyPassageExit(context, key, occupantKey);
     }
 
     public Task<IReadOnlyList<string>> Occupants()

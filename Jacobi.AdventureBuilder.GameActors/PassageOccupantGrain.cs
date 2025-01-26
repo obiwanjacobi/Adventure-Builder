@@ -38,7 +38,4 @@ public abstract class PassageOccupantGrain<T> : Grain<T>, IPassageOccupantGrain
     {
         return Task.CompletedTask;
     }
-
-    protected IPassageEventsProviderGrain GetPassagePubSub()
-        => GrainFactory.GetPassagePubSub(State.Passage.GetPrimaryKeyString());
 }
