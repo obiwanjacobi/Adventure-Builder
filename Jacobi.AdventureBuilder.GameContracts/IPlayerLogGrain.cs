@@ -10,8 +10,8 @@ public interface IPlayerLogGrain : IGrainWithStringKey
     Task<IReadOnlyList<PlayerLogLine>> Lines();
 
     Task AddLine(GameCommand command);
-    Task AddLine(IPassageGrain passage, string playerKey, GameCommand? command = null);
-    Task UpdateLine(IPassageGrain passage, string playerKey, GameCommand? command = null);
+    Task AddLine(IPassageGrain passage, GameCommand? command = null);
+    Task UpdateLine(IPassageGrain passage, GameCommand? command = null);
 }
 
 [GenerateSerializer, Immutable]

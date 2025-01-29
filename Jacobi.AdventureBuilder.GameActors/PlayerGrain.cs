@@ -43,7 +43,7 @@ public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
         var result = await _commandExecutor.ExecuteCommand(world, this, passage, command);
 
         if (result.Success && !isNavigationCmd)
-            await log.UpdateLine(passage, this.GetPrimaryKeyString(), command);
+            await log.UpdateLine(passage, command);
 
         return result;
     }
@@ -53,7 +53,7 @@ public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
         await Subscribe();
 
         var log = GrainFactory.GetPlayerLog(this);
-        await log.AddLine(passage, this.GetPrimaryKeyString());
+        await log.AddLine(passage);
         await base.OnPassageEnter(context, passage);
     }
 
@@ -63,24 +63,27 @@ public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
         await base.OnPassageExit(context, passage);
     }
 
-    public async Task OnPassageEnter(GameContext context, string passageKey, string occupantKey)
+    public Task OnPassageEnter(GameContext context, string passageKey, string occupantKey)
     {
-        var playerKey = this.GetPrimaryKeyString();
-        if (playerKey == occupantKey) return;
+        if (this.GetPrimaryKeyString() != occupantKey)
+            return UpdateLog(passageKey);
 
-        var log = GrainFactory.GetPlayerLog(this);
-        var passage = GrainFactory.GetGrain<IPassageGrain>(passageKey);
-        await log.UpdateLine(passage, playerKey);
+        return Task.CompletedTask;
     }
 
-    public async Task OnPassageExit(GameContext context, string passageKey, string occupantKey)
+    public Task OnPassageExit(GameContext context, string passageKey, string occupantKey)
     {
-        var playerKey = this.GetPrimaryKeyString();
-        if (playerKey == occupantKey) return;
+        if (this.GetPrimaryKeyString() != occupantKey)
+            return UpdateLog(passageKey);
 
-        var log = GrainFactory.GetPlayerLog(this);
+        return Task.CompletedTask;
+    }
+
+    private Task UpdateLog(string passageKey)
+    {
+        var log = GrainFactory.GetPlayerLog(this.GetPrimaryKeyString());
         var passage = GrainFactory.GetGrain<IPassageGrain>(passageKey);
-        await log.UpdateLine(passage, playerKey);
+        return log.UpdateLine(passage);
     }
 
     private Task Subscribe()

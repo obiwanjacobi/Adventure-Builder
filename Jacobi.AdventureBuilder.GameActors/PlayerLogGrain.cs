@@ -1,5 +1,6 @@
 ﻿using Jacobi.AdventureBuilder.GameClient;
 using Jacobi.AdventureBuilder.GameContracts;
+using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -11,12 +12,22 @@ public sealed class PlayerLogGrainState
 
 public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
 {
+    private const int MaxLogLines = 5;
+
+    public PlayerLogGrain(INotifyPassage notifyClient)
+    {
+        _notifyClient = notifyClient;
+    }
+
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
         if (!State.IsLoaded)
         {
             State.IsLoaded = true;
         }
+
+        var timeSpan = TimeSpan.FromMilliseconds(1000);
+        this.RegisterGrainTimer(OnProcessLogEvents, timeSpan, timeSpan);
 
         return base.OnActivateAsync(cancellationToken);
     }
@@ -40,24 +51,32 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
         await WriteStateAsync();
     }
 
-    // playerKey is used to filter out the current player as occupant
-    // this also prevents reentrant grain issues
-    public async Task AddLine(IPassageGrain passage, string playerKey, GameCommand? command = null)
+    public async Task AddLine(IPassageGrain passage, GameCommand? command = null)
     {
         var subLines = new List<PlayerLogLine>();
 
         if (command is not null)
             subLines.Add(await CreateLine(command));
 
-        var occupantLines = await CreateSubLines(await passage.Occupants(), playerKey);
+        var occupantLines = await CreateSubLines(await passage.Occupants());
         subLines.AddRange(occupantLines);
 
         var line = await CreateLine(passage, subLines);
         State.LogLines.Insert(0, line);
+
+        while (State.LogLines.Count > MaxLogLines)
+            State.LogLines.RemoveAt(State.LogLines.Count - 1);
+
         await WriteStateAsync();
     }
 
-    public async Task UpdateLine(IPassageGrain passage, string playerKey, GameCommand? command = null)
+    public Task UpdateLine(IPassageGrain passage, GameCommand? command = null)
+    {
+        QueueLogEvent(passage.GetPrimaryKeyString(), command);
+        return Task.CompletedTask;
+    }
+
+    private async Task UpdateLineInternal(IPassageGrain passage, GameCommand? command = null)
     {
         // passage must be top line
         var topLine = State.LogLines[0];
@@ -76,7 +95,7 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
         if (command is not null)
             subLines.Add(await CreateLine(command));
 
-        var occupantLines = await CreateSubLines(await passage.Occupants(), playerKey);
+        var occupantLines = await CreateSubLines(await passage.Occupants());
         subLines.AddRange(occupantLines);
 
         var line = await CreateLine(passage, subLines);
@@ -90,7 +109,7 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
         var passageOccupant = GrainFactory.GetPassageOccupant(grainKey, out var tag);
         PlayerLogLineKind kind = PlayerLogLineKind.None;
 
-        passageOccupant.IfSome(passageOccupant =>
+        if (tag is not null)
         {
             kind = tag switch
             {
@@ -100,7 +119,7 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
                 _ => throw new NotImplementedException(
                     $"No implementation for '{tag}' type of IPassageOccupant object.")
             };
-        });
+        };
 
         if (kind != PlayerLogLineKind.None &&
             passageOccupant.TryGetValue(out var occupant))
@@ -140,8 +159,9 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
         return Task.FromResult(line);
     }
 
-    private async Task<List<PlayerLogLine>> CreateSubLines(IReadOnlyList<string> occupants, string playerKey)
+    private async Task<List<PlayerLogLine>> CreateSubLines(IReadOnlyList<string> occupants)
     {
+        var playerKey = this.GetPrimaryKeyString();
         var subLines = new List<PlayerLogLine>();
         foreach (var occupant in occupants)
         {
@@ -150,5 +170,49 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
         }
 
         return subLines;
+    }
+
+
+    private readonly record struct DeferedLogEvent(string PassageKey, GameCommand? Command);
+    private readonly List<DeferedLogEvent> _logEvents = [];
+    private readonly INotifyPassage _notifyClient;
+
+    private void QueueLogEvent(string passageKey, GameCommand? command)
+    {
+        // no use in queuing the same passage multiple times
+        if (!_logEvents.Exists(le => le.PassageKey == passageKey))
+            _logEvents.Add(new DeferedLogEvent(passageKey, command));
+    }
+
+    private async Task OnProcessLogEvents()
+    {
+        var passageKeys = new List<string>();
+
+        while (_logEvents.Count > 0)
+        {
+            var logEvent = _logEvents[0];
+            _logEvents.RemoveAt(0);
+            await OnLogEvent(logEvent);
+
+            if (!passageKeys.Contains(logEvent.PassageKey))
+                passageKeys.Add(logEvent.PassageKey);
+        }
+
+        foreach (var passageKey in passageKeys)
+        {
+            var player = GrainFactory.GetPlayer(this.GetPrimaryKeyString());
+            var passageKeyObj = PassageKey.Parse(passageKey);
+            var passage = GrainFactory.GetPassage(passageKey);
+            var world = GrainFactory.GetWorld(passageKeyObj.WorldKey);
+            var context = new GameContext(world, player, passage);
+            // TODO: this should be a player-log-changed notification
+            await _notifyClient.NotifyPassageEnter(context, passageKey, "");
+        }
+    }
+
+    private async Task OnLogEvent(DeferedLogEvent logEvent)
+    {
+        var passage = GrainFactory.GetGrain<IPassageGrain>(logEvent.PassageKey);
+        await UpdateLineInternal(passage, logEvent.Command);
     }
 }

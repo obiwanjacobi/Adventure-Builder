@@ -11,22 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddKeyedAzureTableClient("game-clusters");
 builder.AddKeyedAzureBlobClient("game-grains");
-builder.AddKeyedAzureTableClient("game-pubsub");
-builder.AddKeyedAzureQueueClient("game-events");
 builder.AddApiClient();
 builder.AddNotifyPassage();
 builder.UseOrleans(siloBuilder =>
 {
-    //siloBuilder.AddAzureQueueStreams("AzureQueueProvider", configurator =>
-    //{
-    //    configurator.ConfigureAzureQueue(options =>
-    //    {
-    //        options.Configure<IServiceProvider>((queueOptions, sp) =>
-    //        {
-    //            queueOptions.QueueServiceClient = sp.GetKeyedService<QueueServiceClient>("game-events");
-    //        });
-    //    });
-    //});
+    siloBuilder.AddIncomingGrainCallFilter<InterceptorGrain>();
 
     siloBuilder.ConfigureLogging(logging =>
     {

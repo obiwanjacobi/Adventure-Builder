@@ -51,7 +51,7 @@ internal sealed class InventoryCommandHandler : IGameCommandHandler
         Debug.Assert(context.Passage is not null);
 
         var occupants = await context.Passage.Occupants();
-        var assetKeys = occupants.Where(occupant => AssetKey.IsValidKey(occupant));
+        var assetKeys = occupants.Where(occupant => AssetKey.IsValidKey(occupant)).ToList();
         var assets = assetKeys.Map(assetKey => _factory.GetGrain<IAssetGrain>(assetKey));
 
         var commands = new List<GameCommand>();

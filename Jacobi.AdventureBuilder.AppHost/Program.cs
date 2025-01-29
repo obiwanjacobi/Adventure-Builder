@@ -14,15 +14,11 @@ var cosmosDb = cosmos.AddDatabase("adventuredata");
 var storage = builder.AddAzureStorage("st-adventurebuilder");
 var gameClusters = storage.AddTables("game-clusters");
 var grainBlobs = storage.AddBlobs("game-grains");
-//var gamePubSub = storage.AddTables("game-pubsub");
-//var gameEvents = storage.AddQueues("game-events");
 
 // orleans actor model
 var orleans = builder.AddOrleans("default")
     .WithClustering(gameClusters)
     .WithGrainStorage("Default", grainBlobs)
-    //.WithGrainStorage("PubSubStore", gamePubSub)
-    //.WithStreaming("AzureQueueStorage", gameEvents) << does not work!
     ;
 
 // Identity Provider
@@ -56,7 +52,6 @@ var apiService = builder.AddProject<Projects.Jacobi_AdventureBuilder_ApiService>
 var gameServer = builder.AddProject<Projects.Jacobi_AdventureBuilder_GameServer>("gameserver")
     .WithReference(apiService).WaitFor(apiService)
     .WithReference(orleans).WithReplicas(1)
-    //.WithReference(gameEvents)
     ;
 
 var webApp = builder.AddProject<Projects.Jacobi_AdventureBuilder_Web>("webfrontend")
