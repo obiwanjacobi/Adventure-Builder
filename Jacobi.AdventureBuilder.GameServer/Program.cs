@@ -25,8 +25,14 @@ builder.UseOrleans(siloBuilder =>
             options.Configure<IServiceProvider>((queueOptions, sp) =>
             {
                 queueOptions.QueueServiceClient = sp.GetKeyedService<QueueServiceClient>("game-events");
+                queueOptions.QueueNames = ["adventure-events-azurequeueprovider"];
             });
         });
+        configurator.ConfigurePullingAgent(ob => ob.Configure(options =>
+        {
+            options.GetQueueMsgsTimerPeriod = TimeSpan.FromMilliseconds(1000);
+            //options.StreamInactivityPeriod = TimeSpan.FromMilliseconds(1000);
+        }));
     });
 
     siloBuilder.ConfigureLogging(logging =>

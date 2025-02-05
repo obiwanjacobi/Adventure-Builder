@@ -1,11 +1,13 @@
-﻿<FluentOverflow Orientation="Orientation.Vertical">
+﻿@using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
+
+<FluentOverflow Orientation="Orientation.Vertical">
     @foreach (var item in Items)
     {
         <FluentOverflowItem Fixed="OverflowItemFixed.Ellipsis">
             <FluentBadge Style="height:100%">
                 <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" Style="max-width:180px;height:100%">
                     <span>
-                        <FluentIcon Value="@(new Icons.Regular.Size20.Square())"></FluentIcon>
+                        <FluentIcon Value="@(new Size20.Square())"></FluentIcon>
                         @item.Name
                     </span>
                     <span style="width: 100%;white-space:normal;word-wrap:break-word">

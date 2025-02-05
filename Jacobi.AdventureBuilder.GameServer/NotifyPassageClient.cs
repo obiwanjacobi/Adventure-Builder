@@ -2,7 +2,7 @@
 
 namespace Jacobi.AdventureBuilder.GameServer;
 
-public sealed class NotifyPassageClient : INotifyPassage
+public sealed class NotifyPassageClient : IPassageEventsGrain
 {
     private readonly HttpClient _httpClient;
 
@@ -38,7 +38,7 @@ internal static class NotifyExtensions
 
     public static IHttpClientBuilder AddNotifyPassageClient(this IServiceCollection services, string serverUrl)
     {
-        return services.AddHttpClient<INotifyPassage, NotifyPassageClient>(client =>
+        return services.AddHttpClient<IPassageEventsGrain, NotifyPassageClient>(client =>
         {
             client.BaseAddress = new Uri(serverUrl);
         });

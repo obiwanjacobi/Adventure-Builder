@@ -79,10 +79,14 @@ public partial class Home : ComponentBase
         {
             var result = await _player!.Play(_world!, _passage, command);
             if (result.Passage is null) return;
-
             await SetPassage(result.Passage);
-            StateHasChanged();
         }
+        else
+        {
+            await SetPassage(_passage);
+        }
+
+        StateHasChanged();
     }
 
     private async Task SetPassage(IPassageGrain passage)
