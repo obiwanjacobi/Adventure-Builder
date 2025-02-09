@@ -13,11 +13,14 @@ internal static class NotificationExtensions
         services.AddSingleton<INotificationUsers>(serviceProvider
             => serviceProvider.GetRequiredService<NotificationService>());
 
+        //services.AddSingleton<IPassageEvents, PassageEventsNotification>();
+        //services.AddSingleton<IPlayerEvents, PlayerEventsNotification>();
+
         return services;
     }
 
     public static void MapNotifications(this WebApplication app)
     {
-        app.MapHub<PassageNotificationHub>("/notifications");
+        app.MapHub<GameNotificationHub>("/notifications");
     }
 }

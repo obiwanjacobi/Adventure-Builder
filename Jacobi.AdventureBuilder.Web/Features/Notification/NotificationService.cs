@@ -4,8 +4,12 @@ namespace Jacobi.AdventureBuilder.Web.Features.Notification;
 
 public interface INotificationService
 {
-    Task NotifyPassageEnterAsync(string passageKey, string occupantKey);
-    Task NotifyPassageExitAsync(string passageKey, string occupantKey);
+    // player
+    Task NotifyPlayerLogChanged(string playerKey);
+
+    // passage
+    Task NotifyPassageEnter(string passageKey, string occupantKey);
+    Task NotifyPassageExit(string passageKey, string occupantKey);
 }
 
 public interface INotificationUsers
@@ -13,24 +17,41 @@ public interface INotificationUsers
     Task Subscribe(string connectionId, string playerKey, string? passageKey);
 }
 
-internal sealed class NotificationService(IHubContext<PassageNotificationHub, IPassageNotifications> hubContext)
+internal sealed class NotificationService(IHubContext<GameNotificationHub, IGameNotifications> hubContext)
     : INotificationService, INotificationUsers
 {
     private readonly Lock _lock = new();    // we are a singleton
-    private readonly IHubContext<PassageNotificationHub, IPassageNotifications> _hubContext = hubContext;
+    private readonly IHubContext<GameNotificationHub, IGameNotifications> _hubContext = hubContext;
+    // maps player keys to user info
     private readonly Dictionary<string, UserNotificationInfo> _userMap = new();
+    // maps passage keys to user info
     private readonly Dictionary<string, List<UserNotificationInfo>> _passageMap = new();
 
-    public async Task NotifyPassageEnterAsync(string passageKey, string occupantKey)
+    public async Task NotifyPassageEnter(string passageKey, string occupantKey)
     {
         await Enter(passageKey, occupantKey);
         await _hubContext.Clients.Group(passageKey).OnPassageEnter(occupantKey);
     }
 
-    public async Task NotifyPassageExitAsync(string passageKey, string occupantKey)
+    public async Task NotifyPassageExit(string passageKey, string occupantKey)
     {
         await Exit(passageKey, occupantKey);
         await _hubContext.Clients.Group(passageKey).OnPassageExit(occupantKey);
+    }
+
+    public Task NotifyPlayerLogChanged(string playerKey)
+    {
+        UserNotificationInfo? userInfo;
+
+        lock (_lock)
+        {
+            _userMap.TryGetValue(playerKey, out userInfo);
+        }
+
+        if (userInfo is not null)
+            return _hubContext.Clients.Client(userInfo.ConnectionId).OnPlayerLogChanged();
+
+        return Task.CompletedTask;
     }
 
     public async Task Subscribe(string connectionId, string playerKey, string? passageKey)
@@ -77,6 +98,7 @@ internal sealed class NotificationService(IHubContext<PassageNotificationHub, IP
                 _passageMap.TryGetValue(passageKey, out var users))
             {
                 users.Remove(userInfo);
+                userInfo.PassageKey = null;
             }
         }
 

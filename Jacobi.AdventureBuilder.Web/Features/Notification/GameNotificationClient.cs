@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Jacobi.AdventureBuilder.Web.Features.Notification;
 
-internal sealed class NotificationClient : IAsyncDisposable
+internal sealed class GameNotificationClient : IAsyncDisposable
 {
     private readonly HubConnection _hubConnection;
 
-    public NotificationClient(NavigationManager navigationManager)
+    public GameNotificationClient(NavigationManager navigationManager)
     {
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(navigationManager.ToAbsoluteUri("/notifications"))
@@ -29,6 +29,15 @@ internal sealed class NotificationClient : IAsyncDisposable
         {
             ArgumentNullException.ThrowIfNull(value);
             _hubConnection.On<string>("OnPassageExit", value);
+        }
+    }
+
+    public Func<Task>? OnPlayerLogChanged
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            _hubConnection.On("OnPlayerLogChanged", value);
         }
     }
 

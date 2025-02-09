@@ -11,6 +11,8 @@ public sealed class PlayerLogGrainState
 
 public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
 {
+    private IPlayerEventsGrain? _playerEvents;
+
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
         if (!State.IsLoaded)
@@ -18,19 +20,19 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
             State.IsLoaded = true;
         }
 
+        _playerEvents = GrainFactory.GetPlayerEvents(this.GetPrimaryKeyString());
+
         return base.OnActivateAsync(cancellationToken);
     }
 
     public Task Clear()
     {
         State.LogLines.Clear();
-        return Task.CompletedTask;
+        return NotifyPlayerLogChanged();
     }
 
     public Task<IReadOnlyList<PlayerLogLine>> Lines()
-    {
-        return Task.FromResult((IReadOnlyList<PlayerLogLine>)State.LogLines);
-    }
+        => Task.FromResult((IReadOnlyList<PlayerLogLine>)State.LogLines);
 
     public async Task AddLine(GameCommand command)
     {
@@ -38,6 +40,7 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
 
         State.LogLines.Insert(0, line);
         await WriteStateAsync();
+        await NotifyPlayerLogChanged();
     }
 
     // playerKey is used to filter out the current player as occupant
@@ -55,6 +58,7 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
         var line = await CreateLine(passage, subLines);
         State.LogLines.Insert(0, line);
         await WriteStateAsync();
+        await NotifyPlayerLogChanged();
     }
 
     public async Task UpdateLine(IPassageGrain passage, string playerKey, GameCommand? command = null)
@@ -83,6 +87,7 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
         State.LogLines.RemoveAt(0);
         State.LogLines.Insert(0, line);
         await WriteStateAsync();
+        await NotifyPlayerLogChanged();
     }
 
     private async Task<PlayerLogLine> CreateLine(string grainKey)
@@ -151,4 +156,7 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
 
         return subLines;
     }
+
+    private Task NotifyPlayerLogChanged()
+        => _playerEvents!.NotifyPlayerLogChanged(this.GetPrimaryKeyString());
 }

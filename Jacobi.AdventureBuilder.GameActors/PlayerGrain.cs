@@ -1,5 +1,6 @@
 ﻿using Jacobi.AdventureBuilder.GameClient;
 using Jacobi.AdventureBuilder.GameContracts;
+using Orleans.Concurrency;
 using Orleans.Streams;
 
 namespace Jacobi.AdventureBuilder.GameActors;
@@ -9,6 +10,7 @@ public sealed class PlayerGrainState : PassageOccupantGrainState
     public bool IsLoaded { get; set; }
 }
 
+[Reentrant]
 public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
     : PassageOccupantGrain<PlayerGrainState>, IPlayerGrain, IPassageEvents
 {
@@ -89,12 +91,6 @@ public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
         if (State.Passage is null) return;
 
         _subscription = await this.SubscribePassageEvents(State.Passage.GetPrimaryKeyString());
-
-        //var passageId = PassageKey.Parse(State.Passage.GetPrimaryKeyString()).PassageId;
-        //var streamProvider = this.GetStreamProvider("AzureQueueProvider");
-        //var streamId = StreamId.Create("passage-events", passageId);
-        //var stream = streamProvider.GetStream<PassageEvent>(streamId);
-        //_subscription = await stream.SubscribeAsync(this);
     }
     private async Task Unsubscribe()
     {
@@ -102,7 +98,4 @@ public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
         await _subscription.UnsubscribeAsync();
         _subscription = null;
     }
-
-    //private IPassageEventsGrain GetPassagePubSub()
-    //    => GrainFactory.GetPassagePubSub(State.Passage.GetPrimaryKeyString());
 }

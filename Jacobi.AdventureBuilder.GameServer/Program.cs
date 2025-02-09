@@ -15,9 +15,12 @@ builder.AddKeyedAzureBlobClient("game-grains");
 builder.AddKeyedAzureTableClient("game-pubsub");
 builder.AddKeyedAzureQueueClient("game-events");
 builder.AddApiClient();
+builder.AddNotifyPlayer();
 builder.AddNotifyPassage();
 builder.UseOrleans(siloBuilder =>
 {
+    siloBuilder.AddIncomingGrainCallFilter<InterceptorGrain>();
+
     siloBuilder.AddAzureQueueStreams("AzureQueueProvider", configurator =>
     {
         configurator.ConfigureAzureQueue(options =>

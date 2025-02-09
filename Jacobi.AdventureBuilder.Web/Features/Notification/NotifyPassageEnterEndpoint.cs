@@ -30,7 +30,7 @@ internal sealed class NotifyPassageEnterEndpoint(INotificationService notificati
 
     public override async Task HandleAsync(NotifyPassageEnterRequest req, CancellationToken ct)
     {
-        await _notificationService.NotifyPassageEnterAsync(req.PassageKey, req.OccupantKey);
+        await _notificationService.NotifyPassageEnter(req.PassageKey, req.OccupantKey);
     }
 }
 

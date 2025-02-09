@@ -82,16 +82,6 @@ public sealed class PassageGrain : Grain<PassageGrainState>, IPassageGrain
         var key = this.GetPrimaryKeyString();
         var notify = GrainFactory.GetNotifyPassage(key);
         await notify.NotifyPassageEnter(context, key, occupantKey);
-
-        //var passageKey = this.GetPrimaryKeyString();
-        //var passageId = PassageKey.Parse(passageKey).PassageId;
-        //var streamProvider = this.GetStreamProvider("AzureQueueProvider");
-        //var streamId = StreamId.Create("passage-events", passageId);
-        //var stream = streamProvider.GetStream<PassageEvent>(streamId);
-        //var passageEvent = new PassageEvent(PassageEventKind.Exit, passageKey);
-        //await stream.OnNextAsync(passageEvent);
-
-        //await _notifyClient.NotifyPassageExit(context, passageKey, occupantKey);
     }
 
     public async Task Exit(GameContext context, string occupantKey)
