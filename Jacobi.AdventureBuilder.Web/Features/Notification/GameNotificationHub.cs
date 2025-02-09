@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Jacobi.AdventureBuilder.Web.Features.Notification;
 
-public interface IPassageNotifications
+public interface IGameNotifications
 {
     Task OnPassageExit(string occupantKey);
     Task OnPassageEnter(string occupantKey);
+    Task OnPlayerLogChanged();
 }
 
-public sealed class PassageNotificationHub : Hub<IPassageNotifications>
+public sealed class GameNotificationHub : Hub<IGameNotifications>
 {
     public Task Subscribe(string playerKey, string? passageKey, [FromServices] INotificationUsers notificationUsers)
     {

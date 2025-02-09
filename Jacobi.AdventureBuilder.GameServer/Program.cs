@@ -15,9 +15,12 @@ builder.AddKeyedAzureBlobClient("game-grains");
 builder.AddKeyedAzureTableClient("game-pubsub");
 builder.AddKeyedAzureQueueClient("game-events");
 builder.AddApiClient();
+builder.AddNotifyPlayer();
 builder.AddNotifyPassage();
 builder.UseOrleans(siloBuilder =>
 {
+    siloBuilder.AddIncomingGrainCallFilter<InterceptorGrain>();
+
     siloBuilder.AddAzureQueueStreams("AzureQueueProvider", configurator =>
     {
         configurator.ConfigureAzureQueue(options =>
@@ -25,8 +28,14 @@ builder.UseOrleans(siloBuilder =>
             options.Configure<IServiceProvider>((queueOptions, sp) =>
             {
                 queueOptions.QueueServiceClient = sp.GetKeyedService<QueueServiceClient>("game-events");
+                queueOptions.QueueNames = ["adventure-events-azurequeueprovider"];
             });
         });
+        configurator.ConfigurePullingAgent(ob => ob.Configure(options =>
+        {
+            options.GetQueueMsgsTimerPeriod = TimeSpan.FromMilliseconds(1000);
+            //options.StreamInactivityPeriod = TimeSpan.FromMilliseconds(1000);
+        }));
     });
 
     siloBuilder.ConfigureLogging(logging =>

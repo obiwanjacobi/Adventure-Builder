@@ -1,6 +1,7 @@
 ﻿using Jacobi.AdventureBuilder.GameContracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
+using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular;
 
 namespace Jacobi.AdventureBuilder.Web.Features;
 
@@ -36,12 +37,12 @@ public partial class StoryLine : ComponentBase
     {
         return item.Kind switch
         {
-            PlayerLogLineKind.Asset => new Icons.Regular.Size20.Notebook(),
+            PlayerLogLineKind.Asset => new Size20.Notebook(),
             PlayerLogLineKind.Command => GetCommandIcon(item),
-            PlayerLogLineKind.NonPlayerCharacter => new Icons.Regular.Size20.Person(),
-            PlayerLogLineKind.Passage => new Icons.Regular.Size20.Location(),
-            PlayerLogLineKind.Player => new Icons.Regular.Size20.PersonHome(),
-            _ => new Icons.Regular.Size20.Box(),
+            PlayerLogLineKind.NonPlayerCharacter => new Size20.Person(),
+            PlayerLogLineKind.Passage => new Size20.Location(),
+            PlayerLogLineKind.Player => new Size20.PersonHome(),
+            _ => new Size20.Box(),
         };
     }
 
@@ -49,10 +50,10 @@ public partial class StoryLine : ComponentBase
     {
         return item.CommandKind switch
         {
-            "nav-passage" => new Icons.Regular.Size20.ArrowCurveUpRight(),
-            "inv-put" => new Icons.Regular.Size20.AddSquare(),
-            "inv-take" => new Icons.Regular.Size20.ArrowExit(),
-            _ => new Icons.Regular.Size20.KeyCommand(),
+            "nav-passage" => new Size20.ArrowCurveUpRight(),
+            "inv-put" => new Size20.AddSquare(),
+            "inv-take" => new Size20.ArrowExit(),
+            _ => new Size20.KeyCommand(),
         };
     }
 }

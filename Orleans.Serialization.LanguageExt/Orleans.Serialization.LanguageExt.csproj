@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
     <PackageReference Include="Microsoft.Orleans.Sdk" Version="8.2.0" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.1" />
   </ItemGroup>
 
 </Project>

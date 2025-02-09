@@ -33,8 +33,8 @@ internal sealed class InventoryCommandHandler : IGameCommandHandler
 
         if (command.Kind == InventoryPut)
         {
-            await inventory.Add(asset);
             await context.Passage.Exit(context, assetKey);
+            await inventory.Add(asset);
         }
         if (command.Kind == InventoryTake)
         {
@@ -55,7 +55,7 @@ internal sealed class InventoryCommandHandler : IGameCommandHandler
         var assets = assetKeys.Map(assetKey => _factory.GetGrain<IAssetGrain>(assetKey));
 
         var commands = new List<GameCommand>();
-        foreach (var asset in assets)
+        foreach (var asset in assets.ToList())
         {
             // does asset support inventory-put command?
             var commandKinds = await asset.CommandKinds();

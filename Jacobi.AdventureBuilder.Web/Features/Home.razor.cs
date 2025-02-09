@@ -10,7 +10,7 @@ public partial class Home : ComponentBase
 {
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly AdventureGameClient _gameClient;
-    private NotificationClient _notificationClient;
+    private GameNotificationClient _notificationClient;
     private IReadOnlyList<GameCommand>? _commands;
     private IPlayerGrain? _player;
     private IWorldGrain? _world;
@@ -24,7 +24,7 @@ public partial class Home : ComponentBase
     {
         _authenticationStateProvider = authenticationStateProvider;
         _gameClient = gameClient;
-        _notificationClient = new NotificationClient(navigationManager);
+        _notificationClient = new GameNotificationClient(navigationManager);
     }
 
     protected override async Task OnInitializedAsync()
@@ -44,28 +44,36 @@ public partial class Home : ComponentBase
             var passage = await _world.Start(_player);
             await SetPassage(passage);
 
-            _notificationClient.OnPassageEnter = OnPassageEnter;
-            _notificationClient.OnPassageExit = OnPassageExit;
+            //_notificationClient.OnPassageEnter = OnPassageEnter;
+            //_notificationClient.OnPassageExit = OnPassageExit;
+            _notificationClient.OnPlayerLogChanged = OnPlayerLogChanged;
             await _notificationClient.StartAsync(_player.GetPrimaryKeyString(), passage.GetPrimaryKeyString());
         }
     }
 
-    private async Task OnPassageExit(string occupantKey)
+    //private async Task OnPassageExit(string occupantKey)
+    //{
+    //    if (_player is null || _passage is null) return;
+    //    var playerKey = _player.GetPrimaryKeyString();
+    //    if (playerKey == occupantKey) return;
+
+    //    await SetPassage(_passage);
+    //    await InvokeAsync(StateHasChanged);
+    //}
+
+    //private async Task OnPassageEnter(string occupantKey)
+    //{
+    //    if (_player is null || _passage is null) return;
+    //    var playerKey = _player.GetPrimaryKeyString();
+    //    if (playerKey == occupantKey) return;
+
+    //    await SetPassage(_passage);
+    //    await InvokeAsync(StateHasChanged);
+    //}
+
+    private async Task OnPlayerLogChanged()
     {
         if (_player is null || _passage is null) return;
-        var playerKey = _player.GetPrimaryKeyString();
-        if (playerKey == occupantKey) return;
-
-        await SetPassage(_passage);
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task OnPassageEnter(string occupantKey)
-    {
-        if (_player is null || _passage is null) return;
-        var playerKey = _player.GetPrimaryKeyString();
-        if (playerKey == occupantKey) return;
-
         await SetPassage(_passage);
         await InvokeAsync(StateHasChanged);
     }
@@ -79,10 +87,14 @@ public partial class Home : ComponentBase
         {
             var result = await _player!.Play(_world!, _passage, command);
             if (result.Passage is null) return;
-
             await SetPassage(result.Passage);
-            StateHasChanged();
         }
+        else
+        {
+            await SetPassage(_passage);
+        }
+
+        StateHasChanged();
     }
 
     private async Task SetPassage(IPassageGrain passage)
