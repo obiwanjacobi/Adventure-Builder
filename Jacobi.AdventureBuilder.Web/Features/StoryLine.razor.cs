@@ -23,11 +23,10 @@ public partial class StoryLine : ComponentBase
 
     private void SetStoryLineItems(IReadOnlyList<PlayerLogLine> logLines)
     {
-        var cnt = 0;
         Items = logLines.Select(line =>
-            new StoryLineItem(line.Kind, line.Title, line.Description, line.CommandKind, cnt++ == 0,
+            new StoryLineItem(line.Kind, line.Title, line.Description, line.CommandKind, false,
                 line.SubLines?.Select(subLine =>
-                    new StoryLineItem(subLine.Kind, subLine.Title, subLine.Description, subLine.CommandKind, cnt++ == 0, [])
+                    new StoryLineItem(subLine.Kind, subLine.Title, subLine.Description, subLine.CommandKind, false, [])
                 ).ToList() ?? [])
         )
         .ToList();

@@ -44,38 +44,40 @@ public partial class Home : ComponentBase
             var passage = await _world.Start(_player);
             await SetPassage(passage);
 
-            //_notificationClient.OnPassageEnter = OnPassageEnter;
-            //_notificationClient.OnPassageExit = OnPassageExit;
+            _notificationClient.OnPassageEnter = OnPassageEnter;
+            _notificationClient.OnPassageExit = OnPassageExit;
             _notificationClient.OnPlayerLogChanged = OnPlayerLogChanged;
             await _notificationClient.StartAsync(_player.GetPrimaryKeyString(), passage.GetPrimaryKeyString());
         }
     }
 
-    //private async Task OnPassageExit(string occupantKey)
-    //{
-    //    if (_player is null || _passage is null) return;
-    //    var playerKey = _player.GetPrimaryKeyString();
-    //    if (playerKey == occupantKey) return;
-
-    //    await SetPassage(_passage);
-    //    await InvokeAsync(StateHasChanged);
-    //}
-
-    //private async Task OnPassageEnter(string occupantKey)
-    //{
-    //    if (_player is null || _passage is null) return;
-    //    var playerKey = _player.GetPrimaryKeyString();
-    //    if (playerKey == occupantKey) return;
-
-    //    await SetPassage(_passage);
-    //    await InvokeAsync(StateHasChanged);
-    //}
-
-    private async Task OnPlayerLogChanged()
+    private async Task OnPassageExit(string occupantKey)
     {
         if (_player is null || _passage is null) return;
+        var playerKey = _player.GetPrimaryKeyString();
+        if (playerKey == occupantKey) return;
+
         await SetPassage(_passage);
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnPassageEnter(string occupantKey)
+    {
+        if (_player is null || _passage is null) return;
+        var playerKey = _player.GetPrimaryKeyString();
+        if (playerKey == occupantKey) return;
+
+        await SetPassage(_passage);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private Task OnPlayerLogChanged()
+    {
+        return UpdatePlayerLogLines();
+
+        //if (_player is null || _passage is null) return;
+        //await SetPassage(_passage);
+        //await InvokeAsync(StateHasChanged);
     }
 
     private async Task ExecuteCommand(string commandAction)
@@ -89,10 +91,10 @@ public partial class Home : ComponentBase
             if (result.Passage is null) return;
             await SetPassage(result.Passage);
         }
-        else
-        {
-            await SetPassage(_passage);
-        }
+        //else
+        //{
+        //    await SetPassage(_passage);
+        //}
 
         StateHasChanged();
     }
@@ -102,9 +104,12 @@ public partial class Home : ComponentBase
         _passage = passage;
         _commands = await _passage.Commands(_player);
 
-        var log = _gameClient.GrainFactory.GetPlayerLog(_player!);
-        _logLines = await log.Lines();
+        await UpdatePlayerLogLines();
+        await UpdateInventory();
+    }
 
+    private async Task UpdateInventory()
+    {
         var inventory = _gameClient.GrainFactory.GetPlayerInventory(_player!);
         var assets = await inventory.Assets();
         var inventoryItems = new List<InventoryItem>();
@@ -115,5 +120,12 @@ public partial class Home : ComponentBase
             ));
         }
         _inventoryItems = inventoryItems;
+    }
+
+    private async Task UpdatePlayerLogLines()
+    {
+        if (_player is null) return;
+        var log = _gameClient.GrainFactory.GetPlayerLog(_player);
+        _logLines = await log.Lines();
     }
 }

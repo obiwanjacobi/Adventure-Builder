@@ -8,16 +8,16 @@
 <AuthorizeView>
     <Authorized>
         <h1>@_worldName</h1>
-        <h3>@_playerNickname</h3>
         <FluentDivider />
-
-        @if (@_commands is not null)
-        {
-            <CommandBar Commands="@_commands" ExecuteCommandAsync="@ExecuteCommand" />
-        }
-
         <FluentStack Orientation="Orientation.Horizontal">
-            <StoryLine LogLines="_logLines"></StoryLine>
+            <FluentStack Orientation="Orientation.Vertical">
+                <PassageView @ref="_passageView" Passage="@_passage" />
+                @if (@_commands is not null)
+                {
+                    <CommandBar Commands="@_commands" ExecuteCommandAsync="@ExecuteCommand" />
+                }
+                <StoryLine LogLines="_logLines"></StoryLine>
+            </FluentStack>
             <Inventory Items="_inventoryItems"></Inventory>
         </FluentStack>
     </Authorized>
@@ -25,3 +25,7 @@
         <p><strong>Please <a href="authentication/login">log in</a>.</strong></p>
     </NotAuthorized>
 </AuthorizeView>
+
+@code {
+  private PassageView _passageView;
+}

@@ -13,7 +13,10 @@
 - [ ] Notify other players when an asset is taken (player x took the 'asset')
 - [ ] Add inter-player chat.
 - [ ] Talk to npc's.
+- [ ] Count how many times a player visits a passage. Other rules may use this info.
+- [ ] A concept of public and private inventory items? That way you can see a player has the bottle and ask them for it.
 - [ ] Lock assets when they are picked up - so 2 players cannot pick up the same asset at the same time.
+- [ ] What happens to assets in a player's inventory when he/she leaves the game?
 - [ ] Certain assets introduce new commands (to be done with the asset)
   Bottle->drink(if-open),break,close,open, Knife->cut,stab,slice, 
   How to manage the dependency between asset defined in twine and the code for its commands?

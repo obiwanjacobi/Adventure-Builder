@@ -1,5 +1,4 @@
 ﻿using Jacobi.AdventureBuilder.GameContracts;
-using LanguageExt;
 
 namespace Jacobi.AdventureBuilder.GameClient;
 
@@ -27,27 +26,27 @@ public static class GrainExtensions
     public static IPlayerInventoryGrain GetPlayerInventory(this IGrainFactory factory, string playerKey)
         => factory.GetGrain<IPlayerInventoryGrain>(playerKey);
 
-    public static Option<IPassageOccupantGrain> GetPassageOccupant(this IGrainFactory factory, string key, out string? tag)
+    public static IPassageOccupantGrain? GetPassageOccupant(this IGrainFactory factory, string key, out string? tag)
     {
         if (PlayerKey.IsValidKey(key))
         {
             tag = PlayerKey.Tag;
-            return Option<IPassageOccupantGrain>.Some(factory.GetGrain<IPlayerGrain>(key));
+            return factory.GetGrain<IPlayerGrain>(key);
         }
 
         if (NonPlayerCharacterKey.IsValidKey(key))
         {
             tag = NonPlayerCharacterKey.Tag;
-            return Option<IPassageOccupantGrain>.Some(factory.GetGrain<INonPlayerCharacterGrain>(key));
+            return factory.GetGrain<INonPlayerCharacterGrain>(key);
         }
 
         if (AssetKey.IsValidKey(key))
         {
             tag = AssetKey.Tag;
-            return Option<IPassageOccupantGrain>.Some(factory.GetGrain<IAssetGrain>(key));
+            return factory.GetGrain<IAssetGrain>(key);
         }
 
         tag = null;
-        return Option<IPassageOccupantGrain>.None;
+        return null;
     }
 }

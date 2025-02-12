@@ -31,8 +31,8 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
         return NotifyPlayerLogChanged();
     }
 
-    public Task<IReadOnlyList<PlayerLogLine>> Lines()
-        => Task.FromResult((IReadOnlyList<PlayerLogLine>)State.LogLines);
+    public Task<IReadOnlyList<PlayerLogLine>> Lines(int count = 5)
+        => Task.FromResult((IReadOnlyList<PlayerLogLine>)State.LogLines.Take(count).ToList());
 
     public async Task AddLine(GameCommand command)
     {
@@ -61,41 +61,12 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
         await NotifyPlayerLogChanged();
     }
 
-    public async Task UpdateLine(IPassageGrain passage, string playerKey, GameCommand? command = null)
-    {
-        // passage must be top line
-        var topLine = State.LogLines[0];
-        if (topLine.Kind != PlayerLogLineKind.Passage ||
-            topLine.Title != await passage.Name())
-        {
-            return;
-        }
-
-        var subLines = topLine.SubLines?.Where(sl =>
-            {
-                return !String.IsNullOrEmpty(sl.CommandKind) &&
-                command?.Subject != sl.Subject;
-            }).ToList() ?? [];
-
-        if (command is not null)
-            subLines.Add(await CreateLine(command));
-
-        var occupantLines = await CreateSubLines(await passage.Occupants(), playerKey);
-        subLines.AddRange(occupantLines);
-
-        var line = await CreateLine(passage, subLines);
-        State.LogLines.RemoveAt(0);
-        State.LogLines.Insert(0, line);
-        await WriteStateAsync();
-        await NotifyPlayerLogChanged();
-    }
-
     private async Task<PlayerLogLine> CreateLine(string grainKey)
     {
-        var passageOccupant = GrainFactory.GetPassageOccupant(grainKey, out var tag);
-        PlayerLogLineKind kind = PlayerLogLineKind.None;
+        var occupant = GrainFactory.GetPassageOccupant(grainKey, out var tag);
+        var kind = PlayerLogLineKind.None;
 
-        passageOccupant.IfSome(passageOccupant =>
+        if (occupant is not null)
         {
             kind = tag switch
             {
@@ -105,13 +76,9 @@ public sealed class PlayerLogGrain : Grain<PlayerLogGrainState>, IPlayerLogGrain
                 _ => throw new NotImplementedException(
                     $"No implementation for '{tag}' type of IPassageOccupant object.")
             };
-        });
 
-        if (kind != PlayerLogLineKind.None &&
-            passageOccupant.TryGetValue(out var occupant))
-        {
             return await CreateLine(occupant, grainKey, kind);
-        }
+        };
 
         throw new NotSupportedException(
             $"No {nameof(PlayerLogLine)} could be created for '{grainKey}'.");

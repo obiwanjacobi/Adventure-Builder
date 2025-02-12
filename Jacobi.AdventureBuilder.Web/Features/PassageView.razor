@@ -1,0 +1,49 @@
+﻿@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+<FluentCard>
+    @if (Passage is null)
+    {
+        <FluentLabel>Loading...</FluentLabel>
+    }
+    @if (Passage is not null)
+    {
+        <FluentLabel>@_name</FluentLabel>
+        <FluentLabel>@_description</FluentLabel>
+        <FluentDivider />
+        <FluentStack Orientation="Orientation.Horizontal">
+            @foreach (var player in _players)
+            {
+                <div>
+                    <FluentIcon Value="new Icons.Regular.Size20.Person()" />
+                    <div style="font-weight:bold">
+                        @player.Name
+                    </div>
+
+                    @player.Description
+                </div>
+            }
+            @foreach (var npc in _npcs)
+            {
+                <div>
+                    <FluentIcon Value="new Icons.Regular.Size20.Person()" />
+                    <div style="font-weight:bold">
+                        @npc.Name
+                    </div>
+
+                    @npc.Description
+                </div>
+            }
+            @foreach (var asset in _assets)
+            {
+                <div>
+                    <FluentIcon Value="new Icons.Regular.Size20.Notebook()" />
+                    <div style="font-weight:bold">
+                        @asset.Name
+                    </div>
+
+                    @asset.Description
+                </div>
+            }
+        </FluentStack>
+    }
+</FluentCard>

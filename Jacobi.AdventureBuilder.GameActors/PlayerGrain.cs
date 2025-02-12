@@ -1,7 +1,6 @@
 ﻿using Jacobi.AdventureBuilder.GameClient;
 using Jacobi.AdventureBuilder.GameContracts;
 using Orleans.Concurrency;
-using Orleans.Streams;
 
 namespace Jacobi.AdventureBuilder.GameActors;
 
@@ -12,7 +11,7 @@ public sealed class PlayerGrainState : PassageOccupantGrainState
 
 [Reentrant]
 public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
-    : PassageOccupantGrain<PlayerGrainState>, IPlayerGrain, IPassageEvents
+    : PassageOccupantGrain<PlayerGrainState>, IPlayerGrain
 {
     private readonly GameCommandExecuter _commandExecutor = commandExecutor;
 
@@ -27,10 +26,6 @@ public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
         {
             State.IsLoaded = true;
         }
-        else if (State.Passage is not null)
-        {
-            await Subscribe();
-        }
 
         await base.OnActivateAsync(cancellationToken);
     }
@@ -38,64 +33,24 @@ public sealed class PlayerGrain(GameCommandExecuter commandExecutor)
     public async Task<GameCommandResult> Play(IWorldGrain world, IPassageGrain passage, GameCommand command)
     {
         var log = GrainFactory.GetPlayerLog(this);
-        var isNavigationCmd = NavigationCommandHandler.IsNavigationCommand(command);
+        //var isNavigationCmd = NavigationCommandHandler.IsNavigationCommand(command);
 
-        if (isNavigationCmd)
-            await log.AddLine(command);
+        //if (isNavigationCmd)
+        await log.AddLine(command);
 
-        var result = await _commandExecutor.ExecuteCommand(world, this, passage, command);
-
-        if (result.Success && !isNavigationCmd)
-            await log.UpdateLine(passage, this.GetPrimaryKeyString(), command);
-
-        return result;
+        return await _commandExecutor.ExecuteCommand(world, this, passage, command);
     }
 
     protected override async Task OnPassageEnter(GameContext context, IPassageGrain passage)
     {
-        await Subscribe();
-
-        var log = GrainFactory.GetPlayerLog(this);
-        await log.AddLine(passage, this.GetPrimaryKeyString());
         await base.OnPassageEnter(context, passage);
     }
 
     protected override async Task OnPassageExit(GameContext context, IPassageGrain passage)
     {
-        await Unsubscribe();
-        await base.OnPassageExit(context, passage);
-    }
-
-    public async Task OnNextAsync(PassageEvent item, StreamSequenceToken? token = null)
-    {
-        var playerKey = this.GetPrimaryKeyString();
         var log = GrainFactory.GetPlayerLog(this);
-        var passage = GrainFactory.GetGrain<IPassageGrain>(item.PassageKey);
-        await log.UpdateLine(passage, playerKey);
-    }
+        await log.AddLine(passage, this.GetPrimaryKeyString());
 
-    public Task OnCompletedAsync()
-    {
-        return Task.CompletedTask;
-    }
-    public Task OnErrorAsync(Exception ex)
-    {
-        return Task.CompletedTask;
-    }
-
-    private StreamSubscriptionHandle<PassageEvent>? _subscription;
-
-    private async Task Subscribe()
-    {
-        if (_subscription is not null) await Unsubscribe();
-        if (State.Passage is null) return;
-
-        _subscription = await this.SubscribePassageEvents(State.Passage.GetPrimaryKeyString());
-    }
-    private async Task Unsubscribe()
-    {
-        if (_subscription is null) return;
-        await _subscription.UnsubscribeAsync();
-        _subscription = null;
+        await base.OnPassageExit(context, passage);
     }
 }
