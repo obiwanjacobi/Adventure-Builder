@@ -33,6 +33,6 @@ internal sealed class PutAdventureWorldEndpoint : Endpoint<AdventureWorldInfo, A
     {
         var worldData = AdventureMapper.ToWorldData(req);
         await _repository.PutAdventureWorldAsync(worldData, ct);
-        await SendOkAsync();
+        await Send.OkAsync();
     }
 }

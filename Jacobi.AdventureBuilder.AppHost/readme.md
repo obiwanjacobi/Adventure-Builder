@@ -5,7 +5,7 @@ Aspire Distributed Application Host
 
 ## Configuring Keycloak (Identity Provider)
 
-- Create 1 new Realm: AdventureBuilder
+- Create 1 new Realm: AdventureBuilder (case sensitive)
 - Create 2 new Users: testuser1 and testuser2 (not-temp & set password)
 - Create 3 new Clients: webfrontend, gameserver and apiservice:
   OpenId

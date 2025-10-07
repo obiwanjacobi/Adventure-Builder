@@ -8,7 +8,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 // metadata store
 var cosmos = builder.AddAzureCosmosDB("cmos-adventurebuilder");
-var cosmosDb = cosmos.AddDatabase("adventuredata");
+var cosmosDb = cosmos.AddCosmosDatabase("adventuredata");
 
 // runtime store
 var storage = builder.AddAzureStorage("st-adventurebuilder");
@@ -33,15 +33,20 @@ var identityProvider = builder.AddKeycloak("IdentityProvider", 8080)
 
 if (builder.Environment.IsDevelopment())
 {
-    cosmos.RunAsEmulator(config => config
-        .WithHttpEndpoint(targetPort: 1234, name: "explorer-port", isProxied: false)
-        .WithImageRegistry("mcr.microsoft.com")
-        .WithImage("cosmosdb/linux/azure-cosmos-emulator")
-        .WithImageTag("vnext-preview")
-        .WithArgs("--protocol", "https")
-        .WithArgs("--explorer-protocol", "http")
-        .WithLifetime(ContainerLifetime.Persistent)
-    );
+    cosmos = cosmos.RunAsExisting("cosmos-adventurebuilder", "adventure-builder");
+
+    //#pragma warning disable ASPIRECOSMOSDB001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+    //    cosmos.RunAsPreviewEmulator(config => config
+    //    //cosmos.RunAsEmulator(config => config
+    //        .WithHttpEndpoint(targetPort: 1234, name: "explorer-port", isProxied: false)
+    //        .WithImageRegistry("mcr.microsoft.com")
+    //        .WithImage("cosmosdb/linux/azure-cosmos-emulator")
+    //        //.WithImageTag("vnext-preview")
+    //        .WithArgs("--protocol", "https")
+    //        .WithArgs("--explorer-protocol", "http")
+    //        .WithLifetime(ContainerLifetime.Persistent)
+    //    );
+    //#pragma warning restore ASPIRECOSMOSDB001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
     // Seems to cause problems when debugging (and stopping half way).
     //storage.RunAsEmulator(config => config.WithLifetime(ContainerLifetime.Persistent));

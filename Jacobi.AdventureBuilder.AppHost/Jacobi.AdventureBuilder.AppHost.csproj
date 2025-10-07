@@ -23,18 +23,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Azure.Data.Tables" Version="9.0.0" />
-    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="9.0.0" />
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0" />
-    <PackageReference Include="Aspire.Hosting.Azure.CosmosDB" Version="9.0.0" />
-    <PackageReference Include="Aspire.Hosting.Azure.Storage" Version="9.0.0" />
+    <PackageReference Include="Aspire.Azure.Data.Tables" Version="9.5.1" />
+    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="9.5.1" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.5.1" />
+    <PackageReference Include="Aspire.Hosting.Azure.CosmosDB" Version="9.5.1" />
+    <PackageReference Include="Aspire.Hosting.Azure.Storage" Version="9.5.1" />
     <PackageReference Include="Aspire.Hosting.Keycloak" Version="9.0.0-preview.5.24551.3" />
-    <PackageReference Include="Aspire.Hosting.Orleans" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="8.2.0" />
-    <PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="8.2.0" />
-    <PackageReference Include="Microsoft.Orleans.Streaming" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Orleans.Streaming.AzureStorage" Version="8.2.0" />
-    <PackageReference Include="System.Text.Json" Version="9.0.1" />
+    <PackageReference Include="Aspire.Hosting.Orleans" Version="9.5.1" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="9.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="9.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Streaming" Version="9.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Streaming.AzureStorage" Version="9.2.1" />
+    <PackageReference Include="System.Text.Json" Version="9.0.9" />
   </ItemGroup>
 
 </Project>

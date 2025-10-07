@@ -35,6 +35,6 @@ internal sealed class GetAdventurePassageEndpoint : Endpoint<GetAdventurePassage
     {
         var worldData = await _repository.GetAdventureWorldAsync(req.WorldId, ct);
         var passage = AdventureMapper.ToPassageInfo(worldData, req.PassageId);
-        await SendAsync(passage, cancellation: ct);
+        await Send.OkAsync(passage, cancellation: ct);
     }
 }
