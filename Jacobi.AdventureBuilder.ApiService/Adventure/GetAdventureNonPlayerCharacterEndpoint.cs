@@ -35,6 +35,6 @@ internal sealed class GetAdventureNonPlayerCharacterEndpoint : Endpoint<GetAdven
     {
         var worldData = await _repository.GetAdventureWorldAsync(req.WorldId, ct);
         var npc = AdventureMapper.ToNonPlayerCharacterInfo(worldData, req.NpcId);
-        await SendAsync(npc, cancellation: ct);
+        await Send.OkAsync(npc, cancellation: ct);
     }
 }

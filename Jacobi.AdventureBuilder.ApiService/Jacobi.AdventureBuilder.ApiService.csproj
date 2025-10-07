@@ -24,13 +24,13 @@
   </PropertyGroup>-->
   
   <ItemGroup>
-    <PackageReference Include="Aspire.Microsoft.Azure.Cosmos" Version="9.0.0" />
-    <PackageReference Include="Azure.Identity" Version="1.13.2" />
-    <PackageReference Include="FastEndpoints" Version="5.34.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.46.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.0.0-preview.9.24556.5" />
-    <PackageReference Include="System.Text.Json" Version="9.0.1" />
+    <PackageReference Include="Aspire.Microsoft.Azure.Cosmos" Version="9.5.1" />
+    <PackageReference Include="Azure.Identity" Version="1.16.0" />
+    <PackageReference Include="FastEndpoints" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.54.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.9.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>

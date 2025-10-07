@@ -35,6 +35,6 @@ internal sealed class GetAdventureAssetEndpoint : Endpoint<GetAdventureAssetRequ
     {
         var worldData = await _repository.GetAdventureWorldAsync(req.WorldId, ct);
         var npc = AdventureMapper.ToAssetInfo(worldData, req.AssetId);
-        await SendAsync(npc, cancellation: ct);
+        await Send.OkAsync(npc, cancellation: ct);
     }
 }

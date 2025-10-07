@@ -34,7 +34,7 @@ internal sealed class SignupEndpoint : Endpoint<SignupRequest, SignupResponse>
     {
         var account = await _repository.CreateAccountAsync(req.Name, req.Email, req.Nickname, ct);
         var url = $"/accounts/{account.AccountId}";
-        var taskSend = SendCreatedAtAsync(url, null, new SignupResponse(account.AccountId.ToString()), cancellation: ct);
+        var taskSend = Send.CreatedAtAsync(url, null, new SignupResponse(account.AccountId.ToString()), cancellation: ct);
         var taskPublish = PublishAsync(new AccountCreatedEvent(account.AccountId), cancellation: ct);
 
         await Task.WhenAll(taskSend, taskPublish);

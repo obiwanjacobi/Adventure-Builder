@@ -17,17 +17,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Azure.Data.Tables" Version="9.0.0" />
-    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="9.0.0" />
-    <PackageReference Include="Aspire.Azure.Storage.Queues" Version="9.0.0" />
+    <PackageReference Include="Aspire.Azure.Data.Tables" Version="9.5.1" />
+    <PackageReference Include="Aspire.Azure.Storage.Blobs" Version="9.5.1" />
+    <PackageReference Include="Aspire.Azure.Storage.Queues" Version="9.5.1" />
     <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="8.2.0" />
-    <PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="8.2.0" />
-    <PackageReference Include="Microsoft.Orleans.Streaming.AzureStorage" Version="8.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
-    <PackageReference Include="System.Text.Json" Version="9.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="9.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="9.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Streaming.AzureStorage" Version="9.2.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+    <PackageReference Include="System.Text.Json" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>

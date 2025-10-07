@@ -37,6 +37,6 @@ internal sealed class GetAdventureWorldEndpoint : Endpoint<GetAdventureWorldRequ
         var world = isSummary
             ? AdventureMapper.ToWorldInfoSummary(worldData)
             : AdventureMapper.ToWorldInfo(worldData);
-        await SendAsync(world, cancellation: ct);
+        await Send.OkAsync(world, cancellation: ct);
     }
 }

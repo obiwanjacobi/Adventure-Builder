@@ -7,7 +7,8 @@ public static class BuilderExtensions
 {
     public static IHostApplicationBuilder AddGameClient(this IHostApplicationBuilder builder)
     {
-        builder.AddKeyedAzureTableClient("game-clusters");
+        //builder.AddKeyedAzureTableClient("game-clusters");
+        builder.AddKeyedAzureTableServiceClient("game-clusters");
         builder.UseOrleansClient();
 
         builder.Services.AddSingleton<AdventureGameClient>();
