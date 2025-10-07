@@ -10,13 +10,9 @@ using Jacobi.AdventureBuilder.GameServer;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-//builder.AddKeyedAzureTableClient("game-clusters");
 builder.AddKeyedAzureTableServiceClient("game-clusters");
-//builder.AddKeyedAzureBlobClient("game-grains");
 builder.AddKeyedAzureBlobServiceClient("game-grains");
-//builder.AddKeyedAzureTableClient("game-pubsub");
 builder.AddKeyedAzureTableServiceClient("game-pubsub");
-//builder.AddKeyedAzureQueueClient("game-events");
 builder.AddKeyedAzureQueueServiceClient("game-events");
 builder.AddApiClient();
 builder.AddNotifyPlayer();
