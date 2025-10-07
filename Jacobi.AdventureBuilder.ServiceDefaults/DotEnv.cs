@@ -26,9 +26,10 @@ public static class DotEnv
         Console.WriteLine($"Reading Environment Variables from '{filePath}'.");
         foreach (var line in File.ReadAllLines(filePath))
         {
-            if (line.StartsWith('#')) continue;
+            var trimmed = line.Trim();
+            if (trimmed.StartsWith('#')) continue;
 
-            var parts = line.Split('=', StringSplitOptions.TrimEntries);
+            var parts = trimmed.Split('=', StringSplitOptions.TrimEntries);
 
             if (parts.Length != 2)
             {
